@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', afterLoadingHall);
 
 function afterLoadingHall() {
-    console.log('now');
     let hallSettingsButton = document.getElementById('hall-settings-btn');
     let hallCampaignsButton = document.getElementById('hall-campaigns-btn');
     let hallLogoutButton = document.getElementById('hall-logout-btn');

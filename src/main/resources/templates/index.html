@@ -7,8 +7,8 @@
         <title>Scribe VTTRPG</title>
     </head>
     <body>
-        <h1><span th:text="${mainTitle}" >welcome</span></h1>
-        <a href="./web/hall.html" th:text="${toHall}" >to personal hall</a>
+        <h1 th:text="${mainTitle}">welcome</h1>
+        <a href="./hall.html" th:href="'./hall'" th:text="${toHall}" >to personal hall</a>
 <!--        <div th:if="${param.error}">
             Invalid username and password.
         </div>

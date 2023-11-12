@@ -28,17 +28,12 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
 java {
     sourceCompatibility = '17'
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
-
-//application {
-//    mainClass = 'dev.dragonstb.scribevttrpg.App'
-//}
 
 tasks.named('test') {
     useJUnitPlatform()

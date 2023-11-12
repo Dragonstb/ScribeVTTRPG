@@ -27,5 +27,5 @@ public class StorageConfig {
         this.fileStorageDir = fileStorageDir;
     }
 
-    
+
 }

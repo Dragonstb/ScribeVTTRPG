@@ -41,10 +41,10 @@ public class FileStorageService implements StorageServiceInterface {
 			if (file.isEmpty()) {
 				throw new FileStorageException("Failed to store empty file.");
 			}
-			Path destinationFile = this.rootLocation.resolve(
+			Path destinationFile = rootLocation.resolve(
 					Paths.get(file.getOriginalFilename()))
 					.normalize().toAbsolutePath();
-			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+			if (!destinationFile.getParent().equals(rootLocation.toAbsolutePath())) {
 				// This is a security check
 				throw new FileStorageException("Cannot store file outside current directory.");
 			}
@@ -85,8 +85,8 @@ public class FileStorageService implements StorageServiceInterface {
 				return resource;
 			}
 			else {
-				throw new FileStorageFileNotFoundException("Could not read file: " + filename);
-
+				throw new FileStorageFileNotFoundException("Could not read file: " + filename
+                        + ", readable? "+resource.isReadable()+", exists? "+resource.exists());
 			}
 		}
 		catch (MalformedURLException e) {

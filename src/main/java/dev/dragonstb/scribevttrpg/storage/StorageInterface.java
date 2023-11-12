@@ -17,7 +17,7 @@ public interface StorageInterface {
      * @param userName The user's username.
      * @return The user's uid.
      */
-    public UUID getUidByUsername(@NonNull String userName);
+    public String getUidByUsername(@NonNull String userName);
 
     /** Returns a list of all of the user's campaigns.
      * @author Dragonstb
@@ -25,7 +25,7 @@ public interface StorageInterface {
      * @param uid User's uid.
      * @return His/her campaigns,
      */
-    public List<Campaign> getAllCampaigns(@NonNull UUID uid);
+    public List<Campaign> getAllCampaigns(@NonNull String uid);
 
 
 }

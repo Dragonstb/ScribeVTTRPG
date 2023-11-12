@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
     <head>
-        <title>Personal Hall</title>
+        <title th:text="${pageTitle}">Personal Hall</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
         <script src="../static/scripts/hall.js" th:src="@{/scripts/hall.js}"></script>
     </head>
     <body>
+        <h1 th:text="${personalHall}">personal hall</h1>
         <div role="tablist">
             <button id="hall-settings-btn" type="button" role="tab" aria-controls="hall-settings-panel" th:text="${accountSettings}">Account Settings</button>
             <button id="hall-campaigns-btn" type="button" role="tab" aria-controls="hall-campaigns-panel" th:text="${campaignsLabel}">Campaigns</button>
-            <button id="hall-logout-btn" type="button" role="tab" aria-controls="hall-logout-panel" th:text="web.logout">Logout</button>
+            <button id="hall-logout-btn" type="button" role="tab" aria-controls="hall-logout-panel" th:text="${logout}">Logout</button>
         </div>
         <div>
             <!-- Account settings -->
@@ -20,15 +21,25 @@
             </div>
             <!-- Campaigns -->
             <div role="tabpanel" id="hall-campaigns-panel">
-                <button type="button">new campaign</button>
+                <button type="button" th:text="${newCampaign}">new campaign</button>
                 <div th:each="cpgn: ${campaigns}">
-                    <p th:text="${{cpgn.name}}">Campaign title</p>
-                    <p th:text="${{cpgn.system}}">system</p>
+                    <fieldset>
+                        <legend>
+                            <span th:text="${{cpgn.name}}">Campaign title</span>
+                        </legend>
+                        <p th:text="${{cpgn.system}}">system</p>
+                        <button th:text="${manageContent}">manage content</button>
+<!--                        <button th:text="${startSession}" onclick="location.href='./createsession.html'"
+                                th:onclick="'/createsession'"
+                                name="campaign" value="unknown campaign" th:value="${{cpgn.name}}">start session</button>-->
+                        <a href="./createsession.html" th:href="'/createsession?campaign='+${{cpgn.name}}"
+                           th:text="${startSession}">start session</a>
+                    </fieldset>
                 </div>
             </div>
             <div role="tabpanel" id="hall-logout-panel" class="nodisplay">
                 <!--<p>Logout</p>-->
-                <a href="./index.html" th:href="'./index'" th:text="web.logout">logout</a>
+                <a href="./index.html" th:href="'/'" th:text="${logout}">logout</a>
             </div>
         </div>
     </body>

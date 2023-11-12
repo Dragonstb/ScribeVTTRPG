@@ -6,9 +6,8 @@ import dev.dragonstb.scribevttrpg.utils.Constants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileUrlResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
 /** Access to a file system based database.
@@ -43,13 +42,13 @@ public class FileSystemDAO implements StorageInterface{
     }
 
     @Override
-    public UUID getUidByUsername(String userName) {
+    public String getUidByUsername(String userName) {
         return null;
     }
 
     @Override
-    public List<Campaign> getAllCampaigns(UUID uid) {
-        FileUrlResource file = (FileUrlResource)storageService.loadAsResource(campaignTable);
+    public List<Campaign> getAllCampaigns(String uid) {
+        Resource file = storageService.loadAsResource(campaignTable);
         String content;
         try {
             content = file.getContentAsString(Constants.DEFAULT_CHARSET);
@@ -62,7 +61,7 @@ public class FileSystemDAO implements StorageInterface{
         int uidAt = campaignColumns.indexOf( CAMPAIGN_UID_KEY );
         int nameAt = campaignColumns.indexOf( CAMPAIGN_NAME_KEY );
         int systemAt = campaignColumns.indexOf( CAMPAIGN_SYSTEM_KEY );
-        if(uidAt < 1 || nameAt < 1 || systemAt < 1) {
+        if(uidAt < 0 || nameAt < 0 || systemAt < 0) {
             throw new RuntimeException("key not set in campaigns table; uid at "+uidAt+", name at "+nameAt
                     +", system at "+systemAt);
         }
@@ -75,8 +74,7 @@ public class FileSystemDAO implements StorageInterface{
                         + "expected "+campaignColumns.size()+", but are "+values.length);
             }
 
-            UUID uidThisLine = UUID.fromString(values[uidAt]);
-            if( uid.equals(uidThisLine) ) {
+            if( uid.equals(values[uidAt]) ) {
                 String name = values[nameAt];
                 String system = values[systemAt];
                 if( name != null ) {

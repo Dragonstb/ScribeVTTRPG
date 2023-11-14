@@ -50,6 +50,9 @@ public class LocaleConverter implements Converter<String, Locale> {
     @Override
     public Locale convert(String text) {
         Locale use = Locale.ENGLISH;
+        if(text == null) {
+            return use;
+        }
 
         String[] locs = text.split(",");
         for (String loc : locs) {

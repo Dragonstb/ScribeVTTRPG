@@ -56,10 +56,10 @@ public class FileSystemDAO implements StorageInterface{
     private static final String CAMPAIGN_SYSTEM_KEY = "system";
 
     /** A service for loading and storing files from/to the file system. */
-    private final FileStorageService storageService;
+    private final StorageServiceInterface storageService;
 
     @Autowired
-    public FileSystemDAO(FileStorageService storageService) {
+    public FileSystemDAO(StorageServiceInterface storageService) {
         this.storageService = storageService;
         campaignColumns.add(CAMPAIGN_UID_KEY);
         campaignColumns.add(CAMPAIGN_NAME_KEY);
@@ -73,6 +73,10 @@ public class FileSystemDAO implements StorageInterface{
 
     @Override
     public List<Campaign> getAllCampaigns(String uid) {
+        if(uid == null) {
+            throw new IllegalArgumentException("Argument must not be null!");
+        }
+
         Resource file = storageService.loadAsResource(campaignTable);
         String content;
         try {
@@ -111,6 +115,5 @@ public class FileSystemDAO implements StorageInterface{
 
         return campaigns;
     }
-
 
 }

@@ -12,13 +12,8 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    //testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-
-    //testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // This dependency is used by the application.
-    //implementation 'com.google.guava:guava:31.1-jre'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title th:text="${documentTitle}">Game</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
+        <script src="../static/scripts/game.js" th:src="@{/scripts/game.js}"></script>
+    </head>
+    <body>
+        <div>
+            <button type="button" id="main-menu-btn" aria-controls="main-menu-panel">A menu</button>
+            <div class="nodisplay" id="main-menu-panel">
+                <button type="button" id="let-them-in-btn" aria-controls="let-them-in-panel"
+                        aria-owns="let-them-in-panel">Guests waiting in fromt of the door</button>
+                <button type="button">Leave</button>
+            </div>
+            <div class="nodisplay" id="let-them-in-panel" >
+                <div>Sam</div>
+                <div>Alex</div>
+            </div>
+            <span>A menu bar</span>
+        </div>
+        <div>Space for the table</div>
+        <div>Initiative bar, maybe?</div>
+        <div>The handouts, I guess</div>
+        <div>Set up your rolls here?</div>
+        <div>Probably space for your materials you haven't put on the table</div>
+    </body>
+</html>

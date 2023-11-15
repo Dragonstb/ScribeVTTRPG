@@ -9,21 +9,61 @@ function afterLoadingHall() {
     let hallLogoutPanel = document.getElementById('hall-logout-panel');
 
     function showHallSettingsPanel() {
-        hallSettingsPanel.classList.remove('nodisplay');
-        hallCampaingsPanel.classList.add('nodisplay');
-        hallLogoutPanel.classList.add('nodisplay');
+        setTabSelected(hallSettingsButton, true);
+        setTabSelected(hallCampaignsButton, false);
+        setTabSelected(hallLogoutButton, false);
+        setPanelVisible(hallSettingsPanel, true);
+        setPanelVisible(hallCampaingsPanel, false);
+        setPanelVisible(hallLogoutPanel, false);
     }
 
     function showHallCampaignsPanel() {
-        hallSettingsPanel.classList.add('nodisplay');
-        hallCampaingsPanel.classList.remove('nodisplay');
-        hallLogoutPanel.classList.add('nodisplay');
+        setTabSelected(hallSettingsButton, false);
+        setTabSelected(hallCampaignsButton, true);
+        setTabSelected(hallLogoutButton, false);
+        setPanelVisible(hallSettingsPanel, false);
+        setPanelVisible(hallCampaingsPanel, true);
+        setPanelVisible(hallLogoutPanel, false);
     }
 
     function showHallLogoutPanel() {
-        hallSettingsPanel.classList.add('nodisplay');
-        hallCampaingsPanel.classList.add('nodisplay');
-        hallLogoutPanel.classList.remove('nodisplay');
+        setTabSelected(hallSettingsButton, false);
+        setTabSelected(hallCampaignsButton, false);
+        setTabSelected(hallLogoutButton, true);
+        setPanelVisible(hallSettingsPanel, false);
+        setPanelVisible(hallCampaingsPanel, false);
+        setPanelVisible(hallLogoutPanel, true);
+    }
+
+    /** Sets the tab as selected or unselected. Does not affects the visibility of the tab panel controlled by the tab.
+     * @author Dragonstb
+     * @since 0.0.3;
+     * @param {element} elem Tab
+     * @param {bool} selected
+     */
+    function setTabSelected(elem, selected) {
+        if(selected) {
+            elem.setAttribute('aria-selected', 'true');
+        }
+        else {
+            elem.setAttribute('aria-selected', 'false');
+        }
+    }
+
+    /** Sets a tab panel as visible or not visible.
+     * @author Dragonstb
+     * @since 0.0.3;
+     * @param {type} elem
+     * @param {type} visible
+     * @returns {undefined}
+     */
+    function setPanelVisible(elem, visible) {
+        if(visible) {
+            elem.classList.remove('nodisplay');
+        }
+        else {
+            elem.classList.add('nodisplay');
+        }
     }
 
     hallSettingsButton.addEventListener('click', showHallSettingsPanel);

@@ -10,9 +10,12 @@
     <body>
         <h1 th:text="${pageTitle}">personal hall</h1>
         <div role="tablist">
-            <button id="hall-settings-btn" type="button" role="tab" aria-controls="hall-settings-panel" th:text="${accountSettings}">Account Settings</button>
-            <button id="hall-campaigns-btn" type="button" role="tab" aria-controls="hall-campaigns-panel" th:text="${campaignsLabel}">Campaigns</button>
-            <button id="hall-logout-btn" type="button" role="tab" aria-controls="hall-logout-panel" th:text="${logout}">Logout</button>
+            <button id="hall-settings-btn" type="button" role="tab" aria-controls="hall-settings-panel"
+                    aria-selected="false" th:text="${accountSettings}">Account Settings</button>
+            <button id="hall-campaigns-btn" type="button" role="tab" aria-controls="hall-campaigns-panel"
+                    aria-selected="true" th:text="${campaignsLabel}">Campaigns</button>
+            <button id="hall-logout-btn" type="button" role="tab" aria-controls="hall-logout-panel"
+                    aria-selected="false" th:text="${logout}">Logout</button>
         </div>
         <div>
             <!-- Account settings -->

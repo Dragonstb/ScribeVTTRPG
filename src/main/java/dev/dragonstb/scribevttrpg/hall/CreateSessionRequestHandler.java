@@ -50,21 +50,22 @@ public class CreateSessionRequestHandler {
     public String serveCreateSessionPage(@RequestParam(name = "campaign") String campaignName,
             @RequestHeader("Accept-Language") Locale loc, Model model) {
 
-        String baseTitle = messageSource.getMessage("web.baseTitle", null, "<web.baseTitle>", loc);
-        String pageTitle = messageSource.getMessage("web.createSessionTitle", null, "<web.baseTitle>", loc);
+        String baseTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
+        String pageTitle = messageSource.getMessage("web.create.pageTitle", null, "<web.create.pageTitle>", loc);
         String documentTitle = Utils.composeDocumentTitle(pageTitle, baseTitle);
-        model.addAttribute("pageTitle", documentTitle);
+        model.addAttribute("documentTitle", documentTitle);
 
         // TODO: check campaign name against list of available campaigns
-        String name = campaignName != null ? campaignName : messageSource.getMessage("web.cantStartSession", null, "<web.cantStartSession>", loc);
+        String name = campaignName != null ? campaignName :
+                messageSource.getMessage("web.create.cantStartSession", null, "<web.create.cantStartSession>", loc);
         model.addAttribute("campaignName", name);
 
-        addModelText("web.startNewSession", "createSession", model, loc);
-        addModelText("web.forCampaign", "forCampaign", model, loc);
-        addModelText("web.cancel", "cancel", model, loc);
-        addModelText("web.roomNameLabel", "roomNameLabel", model, loc);
-        addModelText("web.roomPasswordLabel", "roomPasswordLabel", model, loc);
-        addModelText("web.newSessionLabel", "newSessionLabel", model, loc);
+        addModelText("web.create.startNewSession", "startNewSession", model, loc);
+        addModelText("web.create.forCampaign", "forCampaign", model, loc);
+        addModelText("web.common.cancel", "cancel", model, loc);
+        addModelText("web.create.roomNameLabel", "roomNameLabel", model, loc);
+        addModelText("web.create.roomPasswordLabel", "roomPasswordLabel", model, loc);
+        addModelText("web.create.newSessionLabel", "newSessionLabel", model, loc);
 
         return "createsession";
     }

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
     <head>
-        <title th:text="${pageTitle}">Personal Hall</title>
+        <title th:text="${documentTitle}">Personal Hall</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
         <script src="../static/scripts/hall.js" th:src="@{/scripts/hall.js}"></script>
     </head>
     <body>
-        <h1 th:text="${personalHall}">personal hall</h1>
+        <h1 th:text="${pageTitle}">personal hall</h1>
         <div role="tablist">
             <button id="hall-settings-btn" type="button" role="tab" aria-controls="hall-settings-panel" th:text="${accountSettings}">Account Settings</button>
             <button id="hall-campaigns-btn" type="button" role="tab" aria-controls="hall-campaigns-panel" th:text="${campaignsLabel}">Campaigns</button>
@@ -28,7 +28,7 @@
                             <span th:text="${{cpgn.name}}">Campaign title</span>
                         </legend>
                         <p th:text="${{cpgn.system}}">system</p>
-                        <button th:text="${manageContent}">manage content</button>
+                        <button th:text="${manageCampaignContent}">manage content</button>
                         <!-- TODO: open a dialog instead of navigating to a new page -->
 <!--                        <button th:text="${startSession}" onclick="location.href='./createsession.html'"
                                 th:onclick="'/createsession'"

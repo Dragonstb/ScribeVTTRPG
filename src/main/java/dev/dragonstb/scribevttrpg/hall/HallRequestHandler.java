@@ -54,33 +54,19 @@ public class HallRequestHandler {
     @GetMapping("/hall")
     public String getHallPage(@RequestHeader("Accept-Language") Locale loc, Model model) {
 
-        String hallLabel = messageSource.getMessage("web.personalHall", null, "<web.personalHall>", loc);
-        model.addAttribute("personalHall", hallLabel);
+        String pageTitle = messageSource.getMessage("web.hall.pageTitle", null, "<web.hall.pageTitle>", loc);
+        model.addAttribute("personalHall", pageTitle);
 
-        String baseTitle = messageSource.getMessage("web.baseTitle", null, "<web.baseTitle>", loc);
-        String pageTitle = Utils.composeDocumentTitle(hallLabel, baseTitle);
-        model.addAttribute("pageTitle", pageTitle);
+        String baseTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
+        String documentTitle = Utils.composeDocumentTitle(pageTitle, baseTitle);
+        model.addAttribute("documentTitle", documentTitle);
 
-//        String accountSettings = messageSource.getMessage("web.accountSettings", null, "<web.accountSettings>", loc);
-//        model.addAttribute("accountSettings", accountSettings);
-        addModelText("web.accountSettings", "accountSettings", model, loc);
-
-//        String campaignsLabel = messageSource.getMessage("web.campaigns", null, "<web.campaigns>", loc);
-//        model.addAttribute("campaignsLabel", campaignsLabel);
-        addModelText("web.campaigns", "campaignsLabel", model, loc);
-
-//        String newCampaignLabel = messageSource.getMessage("web.newCampaign", null, "<web.newCampaign>", loc);
-//        model.addAttribute("newCampaign", newCampaignLabel);
-        addModelText("web.newCampaign", "newCampaign", model, loc);
-
-        String manageContentLabel = messageSource.getMessage("web.manageCampaignContent", null, "<web.manageCampaignContent>", loc);
-        model.addAttribute("manageContent", manageContentLabel);
-
-        String startSessionLabel = messageSource.getMessage("web.startSession", null, "<web.startSession>", loc);
-        model.addAttribute("startSession", startSessionLabel);
-
-        String logoutLabel = messageSource.getMessage("web.logout", null, "<web.logout>", loc);
-        model.addAttribute("logout", logoutLabel);
+        addModelText("web.hall.accountSettings", "accountSettings", model, loc);
+        addModelText("web.hall.campaigns", "campaignsLabel", model, loc);
+        addModelText("web.hall.newCampaign", "newCampaign", model, loc);
+        addModelText("web.hall.manageCampaignContent", "manageCampaignContent", model, loc);
+        addModelText("web.hall.startSession", "startSession", model, loc);
+        addModelText("web.common.logout", "logout", model, loc);
 
         try {
             // TODO: derive uid from username once spring security has become activated

@@ -47,10 +47,12 @@ public class RequestHandler {
     @GetMapping("/")
     public String handleHome(@RequestHeader("Accept-Language") Locale loc, Model model) {
 
-        String mainTitle = messageSource.getMessage("web.mainTitle", null, "<web.mainTitle>", loc);
+        String mainTitle = messageSource.getMessage("web.home.pageTitle", null, "<web.home.pageTitle>", loc);
         model.addAttribute("mainTitle", mainTitle);
-        String toHall = messageSource.getMessage("web.toHall", null, "<web.toHall>", loc);
+        String toHall = messageSource.getMessage("web.home.toHall", null, "<web.home.toHall>", loc);
         model.addAttribute("toHall", toHall);
+        String docTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
+        model.addAttribute("documentTitle", docTitle);
 
         return "index";
     }

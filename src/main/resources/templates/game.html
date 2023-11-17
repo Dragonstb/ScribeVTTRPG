@@ -19,11 +19,18 @@
                 <div>Sam</div>
                 <div>Alex</div>
             </div>
-            <span>A menu bar</span>
+            <h1 th:text="${pageTitle}">A menu bar</h1>
         </div>
         <div>Space for the table</div>
         <div>Initiative bar, maybe?</div>
-        <div>The handouts, I guess</div>
+
+        <!-- ____________________  handouts  ____________________ -->
+        <div>
+            <h2 th:text="${handouts}">Handouts</h2>
+            <div id="handout-anchor" />
+        </div>
+
+        <!-- comment -->
         <div>Set up your rolls here?</div>
         <div>Probably space for your materials you haven't put on the table</div>
     </body>

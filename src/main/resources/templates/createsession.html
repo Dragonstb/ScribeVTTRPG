@@ -4,13 +4,13 @@
         <title th:text="${documentTitle}">Create Session</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!--        <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
-        <script src="../static/scripts/hall.js" th:src="@{/scripts/hall.js}"></script>-->
+<!--        <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/> -->
+        <script src="../static/scripts/create.js" th:src="@{/scripts/create.js}"></script>
     </head>
     <body>
         <h1 th:text="${startNewSession}">create session</h1>
         <p th:text="${forCampaign}">for campaign</p>
-        <p th:text="${campaignName}">unknown campaign</p>
+        <p th:text="${campaignName}" id="campaignName">unknown campaign</p>
         <form id="createForm">
             <label for="roomName" th:text="${roomNameLabel}">name the room:</label>
             <input type="text" id="roomName" name="roomName" required="" minlength="12" maxlength="120" />
@@ -18,7 +18,8 @@
             <input type="text" id="password" name="password" />
         </form>
         <a href="./hall.html" th:href="'/hall'" th:text="${cancel}">cancel</a>
-        <button type="submit" form="createForm" th:text="${newSessionLabel}">create session</button>
+        <button id="create-session-btn" type="button" form="createForm" th:text="${newSessionLabel}" x-target="local"
+                th:x-target="'./creategame'">create session</button>
 
     </body>
 </html>

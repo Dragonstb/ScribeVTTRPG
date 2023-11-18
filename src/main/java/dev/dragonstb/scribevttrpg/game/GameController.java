@@ -33,6 +33,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 /** The request controller for the game web page
@@ -46,15 +47,17 @@ public class GameController {
     @Autowired
     private MessageSource messageSource;
 
-    @GetMapping("/game/{*}")
-    public String getGamePage(@RequestHeader("Accept-Language") Locale loc, Model model) {
+    @GetMapping("/game/{roomName:.+}")
+    public String getGamePage(@PathVariable String roomName, @RequestHeader("Accept-Language") Locale loc, Model model) {
 
+        // TODO: validate room name
         String baseTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
         String campaignName="hello RPG world"; // TODO: fetch campaign title from the room associated with the name
         String documentTitle = Utils.composeDocumentTitle(campaignName, baseTitle);
 
         model.addAttribute("pageTitle", campaignName);
         model.addAttribute("documentTitle", documentTitle);
+        model.addAttribute("roomName", roomName);
 
         return "game";
     }

@@ -24,34 +24,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package dev.dragonstb.scribevttrpg.game.handouts;
+game.handouts.builders = {
 
-import org.springframework.lang.NonNull;
-
-/** Handouts a built up from one to many pieces. A little note found by the players may be just a single text piece.
- * A character sheet may consists of many different pieces organized in sections and subsections using container pieces.
- *
- * @author Dragonstb
- * @since 0.0.3;
- */
-public abstract class AbstractHandoutPiece {
-
-    private final HandoutType type;
-
-    /** Generates.
+    /** Creates the handouts as elements nodes and appends them to the given parent elemen.
      * @author Dragonstb
-     * @since 0.0.3;
-     * @param type The type of the handout. Must be non-null.
+     * @param {HTMLElement} parent Element node the handouts become atatched to.
+     * @param {Array[Object]} data Array of object containing the data of each handout.
+     * @returns {undefined} nothing
      */
-    public AbstractHandoutPiece(@NonNull HandoutType type) {
-        this.type = type;
+    digestHandoutData: function( parent, data ) {
+
+        // TODO: validate input
+        // TODO: data is array?
+
+        for(let handout of data) {
+            if( this.hasOwnProperty( handout.type ) ) {
+                let child = this[handout.type].createNew( handout );
+                if( child ) {
+                    parent.appendChild( child );
+                }
+            }
+            else {
+                console.log('cannot create element for '+handout.type );
+            }
+        }
     }
 
-    public final HandoutType getType() {
-        return type;
-    }
-
-    @NonNull
-    public abstract String toJsonString();
-
-}
+};

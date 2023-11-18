@@ -26,9 +26,19 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.json.UTF8JsonGenerator;
+import com.fasterxml.jackson.core.json.WriterBasedJsonGenerator;
+import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
 /** A handout piece that simply holds some other handout pieces together. The GUI contains of an element showing the
@@ -107,6 +117,29 @@ public final class ContainerHandout extends AbstractHandoutPiece{
             return false;
         }
         return Objects.equals(this.pieces, other.pieces);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<AbstractHandoutPiece> getPieces() {
+        return pieces;
+    }
+
+    @Override
+    public String toJsonString() {
+        JSONObject obj = new JSONObject();
+        obj.putOpt("type", this.getType().toString());
+        obj.put("name", name);
+        if (!pieces.isEmpty() ) {
+            List<String> jsonPcs = this.pieces.stream().map( piece -> piece.toJsonString() )
+                    .collect( Collectors.toUnmodifiableList() );
+            JSONArray arr = new JSONArray();
+            jsonPcs.forEach( piece -> arr.put(piece) );
+            obj.put( "pieces", jsonPcs );
+        }
+        return obj.toString();
     }
 
 

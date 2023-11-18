@@ -26,7 +26,14 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import dev.dragonstb.scribevttrpg.game.handouts.HandoutType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,9 +52,31 @@ public class GameRestController {
         // TODO: check if room name is unused, respond creation failure if used
         // TODO: create room for the campaign
 
+
         String room = "youllalwaysenduphere"; // TODO: use room name here
-        Logger.getLogger("GameRestController").info("creating a game");
-        return "{\"success\": true,\"room\": \""+room+"\"}";
+
+        JSONObject json = new JSONObject();
+        json.put("success", true);
+        json.put("room", room);
+
+        return json.toString();
+//        return "{\"success\": true,\"room\": \""+room+"\"}";
+    }
+
+    @GetMapping("/materials/{*}")
+    public String getMaterials() {
+        // TODO: check if you are allowed to see the materials
+        // TODO: validate room name
+        // TODO: check if you are participant in the given room
+        // TODO: take handouts from campaign
+        List<ContainerHandout> handouts = new ArrayList<>();
+        handouts.add( ContainerHandout.create("rose") );
+        handouts.add( ContainerHandout.create("tyler") );
+
+        JSONArray hoArr = new JSONArray();
+        handouts.forEach( ho -> hoArr.put( new JSONObject(ho.toJsonString()) ) );
+
+        return hoArr.toString();
     }
 
 }

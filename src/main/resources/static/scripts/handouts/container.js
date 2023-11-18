@@ -24,34 +24,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package dev.dragonstb.scribevttrpg.game.handouts;
+game.handouts.builders.container = {
 
-import org.springframework.lang.NonNull;
-
-/** Handouts a built up from one to many pieces. A little note found by the players may be just a single text piece.
- * A character sheet may consists of many different pieces organized in sections and subsections using container pieces.
- *
- * @author Dragonstb
- * @since 0.0.3;
- */
-public abstract class AbstractHandoutPiece {
-
-    private final HandoutType type;
-
-    /** Generates.
+    /** Creates a container handout element for the DOM.
      * @author Dragonstb
-     * @since 0.0.3;
-     * @param type The type of the handout. Must be non-null.
+     * @param {Object} Data of the handout
+     * @returns {HTMLElement} The HTML element that represents the handout on the screen.
      */
-    public AbstractHandoutPiece(@NonNull HandoutType type) {
-        this.type = type;
+    createNew: function(data) {
+
+        // TODO: maybe validate input
+
+        // TODO: think about a fieldset, on the other side, handouts are structured with h3 and such and appear linearly
+        const handout = document.createElement( 'div' );
+
+        // TODO: count depth on nested containers for choosing appropiate h
+        const headline = document.createElement( 'h3' );
+        headline.innerText = data.name;
+        handout.appendChild( headline );
+
+        const content = document.createElement( 'div' );
+        const auxilliaryText = document.createElement( 'span' );
+        auxilliaryText.innerHTML = 'some text about '+data.name;
+        content.appendChild( auxilliaryText );
+        handout.appendChild( content );
+        // TODO: kick auxilliaryText and put the real content into 'content'
+
+        return handout;
     }
 
-    public final HandoutType getType() {
-        return type;
-    }
-
-    @NonNull
-    public abstract String toJsonString();
-
-}
+};

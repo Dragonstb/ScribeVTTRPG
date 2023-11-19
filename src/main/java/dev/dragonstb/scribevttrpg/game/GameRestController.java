@@ -26,16 +26,21 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
-import dev.dragonstb.scribevttrpg.game.handouts.HandoutType;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 /**
  *
@@ -43,24 +48,58 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 0.0.3;
  */
 @RestController
+@SessionAttributes("paticipationList")
 public class GameRestController {
 
+    @Autowired
+    private GameManager gameManager;
+
+    /** This method creates a new game. The game is created with the favourite room name, as long as this name has not
+     * been taken already. If the creation fails, an error messsage is returned.
+     *
+     * @param request The underlying servlet request.
+     * @param body The request body.
+     * @return The response.
+     */
     @PostMapping("/creategame")
-    public String createGame() {
+    public String createGame( HttpServletRequest request, @RequestBody String body ) {
         // TODO: validate favourite room name
         // TODO: validate campaign name; this also includes checking if it is one of the game master's campaign at all
         // TODO: check if room name is unused, respond creation failure if used
         // TODO: create room for the campaign
 
+        JSONObject jbod = new JSONObject(body); // TODO: use converter
+        String roomName = jbod.getString("roomName");
 
-        String room = "youllalwaysenduphere"; // TODO: use room name here
+        // TODO: access session variables with annotations
+        Map<String, Participant> participations = (HashMap<String, Participant>)request.getSession().getAttribute("participations");
+        if( participations == null ) {
+            participations = new HashMap<>();
+            request.getSession().setAttribute("participations", participations);
+        }
 
+        Game game;
+        // TODO: enable catches once the catch bodies are filled
+//        try {
+            game = gameManager.addGame( roomName );
+//        }
+//        catch(IllegalArgumentException e) {
+//            // TODO: name is null or not long enough -> report
+//        }
+//        catch(RuntimeException e) {
+//            // TODO: name is in use already -> report
+//        }
+
+        // add yourself as gm
+        Participant part = game.addParticipant( ParticipantRole.gm );
+        participations.put( roomName, part );
+
+        // build response
         JSONObject json = new JSONObject();
         json.put("success", true);
-        json.put("room", room);
+        json.put("room", roomName);
 
         return json.toString();
-//        return "{\"success\": true,\"room\": \""+room+"\"}";
     }
 
     @GetMapping("/materials/{*}")

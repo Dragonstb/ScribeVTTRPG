@@ -3,6 +3,8 @@ and the goals of the project.
 
 # Overview
 
+tbd
+
 # Quality goals
 
 ## Performance
@@ -11,8 +13,9 @@ The system is designed for a small crowd. There might be up to ten registered us
 for their campaigns. At any time, there may be not more than 50 users at the same time, and not more than 10 sessions
 ongoing. Within this usage:
 - for 90% of the requests the time between the request arriving at the system and the response being released to the
-web shall be less than half a second.
-- for 99% of such requests, the same interval shall be less than two seconds.
+web shall be less than half a second, excluding the time for accessing the persistant data storage.
+- for 99% of such requests, the same interval shall be less than two seconds, again excluding the time for accessing the
+ persistant data storage.
 
 ## Accessibility
 

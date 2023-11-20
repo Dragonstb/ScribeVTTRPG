@@ -26,13 +26,6 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.json.UTF8JsonGenerator;
-import com.fasterxml.jackson.core.json.WriterBasedJsonGenerator;
-import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

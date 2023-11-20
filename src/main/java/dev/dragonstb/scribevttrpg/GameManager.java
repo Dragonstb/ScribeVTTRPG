@@ -31,7 +31,6 @@ import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;

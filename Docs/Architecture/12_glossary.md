@@ -10,6 +10,8 @@ The buzz words used within this project. They are also definistions. Thus, pleas
 **http session:** The http session that relates consecutive http requests to a sibgle person. To be differentiated from
 the *session*, which is a bunch pf people having found together and playing their game.
 
+**participant:** Groups all kind of participants in a *session* together. Thus, a *gm*, a *player*, or a *spectator*.
+
 **player:** A participant in a game with limited rights. He/she can see only the handouts the *GM* allowes to be seen by
 the player. The player can only move *tokens* for that he/she has got the right to do so. A player may roll at free
 will.

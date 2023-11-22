@@ -19,7 +19,7 @@ web shall be less than half a second, excluding the time for accessing the persi
 
 ## Accessibility
 
-We seek for the WCAG 2.2 level AA recommendations by the W3C, as RPG fun is for everyone:
+We seek for the WCAG 2.2 level AA recommendations by the W3C, as RPG-fun is for everyone:
 [WCAG 2.2 standard](https://www.w3.org/TR/WCAG22/)
 
 # Stakeholder

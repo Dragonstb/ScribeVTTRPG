@@ -23,33 +23,55 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package dev.dragonstb.scribevttrpg.game;
 
-import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
+import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.List;
-import org.springframework.lang.NonNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-/** Methods that a participant of a game is asked to execute by other classes.
+/**
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
-public interface Participant {
+public class GameTest {
 
-    /** The participant's role in the game.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The participant's role in the game.
-     */
-    @NonNull
-    public ParticipantRole getRole();
+    private static final String ROOM_NAME_BASE = "Bath Room ";
+    private HandoutManager manager;
+    private String roomName;
+    private static int counter = 0;
 
-    /** The handouts the participant can see.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The handouts the participant can see.
-     */
-    @NonNull
-    public List<ContainerHandout> getHandouts();
+    @BeforeEach
+    public void setUp() {
+        roomName = ROOM_NAME_BASE + (++counter);
+        manager = new DefaultHandoutManager();
+    }
+
+    @Test
+    public void testCreate() {
+        Game game = Game.create( roomName, manager );
+
+        assertEquals( roomName, game.getRoomName() );
+        List<Participant> participants = game.getParticipant();
+        assertTrue( participants.isEmpty() );
+        assertEquals( manager, game.getHandoutManager() );
+    }
+
+    @Test
+    public void testAddParticipant() {
+        ParticipantRole role = ParticipantRole.player;
+        Game game = Game.create( roomName, manager );
+
+        Participant part = game.addParticipant( role );
+
+        assertEquals( role, part.getRole() );
+        assertTrue( game.getParticipant().contains( part ) );
+    }
+
 }

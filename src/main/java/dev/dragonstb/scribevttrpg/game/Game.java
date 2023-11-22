@@ -78,7 +78,40 @@ public class Game implements GameService {
     public Participant addParticipant(@NonNull ParticipantRole role) {
         List<ContainerHandout> handouts = handoutManager.getListForRole(role);
         DefaultParticipant part = DefaultParticipant.create(role, handouts);
+        participant.add( part );
         return part;
     }
+
+    /** The name of the room this game takes place in.
+     * @author Dragonstb
+     * @return The name of the room this game takes place in.
+     */
+    @NonNull
+    String getRoomName() {
+        // TODO: Do we really need this outside of unit tests?
+        return roomName;
+    }
+
+    /** The list of participants.<br>
+     * <b>Caution:</b> It is the list itself, which can be manipulated.
+     * @author Dragonstb
+     * @return The list of participants.
+     */
+    @NonNull
+    List<Participant> getParticipant() {
+        // TODO: Do we really need this outside of unit tests?
+        return participant;
+    }
+
+    /** The handout manager used by this game
+     * @author Dragonstb
+     * @return The handout manager used by this game
+     */
+    @NonNull
+    HandoutManager getHandoutManager() {
+        // TODO: Do we really need this outside of unit tests?
+        return handoutManager;
+    }
+
 
 }

@@ -23,56 +23,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.lang.NonNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-/** Representation of a participant.
+/**
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
-public class DefaultParticipant implements Participant{
+public class DefaultParticipantTest {
 
-    /** The role the participant has in the game session. */
-    @NonNull private final ParticipantRole role;
-    /** Lists of handouts that can be read by the participant. To some of these, there might also be write access.
-     * Definitly the participant cannot write on handouts he/she cannot see. */
-    @NonNull private final List<ContainerHandout> handouts;
+    @Test
+    public void testCreate() {
+        ParticipantRole role = ParticipantRole.gm;
+        ContainerHandout handout = ContainerHandout.create("Eliza");
+        List<ContainerHandout> handouts = new ArrayList<>();
+        handouts.add( handout );
 
-    /** Generates.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @param role The role the participant occupies.
-     */
-    private DefaultParticipant(@NonNull ParticipantRole role, @NonNull List<ContainerHandout> handouts) {
-        this.handouts = handouts;
-        this.role = role;
-    }
+        DefaultParticipant part = DefaultParticipant.create(role, handouts);
 
-    /** Creates a new instance.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @param role The role the participant occupies. Must be {@code non-null}.
-     * @param handouts. The readable handouts. Must be {@code non-null}.
-     * @return A new instance.
-     */
-    public static DefaultParticipant create(@NonNull ParticipantRole role, @NonNull List<ContainerHandout> handouts) {
-        DefaultParticipant part = new DefaultParticipant(role, handouts);
-        return part;
-    }
-
-    @Override
-    public ParticipantRole getRole() {
-        return role;
-    }
-
-    @Override
-    public List<ContainerHandout> getHandouts() {
-        return handouts;
+        assertNotNull( part );
+        assertEquals( role, part.getRole() );
+        List<ContainerHandout> theHandouts = part.getHandouts();
+        assertEquals( handouts.size(), theHandouts.size() );
+        assertEquals( handout, theHandouts.get( 0 ) );
     }
 
 }

@@ -29,6 +29,7 @@ package dev.dragonstb.scribevttrpg.game.handouts;
 import dev.dragonstb.scribevttrpg.game.ParticipantRole;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.lang.NonNull;
 
 /**
  *
@@ -63,6 +64,39 @@ public class DefaultHandoutManager implements HandoutManager {
         };
 
         return list;
+    }
+
+    /** The list of all handouts.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @return The list of all handouts.
+     */
+    @NonNull
+    List<ContainerHandout> getAllHandouts() {
+        // TODO: do we need this method outside of unit tests?
+        return allHandouts;
+    }
+
+    /** The list of handouts the spectators can read.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @return The list of handouts the spectators can read.
+     */
+    @NonNull
+    List<ContainerHandout> getSpectatorHandouts() {
+        // TODO: do we need this method outside of unit tests?
+        return spectatorHandouts;
+    }
+
+    /** The list of lists of handouts for players. Each player has his/her own list.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @return The list of lists of handouts for players. Each player has his/her own list.
+     */
+    @NonNull
+    List<List<ContainerHandout>> getPlayerLists() {
+        // TODO: do we need this method outside of unit tests?
+        return playerLists;
     }
 
 }

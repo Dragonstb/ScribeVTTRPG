@@ -30,16 +30,16 @@ game.handouts.builders = {
      * @author Dragonstb
      * @param {HTMLElement} parent Element node the handouts become atatched to.
      * @param {Array[Object]} data Array of object containing the data of each handout.
+     * @param {String} An appendix for the id of the element.
      * @returns {undefined} nothing
      */
-    digestHandoutData: function( parent, data ) {
+    digestHandoutData: function( parent, data, appendix='', depth=0 ) {
 
         // TODO: validate input
-        // TODO: data is array?
 
         for(let handout of data) {
             if( this.hasOwnProperty( handout.type ) ) {
-                let child = this[handout.type].createNew( handout );
+                let child = this[handout.type].createNew( handout, appendix, depth );
                 if( child ) {
                     parent.appendChild( child );
                 }

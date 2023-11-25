@@ -25,6 +25,7 @@
  */
 package dev.dragonstb.scribevttrpg.game.handouts;
 
+import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
- * @author dragon
+ * @author Dragonstb
  */
 public class ContainerHandoutTest {
 
@@ -50,7 +51,6 @@ public class ContainerHandoutTest {
         id = BASE_ID + counter;
         con = ContainerHandout.create( name, id );
     }
-
 
     @Test
     public void testCreate_allsWell_noChildren() {
@@ -125,6 +125,110 @@ public class ContainerHandoutTest {
         assertFalse( obj.has("pieces") );
 
         assertEquals( 3, obj.keySet().size(), "wrong number of keys in json" );
+    }
+
+    @Test
+    public void testAddPiece_here_allIsWell() {
+        AbstractHandoutPiece child = makePiece();
+        con.addPiece( child, con.getId() );
+
+        List<AbstractHandoutPiece> pieces = con.getPieces();
+        assertEquals( 1, pieces.size() );
+        assertTrue( pieces.get(0) == child );
+    }
+
+    @Test
+    public void testAddPiece_here_duplicateId() {
+        AbstractHandoutPiece childA = makePiece( "child" );
+        AbstractHandoutPiece childB = makePiece( "child" );
+
+        con.addPiece( childA, con.getId() );
+
+        RuntimeException exc = assertThrows(
+                RuntimeException.class,
+                () -> con.addPiece( childB, con.getId() )
+        );
+
+        assertEquals( "Cannot add handout piece that is already there.", exc.getMessage() );
+    }
+
+    @Test
+    public void testAddPiece_onDescendant_allIsWell() {
+        ContainerHandout childA = ContainerHandout.create( "Wayne", "child" );
+        AbstractHandoutPiece childB = makePiece( "grandChild" );
+
+        String parentId = con.getId() + childA.getId();
+
+        con.addPiece( childA, con.getId() );
+        con.addPiece( childB, parentId );
+
+        assertEquals( 1, childA.getPieces().size() );
+        assertTrue( childA.getPieces().get(0) == childB );
+    }
+
+    @Test
+    public void testAddPiece_onDescendant_noProperChild() {
+        ContainerHandout childA = ContainerHandout.create( "Wayne", "child" );
+        AbstractHandoutPiece childB = makePiece( "grandChild" );
+
+        String parentId = con.getId() + "something";
+
+        con.addPiece( childA, con.getId() );
+
+        RuntimeException exc = assertThrows(
+                RuntimeException.class,
+                () -> con.addPiece( childB, parentId )
+        );
+
+        assertEquals( "No child handout piece of matching name.", exc.getMessage() );
+    }
+
+    public void testAddPiece_onDescendant_thatisNotAContainer() {
+        // TODO
+    }
+
+//    @Test
+//    public void testAddPiece_() {
+//        // TODO
+//    }
+//
+//    @Test
+//    public void testAddPiece_() {
+//        // TODO
+//    }
+
+
+    // ____________________  utilities  ____________________
+
+    /** Returns a handout piece.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @param id An id.
+     * @return A a handout piece.
+     */
+    private AbstractHandoutPiece makePiece(String id) {
+        AbstractHandoutPiece piece = new AbstractHandoutPiece(HandoutType.container, id != null ? id : "defaultId" ) {
+            @Override
+            public String toJsonString() {
+                return "{}";
+            }
+
+            @Override
+            public JSONObject toJsonObject() {
+                return new JSONObject();
+            }
+        };
+
+        return piece;
+    }
+
+    /** The same as {@code makePiece(null)}. For the really lazy unit tester :).
+     * @Dragonstb
+     * @since 0.0.4;
+     * @return A handout piece.
+     */
+    private AbstractHandoutPiece makePiece() {
+        return makePiece( null );
     }
 
 }

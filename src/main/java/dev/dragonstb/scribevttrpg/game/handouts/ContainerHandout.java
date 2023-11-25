@@ -29,6 +29,7 @@ package dev.dragonstb.scribevttrpg.game.handouts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,18 +43,18 @@ import org.springframework.lang.NonNull;
  */
 public final class ContainerHandout extends AbstractHandoutPiece{
 
-    public static enum DEPTH {
+    static enum DEPTH {
         /** Top level piece. Every handout is, fundamentally, a top level ContainerHandout. Displayes as h3 on the web
          page */
         top,
         /** One level below the top level. For containers that are direct child of a top level container. Displayed as
          h4 on the web page. */
         section,
-        /** Two levels below the top level. For containers that are direct child of a top level container. Displayed as
-         h5 on the web page. */
+        /** Two levels below the top level. For containers that are direct child of a section level container.
+         Displayed as h5 on the web page. */
         subsection,
-        /** Three levels below the top level. For containers that are direct child of a top level container. Displayed
-         as h6 on the web page. Containers on this level may not have further containers as children. */
+        /** Three levels below the top level. For containers that are direct child of a subsection level container.
+         Displayed as h6 on the web page. Containers on this level may not have further containers as children. */
         paragraph
     };
 
@@ -90,6 +91,81 @@ public final class ContainerHandout extends AbstractHandoutPiece{
         }
         ContainerHandout ch = new ContainerHandout( name, id );
         return ch;
+    }
+
+    /** Adds the given piece either to the list of child pieces of {@code this} or to the list of child pieces of
+     * a descendant of {@code this}. For finding the right place in the tree structure, the {@code parentId} is the
+     * concatenation of the ids of all supposed-to-be ancestors of {@code piece}. It starts with the id of {@code this}
+     * and ends with the id of the actual parent.<br>
+     * If {@code piece} is not a child of {@code this}, the id of {@code this} is stripped from {@code parentId}.
+     * From this reduced parent id, the correct child in the heredity line is deduced. This method {@code addPiece(..)}
+     * is then invoked on this child, with the reduced parent id as parameter.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @param piece Piece to be added.
+     * @param parentId Concatenated ids of all ancestors of {@code piece} up to <i>and including</i> {@code this}.
+     * @throws RuntimeException There are various reasons:
+     * <ul>
+     *  <li>A handout piece with the same id is already listed to {@code this}.</li>
+     *  <li>The piece is to be added to a descendant piece of {@code this}, but there is not even a direct child with a
+     *  name that follows from the {@code parentId}. </li>
+     *  <li></li>
+     *  <li>The piece that is supposed to be the parent is not a container handout.</li>
+     * </ul>
+     */
+    public void addPiece( @NonNull AbstractHandoutPiece piece, @NonNull String parentId ) throws RuntimeException {
+        String myId = this.getId();
+        if( myId.equals( parentId ) ) {
+            addPieceHere( piece );
+        }
+        else {
+            String reducedId = parentId.substring( myId.length() ); // all part of 'parentId' beyond 'myId'
+            addPieceToChild( piece, reducedId );
+        }
+    }
+
+    /** Adds the piece to the list of child pieces.
+     * @author Dragonstb
+     * @since 0.4;
+     * @param piece Handout piece to be added.
+     * @throws RuntimeException In case there is already a handout piece with the same id.
+     */
+    private void addPieceHere( @NonNull AbstractHandoutPiece piece ) throws RuntimeException {
+        // TODO: could be private, for now package protected for simple unit testing
+        boolean yetNotListed = pieces.stream().noneMatch( pc -> pc.getId().equals( piece.getId()) );
+        if( yetNotListed ) {
+            pieces.add( piece );
+        }
+        else {
+            throw new RuntimeException( "Cannot add handout piece that is already there." );
+        }
+    }
+
+    /** Finds the right child from {@code reducedParentId} for invoking {@code addPiece(..)}.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @param piece Piece to be added.
+     * @param reducedParentId Concatenated ids of all ancestors of {@code piece} up to <i>but excluding</i>
+     * {@code this}.
+     * @throws RuntimeException When no proper child can be found, or when the proper child is not a container handout.
+     */
+    private void addPieceToChild( @NonNull AbstractHandoutPiece piece, @NonNull String reducedParentId )
+            throws RuntimeException{
+        // TODO: could be private, for now package protected for simple unit testing
+        Optional<AbstractHandoutPiece> opt = pieces.stream().filter( pc -> reducedParentId.startsWith( pc.getId() ) )
+                .findFirst();
+
+        if( opt.isEmpty() ) {
+            throw new RuntimeException( "No child handout piece of matching name." );
+        }
+
+        AbstractHandoutPiece next = opt.get();
+        if( next.getType() == HandoutType.container ) {
+            ((ContainerHandout)next).addPiece( piece, reducedParentId );
+        }
+        else {
+            throw new RuntimeException( "Cannot add handout pieces to non-container handouts" );
+        }
     }
 
     @Override

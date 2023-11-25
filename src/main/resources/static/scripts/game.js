@@ -58,8 +58,25 @@ function fetchHandouts() {
     else {
         // for local browsing for local testing without server
         // TODO: do this in another way
-        let data = [{name:'Skull the Barbarien',type:'container',id:'ho-1'},
-            {name:'Strike the Wizard',type:'container',id:'ho-2'}];
+        let data = [
+                {
+                    name:'Skull the Barbarien',
+                    type:'container',
+                    id:'ho-1',
+                    pieces: [
+                        {
+                            name:'Skills',type:'container',id:'ho-3',
+                            pieces: [
+                                {name:'Generic skills',type:'container',id:'ho-7'},
+                                {name:'Combat skills',type:'container',id:'ho-5'},
+                                {name:'Magic skills',type:'container',id:'ho-6'}
+                            ]
+                        },
+                        {name:'Traits',type:'container',id:'ho-4'}
+                    ]
+                },
+                {name:'Strike the Wizard',type:'container',id:'ho-2'}
+            ];
         resolveHandoutSuccess(data);
     }
 

@@ -31,9 +31,9 @@ game.handouts.builders.container = {
      * @param {Object} Data of the handout
      * @returns {HTMLElement} The HTML element that represents the handout on the screen.
      */
-    createNew: function( data ) {
+    createNew: function( data, appendix, depth ) {
 
-        let id = data.id;
+        let id = appendix + data.id;
         let headId = id+'-'+constants.HEAD;
         let bodyId = id+'-'+constants.BODY;
 
@@ -47,18 +47,35 @@ game.handouts.builders.container = {
 
             // TODO: maybe validate input
 
+            // _____ main div _____
             // TODO: think about a fieldset, on the other side, handouts are structured with h3 and such and appear linearly
             const handout = document.createElement( 'div' );
-            handout.setAttribute( 'id', data.id );
+            handout.setAttribute( 'id', id );
 
+            // _____ head _____
             // TODO: count depth on nested containers for choosing appropiate h
-            const headline = document.createElement( 'h3' );
+            let headline;
+            console.log('depth is '+depth);
+            switch( depth ) {
+                case 0:
+                    headline = document.createElement( 'h3' );
+                    break;
+                case 1:
+                    headline = document.createElement( 'h4' );
+                    break;
+                case 2:
+                    headline = document.createElement( 'h5' );
+                    break;
+                default:
+                    headline = document.createElement( 'h6' );
+            }
             headline.innerText = data.name;
             headline.setAttribute( 'id', headId );
             headline.setAttribute( 'aria-expanded', false ); // begins in collapsed state
             headline.setAttribute( 'aria-controls', bodyId );
             handout.appendChild( headline );
 
+            // _____ content area _____
             const content = document.createElement( 'div' );
             const auxilliaryText = document.createElement( 'span' );
             auxilliaryText.innerHTML = 'some text about '+data.name;
@@ -67,6 +84,12 @@ game.handouts.builders.container = {
             content.classList.add( constants.NODISPLAY ); // begins in collapsed state
             handout.appendChild( content );
             // TODO: kick auxilliaryText and put the real content into 'content'
+
+            // _____ children _____
+            if( data.hasOwnProperty('pieces') ) {
+                let useDepth = depth < 3 ? depth+1 : 3;
+                game.handouts.builders.digestHandoutData( content, data.pieces, id, useDepth );
+            }
 
             return handout;
         }

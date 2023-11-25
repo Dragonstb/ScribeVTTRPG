@@ -43,23 +43,8 @@ import org.springframework.lang.NonNull;
  */
 public final class ContainerHandout extends AbstractHandoutPiece{
 
-    static enum DEPTH {
-        /** Top level piece. Every handout is, fundamentally, a top level ContainerHandout. Displayes as h3 on the web
-         page */
-        top,
-        /** One level below the top level. For containers that are direct child of a top level container. Displayed as
-         h4 on the web page. */
-        section,
-        /** Two levels below the top level. For containers that are direct child of a section level container.
-         Displayed as h5 on the web page. */
-        subsection,
-        /** Three levels below the top level. For containers that are direct child of a subsection level container.
-         Displayed as h6 on the web page. Containers on this level may not have further containers as children. */
-        paragraph
-    };
-
-    /** A name of the container. This one is displayed in the expandable field of the corresponding GUI element. */
-    @NonNull private final String name;
+    /** A label of the container. This one is displayed in the corresponding GUI element. */
+    @NonNull private final String label;
 
     /** List pf child pieces. */
     private final List<AbstractHandoutPiece> pieces = new ArrayList<>();
@@ -67,29 +52,28 @@ public final class ContainerHandout extends AbstractHandoutPiece{
     /** Generates.
      * @author Dragonstb
      * @since 0.0.3;
-     * @param name A name of the container. This one is displayed in the expandable field of the corresponding GUI
-     * element.
+     * @param label A label of the container. This one is displayed in the corresponding GUI element.
      */
-    private ContainerHandout(@NonNull String name, @NonNull String id) {
+    private ContainerHandout(@NonNull String label, @NonNull String id) {
         super( HandoutType.container, id );
-        this.name = name;
+        this.label = label;
     }
 
     /** Generates a new instance.
      * @author Dragonstb
-     * @param name A name of the container.
+     * @param label A name of the container.
      * @param id An id for the container.
      * @return New container piece.
-     * @throws IllegalArgumentException When {@code name} is {@code null}.
+     * @throws IllegalArgumentException When {@code label} is {@code null}.
      */
-    public static ContainerHandout create(String name, String id) throws IllegalArgumentException{
-        if( name == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+    public static ContainerHandout create(String label, String id) throws IllegalArgumentException{
+        if( label == null) {
+            throw new IllegalArgumentException("Label cannot be null");
         }
         else if( id == null ) {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        ContainerHandout ch = new ContainerHandout( name, id );
+        ContainerHandout ch = new ContainerHandout( label, id );
         return ch;
     }
 
@@ -170,7 +154,7 @@ public final class ContainerHandout extends AbstractHandoutPiece{
 
     @Override
     public int hashCode() {
-        int hash = 7 + 53 * name.hashCode();
+        int hash = 7 + 53 * label.hashCode();
         return hash;
     }
 
@@ -186,14 +170,14 @@ public final class ContainerHandout extends AbstractHandoutPiece{
             return false;
         }
         final ContainerHandout other = (ContainerHandout) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        if (!Objects.equals(this.label, other.label)) {
             return false;
         }
         return Objects.equals(this.pieces, other.pieces);
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
     public List<AbstractHandoutPiece> getPieces() {
@@ -209,8 +193,8 @@ public final class ContainerHandout extends AbstractHandoutPiece{
     @Override
     public JSONObject toJsonObject() {
         JSONObject obj = new JSONObject();
-        obj.putOpt( "type", this.getType().toString() );
-        obj.put( "name", name );
+        obj.put( "type", this.getType().toString() );
+        obj.put( "label", label );
         obj.put( "id", getId() );
         if (!pieces.isEmpty() ) {
             List<JSONObject> jsonPcs = this.pieces.stream().map( piece -> piece.toJsonObject() )

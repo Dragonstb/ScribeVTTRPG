@@ -26,6 +26,7 @@
 package dev.dragonstb.scribevttrpg.game.handouts;
 
 import java.util.List;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,23 +39,23 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ContainerHandoutTest {
 
     private ContainerHandout con;
-    private static final String BASE_NAME = "jenny";
+    private static final String BASE_LABEL = "jenny";
     private static final String BASE_ID = "ho";
-    private String name;
+    private String label;
     private String id;
     private int counter = 0;
 
     @BeforeEach
     public void setupForTest() {
         ++counter;
-        name = BASE_NAME + counter;
+        label = BASE_LABEL + counter;
         id = BASE_ID + counter;
-        con = ContainerHandout.create( name, id );
+        con = ContainerHandout.create( label, id );
     }
 
     @Test
     public void testCreate_allsWell_noChildren() {
-        assertEquals( name, con.getName() );
+        assertEquals( label, con.getLabel() );
         assertEquals( id, con.getId() );
         assertEquals( HandoutType.container, con.getType() );
         assertTrue( con.getPieces().isEmpty() );
@@ -67,14 +68,14 @@ public class ContainerHandoutTest {
                 () -> ContainerHandout.create( null, id )
             );
 
-        assertEquals( "Name cannot be null", iae.getMessage() );
+        assertEquals( "Label cannot be null", iae.getMessage() );
     }
 
     @Test
     public void testCreate_nullId() {
         IllegalArgumentException iae = assertThrows(
                 IllegalArgumentException.class,
-                () -> ContainerHandout.create( name, null )
+                () -> ContainerHandout.create( label, null )
             );
 
         assertEquals( "Id cannot be null", iae.getMessage() );
@@ -84,21 +85,13 @@ public class ContainerHandoutTest {
         // TODO
     }
 
-    public void testCreate_someEqualChildren() {
-        // TODO
-    }
-
-    public void testEquals() {
-        // TODO
-    }
-
     @Test
     public void testToJsonString_noChildren() {
         String json = con.toJsonString();
         JSONObject obj = new JSONObject( json );
 
-        assertTrue( obj.has("name"), "no name in json" );
-        assertEquals( name, obj.get("name"), "wrong name in json" );
+        assertTrue( obj.has("label"), "no label in json" );
+        assertEquals( label, obj.get("label"), "wrong label in json" );
         assertTrue( obj.has("id"), "no id in json" );
         assertEquals( id, obj.get("id"), "wrong id in json" );
         assertTrue( obj.has("type") );
@@ -116,8 +109,8 @@ public class ContainerHandoutTest {
     public void testToJsonObject_noChildren() {
         JSONObject obj = con.toJsonObject();
 
-        assertTrue( obj.has("name"), "no name in json" );
-        assertEquals( name, obj.get("name"), "wrong name in json" );
+        assertTrue( obj.has("label"), "no label in json" );
+        assertEquals( label, obj.get("label"), "wrong label in json" );
         assertTrue( obj.has("id"), "no id in json" );
         assertEquals( id, obj.get("id"), "wrong id in json" );
         assertTrue( obj.has("type") );
@@ -126,6 +119,38 @@ public class ContainerHandoutTest {
 
         assertEquals( 3, obj.keySet().size(), "wrong number of keys in json" );
     }
+
+    public void testToJsonObject_someChildren() {
+        AbstractHandoutPiece[] children = new AbstractHandoutPiece[] {
+            makePiece( "child1" ), makePiece( "child2" )
+        };
+        for ( AbstractHandoutPiece child : children) {
+            con.addPiece( child, con.getId() );
+        }
+
+        JSONObject obj = con.toJsonObject();
+
+        assertTrue( obj.has("label"), "no label in json" );
+        assertEquals( label, obj.get("label"), "wrong label in json" );
+        assertTrue( obj.has("id"), "no id in json" );
+        assertEquals( id, obj.get("id"), "wrong id in json" );
+        assertTrue( obj.has("type") );
+        assertEquals( HandoutType.container.toString(), obj.get("type"), "wrong type in json");
+        assertFalse( obj.has("pieces") );
+
+        assertTrue( obj.has("pieces") );
+        assertInstanceOf( JSONArray.class, obj.get("pieces") );
+        JSONArray arr = obj.getJSONArray( "pieces" );
+        assertEquals( 2, arr.length() );
+
+        for ( int idx = 0; idx < arr.length(); idx++ ) {
+            JSONObject json = arr.getJSONObject( idx );
+            assertEquals( children[idx].toJsonObject(), json );
+        }
+
+        assertEquals( 4, obj.keySet().size(), "wrong number of keys in json" );
+    }
+
 
     @Test
     public void testAddPiece_here_allIsWell() {
@@ -183,8 +208,20 @@ public class ContainerHandoutTest {
         assertEquals( "No child handout piece of matching name.", exc.getMessage() );
     }
 
+    @Test
     public void testAddPiece_onDescendant_thatisNotAContainer() {
-        // TODO
+        TextHandout childA = TextHandout.create( "a story", "child" );
+        AbstractHandoutPiece childB = makePiece( "grandChild" );
+
+        String parentId = con.getId() + childA.getId();
+
+        con.addPiece( childA, con.getId() );
+        RuntimeException exc = assertThrows(
+                RuntimeException.class,
+                () -> con.addPiece( childB, parentId )
+        );
+
+        assertEquals( "Cannot add handout pieces to non-container handouts", exc.getMessage() );
     }
 
 //    @Test
@@ -215,7 +252,7 @@ public class ContainerHandoutTest {
 
             @Override
             public JSONObject toJsonObject() {
-                return new JSONObject();
+                return new JSONObject().put( "id", id );
             }
         };
 

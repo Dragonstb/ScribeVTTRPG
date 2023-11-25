@@ -23,19 +23,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package dev.dragonstb.scribevttrpg.game.handouts;
 
-/**
- *
- * @author Dragonstb
- * @since 0.0.3;
- */
-public enum HandoutType {
+game.handouts.builders.text = {
 
-    /** A container that collects some other handout pieces. */
-    container,
+    createNew: function( data, appendix, depth ) {
 
-    /** A plain text. */
-    text
+        let id = appendix + data.id;
 
-}
+        function createView( text='' ) {
+            // <div id=id>text</div>
+
+            let handout = document.createElement( 'div' );
+            handout.setAttribute( 'id', id );
+            handout.innerText = text;
+
+            return handout;
+        }
+
+        // _____ create _____
+        let view = createView( data.text );
+        return view;
+    }
+};

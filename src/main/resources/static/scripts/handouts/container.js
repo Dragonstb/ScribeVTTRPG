@@ -55,7 +55,6 @@ game.handouts.builders.container = {
             // _____ head _____
             // TODO: count depth on nested containers for choosing appropiate h
             let headline;
-            console.log('depth is '+depth);
             switch( depth ) {
                 case 0:
                     headline = document.createElement( 'h3' );
@@ -77,13 +76,9 @@ game.handouts.builders.container = {
 
             // _____ content area _____
             const content = document.createElement( 'div' );
-            const auxilliaryText = document.createElement( 'span' );
-            auxilliaryText.innerHTML = 'some text about '+data.name;
-            content.appendChild( auxilliaryText );
             content.setAttribute( 'id', bodyId );
             content.classList.add( constants.NODISPLAY ); // begins in collapsed state
             handout.appendChild( content );
-            // TODO: kick auxilliaryText and put the real content into 'content'
 
             // _____ children _____
             if( data.hasOwnProperty('pieces') ) {

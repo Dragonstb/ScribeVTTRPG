@@ -23,19 +23,62 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 package dev.dragonstb.scribevttrpg.game.handouts;
 
-/**
+import dev.dragonstb.scribevttrpg.utils.Constants;
+import org.json.JSONObject;
+import org.springframework.lang.NonNull;
+
+/** A handout that contains nothing else than text.
  *
  * @author Dragonstb
- * @since 0.0.3;
+ * @since 0.0.4;
  */
-public enum HandoutType {
+public class TextHandout extends AbstractHandoutPiece {
 
-    /** A container that collects some other handout pieces. */
-    container,
+    /** The text. */
+    @NonNull private final String text;
 
-    /** A plain text. */
-    text
+    private TextHandout( String text, @NonNull String id ) {
+        super( HandoutType.text, id );
+        this.text = text != null ? text : Constants.EMPTY_STRING;
+    }
+
+    /** Creates a new instance.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @param text The text which is to be displayed
+     * @param id An id;
+     * @return A new text handout piece.
+     * @throws IllegalArgumentException
+     */
+    public static TextHandout create( String text, @NonNull String id ) {
+        return new TextHandout(text, id );
+    }
+
+    String getText() {
+        return text;
+    }
+
+    @Override
+    public String toJsonString() {
+        JSONObject obj = toJsonObject();
+        return obj.toString();
+    }
+
+    @Override
+    public JSONObject toJsonObject() {
+        JSONObject json = new JSONObject();
+        json.put( "id", getId() );
+        json.put( "type", getType().toString() );
+        json.put( "text", text );
+        return json;
+    }
+
+
+
+
+
 
 }

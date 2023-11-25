@@ -109,11 +109,12 @@ public class GameRestController {
         // TODO: check if you are participant in the given room
         // TODO: take handouts from campaign
         List<ContainerHandout> handouts = new ArrayList<>();
-        handouts.add( ContainerHandout.create("rose") );
-        handouts.add( ContainerHandout.create("tyler") );
+        handouts.add( ContainerHandout.create("rose", "ho-rose") );
+        handouts.add( ContainerHandout.create("tyler", "ho-tyler") );
 
         JSONArray hoArr = new JSONArray();
-        handouts.forEach( ho -> hoArr.put( new JSONObject(ho.toJsonString()) ) );
+//        handouts.forEach( ho -> hoArr.put( new JSONObject(ho.toJsonString()) ) );
+        handouts.forEach( ho -> hoArr.put( ho.toJsonObject() ) );
 
         return hoArr.toString();
     }

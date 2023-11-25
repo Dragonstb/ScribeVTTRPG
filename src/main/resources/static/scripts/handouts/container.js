@@ -31,26 +31,75 @@ game.handouts.builders.container = {
      * @param {Object} Data of the handout
      * @returns {HTMLElement} The HTML element that represents the handout on the screen.
      */
-    createNew: function(data) {
+    createNew: function( data ) {
 
-        // TODO: maybe validate input
+        let id = data.id;
+        let headId = id+'-'+constants.HEAD;
+        let bodyId = id+'-'+constants.BODY;
 
-        // TODO: think about a fieldset, on the other side, handouts are structured with h3 and such and appear linearly
-        const handout = document.createElement( 'div' );
+        function createView( data ) {
+            // <div id=data.id>
+            //   <h3 id=headId aria-controls=bodyId aria-expanded="false">data.name</h3>
+            //   <div id=bodyId class="nodisplay">
+            //     <span>some text</span>
+            //   </div>
+            // </div>
 
-        // TODO: count depth on nested containers for choosing appropiate h
-        const headline = document.createElement( 'h3' );
-        headline.innerText = data.name;
-        handout.appendChild( headline );
+            // TODO: maybe validate input
 
-        const content = document.createElement( 'div' );
-        const auxilliaryText = document.createElement( 'span' );
-        auxilliaryText.innerHTML = 'some text about '+data.name;
-        content.appendChild( auxilliaryText );
-        handout.appendChild( content );
-        // TODO: kick auxilliaryText and put the real content into 'content'
+            // TODO: think about a fieldset, on the other side, handouts are structured with h3 and such and appear linearly
+            const handout = document.createElement( 'div' );
+            handout.setAttribute( 'id', data.id );
 
-        return handout;
+            // TODO: count depth on nested containers for choosing appropiate h
+            const headline = document.createElement( 'h3' );
+            headline.innerText = data.name;
+            headline.setAttribute( 'id', headId );
+            headline.setAttribute( 'aria-expanded', false ); // begins in collapsed state
+            headline.setAttribute( 'aria-controls', bodyId );
+            handout.appendChild( headline );
+
+            const content = document.createElement( 'div' );
+            const auxilliaryText = document.createElement( 'span' );
+            auxilliaryText.innerHTML = 'some text about '+data.name;
+            content.appendChild( auxilliaryText );
+            content.setAttribute( 'id', bodyId );
+            content.classList.add( constants.NODISPLAY ); // begins in collapsed state
+            handout.appendChild( content );
+            // TODO: kick auxilliaryText and put the real content into 'content'
+
+            return handout;
+        }
+
+        function createController( view ) {
+            let head = view.querySelector( '#'+headId );
+            let body = view.querySelector( '#'+bodyId );
+
+            head.addEventListener( 'click', toggleContainer );
+
+            /** Collapses or expands the content.
+             * @author Dragonstb
+             * @since 0.0.4;
+             * @returns nothing
+             */
+            function toggleContainer() {
+                let collapsed = head.getAttribute( 'aria-expanded' ) === 'false';
+                if( collapsed ) {
+                    body.classList.remove( constants.NODISPLAY );
+                    head.setAttribute( 'aria-expanded', 'true' );
+                }
+                else {
+                    body.classList.add( constants.NODISPLAY );
+                    head.setAttribute( 'aria-expanded', 'false' );
+                }
+            }
+        }
+
+        // __________________  create  __________________
+
+        let view = createView( data );
+        createController( view );
+        return view;
     }
 
 };

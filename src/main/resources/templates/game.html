@@ -5,6 +5,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
+        <script src="../static/scripts/utils.js" th:src="@{/scripts/utils.js}"></script>
         <script src="../static/scripts/game.js" th:src="@{/scripts/game.js}"></script>
         <script src="../static/scripts/handouts/builders.js" th:src="@{/scripts/handouts/builders.js}"></script>
         <script src="../static/scripts/handouts/container.js" th:src="@{/scripts/handouts/container.js}"></script>
@@ -15,14 +16,14 @@
             <button type="button" id="main-menu-btn" aria-controls="main-menu-panel">A menu</button>
             <div class="nodisplay" id="main-menu-panel">
                 <button type="button" id="let-them-in-btn" aria-controls="let-them-in-panel"
-                        aria-owns="let-them-in-panel">Guests waiting in fromt of the door</button>
+                        aria-owns="let-them-in-panel">Guests waiting in front of the door</button>
                 <button type="button">Leave</button>
             </div>
             <div class="nodisplay" id="let-them-in-panel" >
                 <div>Sam</div>
                 <div>Alex</div>
             </div>
-            <h1 th:text="${pageTitle}">A menu bar</h1>
+            <h1 th:text="${pageTitle}">The great adventure</h1>
         </div>
         <div>Space for the table</div>
         <div>Initiative bar, maybe?</div>

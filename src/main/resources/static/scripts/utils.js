@@ -23,39 +23,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package dev.dragonstb.scribevttrpg.game;
 
-import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
+/** Collection of constants.
  *
- * @author Dragonstb
- * @since 0.0.4;
+ * @type object
  */
-public class DefaultParticipantTest {
-
-    @Test
-    public void testCreate() {
-        ParticipantRole role = ParticipantRole.gm;
-        ContainerHandout handout = ContainerHandout.create( "Eliza", "ho-1" );
-        List<ContainerHandout> handouts = new ArrayList<>();
-        handouts.add( handout );
-
-        DefaultParticipant part = DefaultParticipant.create(role, handouts);
-
-        assertNotNull( part );
-        assertEquals( role, part.getRole() );
-        List<ContainerHandout> theHandouts = part.getHandouts();
-        assertEquals( handouts.size(), theHandouts.size() );
-        assertEquals( handout, theHandouts.get( 0 ) );
-    }
-
-}
+const constants = {
+    NODISPLAY: 'nodisplay', // name of css class for hidden elements
+    HEAD: 'head', // some constant strings for ids of parts of complicated control elements
+    BODY: 'body' // some constant strings for ids of parts of complicated control elements
+};

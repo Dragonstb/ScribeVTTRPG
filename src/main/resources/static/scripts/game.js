@@ -58,7 +58,8 @@ function fetchHandouts() {
     else {
         // for local browsing for local testing without server
         // TODO: do this in another way
-        let data = [{name:'Skull the Barbarien',type:'container'},{name:'Strike the Wizard',type:'container'}];
+        let data = [{name:'Skull the Barbarien',type:'container',id:'ho-1'},
+            {name:'Strike the Wizard',type:'container',id:'ho-2'}];
         resolveHandoutSuccess(data);
     }
 

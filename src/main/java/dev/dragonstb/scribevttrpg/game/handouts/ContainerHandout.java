@@ -69,22 +69,26 @@ public final class ContainerHandout extends AbstractHandoutPiece{
      * @param name A name of the container. This one is displayed in the expandable field of the corresponding GUI
      * element.
      */
-    private ContainerHandout(@NonNull String name) {
-        super( HandoutType.container );
+    private ContainerHandout(@NonNull String name, @NonNull String id) {
+        super( HandoutType.container, id );
         this.name = name;
     }
 
     /** Generates a new instance.
      * @author Dragonstb
      * @param name A name of the container.
+     * @param id An id for the container.
      * @return New container piece.
      * @throws IllegalArgumentException When {@code name} is {@code null}.
      */
-    public static ContainerHandout create(String name) throws IllegalArgumentException{
+    public static ContainerHandout create(String name, String id) throws IllegalArgumentException{
         if( name == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        ContainerHandout ch = new ContainerHandout(name);
+        else if( id == null ) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        ContainerHandout ch = new ContainerHandout( name, id );
         return ch;
     }
 
@@ -122,18 +126,25 @@ public final class ContainerHandout extends AbstractHandoutPiece{
 
     @Override
     public String toJsonString() {
+        JSONObject obj = this.toJsonObject();
+        return obj.toString();
+    }
+
+    @Override
+    public JSONObject toJsonObject() {
         JSONObject obj = new JSONObject();
-        obj.putOpt("type", this.getType().toString());
-        obj.put("name", name);
+        obj.putOpt( "type", this.getType().toString() );
+        obj.put( "name", name );
+        obj.put( "id", getId() );
         if (!pieces.isEmpty() ) {
-            List<String> jsonPcs = this.pieces.stream().map( piece -> piece.toJsonString() )
+            List<JSONObject> jsonPcs = this.pieces.stream().map( piece -> piece.toJsonObject() )
                     .collect( Collectors.toUnmodifiableList() );
             JSONArray arr = new JSONArray();
             jsonPcs.forEach( piece -> arr.put(piece) );
             obj.put( "pieces", jsonPcs );
         }
-        return obj.toString();
-    }
 
+        return obj;
+    }
 
 }

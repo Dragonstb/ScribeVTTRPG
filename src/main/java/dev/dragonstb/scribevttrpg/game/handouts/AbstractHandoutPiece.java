@@ -26,6 +26,7 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
+import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
 /** Handouts a built up from one to many pieces. A little note found by the players may be just a single text piece.
@@ -36,22 +37,46 @@ import org.springframework.lang.NonNull;
  */
 public abstract class AbstractHandoutPiece {
 
+    @NonNull
     private final HandoutType type;
+
+    @NonNull
+    private final String id;
 
     /** Generates.
      * @author Dragonstb
      * @since 0.0.3;
      * @param type The type of the handout. Must be non-null.
+     * @param id An id of the handout. Must be non-null and unique.
      */
-    public AbstractHandoutPiece(@NonNull HandoutType type) {
+    public AbstractHandoutPiece(@NonNull HandoutType type, @NonNull String id) {
         this.type = type;
+        this.id = id;
     }
 
+    /** Gets the type of the handout.
+     * @suthor Dragonstb
+     * @since 0.0.3;
+     * @return Gets the type of the handout.
+     */
     public final HandoutType getType() {
         return type;
+    }
+
+    /** Gets the id of this handout.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @return Gets the id of this handout.
+     */
+    @NonNull
+    public String getId() {
+        return id;
     }
 
     @NonNull
     public abstract String toJsonString();
 
+    @NonNull
+    public abstract JSONObject toJsonObject();
+    
 }

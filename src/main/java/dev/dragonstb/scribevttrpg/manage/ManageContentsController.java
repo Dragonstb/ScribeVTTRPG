@@ -23,14 +23,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package dev.dragonstb.scribevttrpg.hall;
 
-import dev.dragonstb.scribevttrpg.campaigns.Campaign;
-import dev.dragonstb.scribevttrpg.storage.StorageInterface;
+package dev.dragonstb.scribevttrpg.manage;
+
 import dev.dragonstb.scribevttrpg.utils.Utils;
-import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -38,60 +37,44 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-/** Controller for the personal hall webpage.
+/** Handles requests from the manage content web page.
  *
  * @author Dragonstb
- * @since 0.0.2;
+ * @since 0.0.5;
  */
 @Controller
-public class HallRequestHandler {
+public class ManageContentsController {
 
-    @Autowired
-    private StorageInterface storage;
     @Autowired
     private MessageSource messageSource;
 
-    @GetMapping("/hall")
-    public String getHallPage(@RequestHeader("Accept-Language") Locale loc, Model model) {
-
-        String pageTitle = messageSource.getMessage("web.hall.pageTitle", null, "<web.hall.pageTitle>", loc);
-        model.addAttribute("personalHall", pageTitle);
-
+    @GetMapping("/manage")
+    public String getManageContents(@RequestHeader("Accept-Language") Locale loc, Model model) {
+        String pageTitle = messageSource.getMessage("web.manage.pageTitle", null, "<web.manage.pageTitle>", loc);
         String baseTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
-        String documentTitle = Utils.composeDocumentTitle(pageTitle, baseTitle);
-        model.addAttribute("documentTitle", documentTitle);
+        String docTitle = Utils.composeDocumentTitle( pageTitle, baseTitle );
+        model.addAttribute("documentTitle", docTitle );
+        model.addAttribute("pageTitle", pageTitle );
 
-        addModelText("web.hall.accountSettings", "accountSettings", model, loc);
-        addModelText("web.hall.campaigns", "campaignsLabel", model, loc);
-        addModelText("web.hall.newCampaign", "newCampaign", model, loc);
-        addModelText("web.hall.manageCampaignContent", "manageCampaignContent", model, loc);
-        addModelText("web.hall.manageAllContents", "manageAllContents", model, loc);
-        addModelText("web.hall.startSession", "startSession", model, loc);
-        addModelText("web.common.logout", "logout", model, loc);
+        addModelText( "web.manage.addContent", "addContentBtnLabel", model, loc);
+        addModelText( "web.manage.copyContent", "copyContentBtnLabel", model, loc);
+        addModelText( "web.manage.deleteContent", "deleteContentBtnLabel", model, loc);
+        addModelText( "web.manage.backToHall", "backToHall", model, loc);
 
-        try {
-            // TODO: derive uid from username once spring security has become activated
-            String uid = "123456789";
-            List<Campaign> campaigns = storage.getAllCampaigns(uid);
-            model.addAttribute("campaigns", campaigns);
-        } catch (Exception e) {
-            // TODO: switch to logback
-            Logger log = Logger.getLogger("HallRequestHandler");
-            log.warning(e.getLocalizedMessage());
-        }
-
-        return "hall";
+        model.addAttribute( "fetchFromServer", "const fetchFromServer = true;" );
+        return "managecontents";
     }
 
     /** Sets a localized text as attribute of the model.
      * @author Dragonstb
-     * @since 0.0.2;
+     * @since 0.0.5;
      * @param messageKey The key used for locating the text in the message bundle.
      * @param modelKey The key of the attribute filled with the text.
      * @param model The model.
      * @param loc The localization used.
      */
     private void addModelText(String messageKey, String modelKey, Model model, Locale loc) {
+        // TODO: the same method exists on other controllers
         String text = messageSource.getMessage(messageKey, null, "<"+messageKey+">", loc);
         model.addAttribute(modelKey, text);
     }

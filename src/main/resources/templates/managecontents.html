@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title th:text="${documentTitle}">manage contents</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
+        <script th:text="${fetchFromServer}">const fetchFromServer = false;</script>
+        <script src="../static/scripts/utils.js" th:src="@{/scripts/utils.js}"></script>
+        <script src="../static/scripts/manage.js" th:src="@{/scripts/manage.js}"></script>
+        <script src="../static/scripts/handouts/builders.js" th:src="@{/scripts/handouts/builders.js}"></script>
+        <script src="../static/scripts/handouts/container.js" th:src="@{/scripts/handouts/container.js}"></script>
+        <script src="../static/scripts/handouts/text.js" th:src="@{/scripts/handouts/text.js}"></script>
+    </head>
+    <body>
+        <h1 th:text="${pageTitle}">manage contents</h1>
+        <div>
+            <div id="content-list"></div>
+            <div>
+                <button id="add-content-btn" type="button" th:text="${addContentBtnLabel}">+</button>
+                <button id="copy-content-btn" type="button" th:text="${copyContentBtnLabel}">cc</button>
+                <button id="delete-content-btn" type="button" th:text="${deleteContentBtnLabel}">X</button>
+            </div>
+        </div>
+        <a href="./hall.html" th:href="'/hall'" th:text="${backToHall}">back to hall</a>
+    </body>
+</html>

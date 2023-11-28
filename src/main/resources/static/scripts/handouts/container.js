@@ -68,7 +68,7 @@ game.handouts.builders.container = {
                 default:
                     headline = document.createElement( 'h6' );
             }
-            headline.innerText = data.name;
+            headline.innerText = data.label;
             headline.setAttribute( 'id', headId );
             headline.setAttribute( 'aria-expanded', false ); // begins in collapsed state
             headline.setAttribute( 'aria-controls', bodyId );

@@ -28,6 +28,7 @@ package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import dev.dragonstb.scribevttrpg.game.handouts.TextHandout;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,10 +108,49 @@ public class GameRestController {
         // TODO: check if you are allowed to see the materials
         // TODO: validate room name
         // TODO: check if you are participant in the given room
+
         // TODO: take handouts from campaign
         List<ContainerHandout> handouts = new ArrayList<>();
-        handouts.add( ContainerHandout.create("rose", "ho-rose") );
-        handouts.add( ContainerHandout.create("tyler", "ho-tyler") );
+        ContainerHandout skull = ContainerHandout.create( "Skull the Barbarian", "ho1" );
+        ContainerHandout skills = ContainerHandout.create( "Skills", "ho2" );
+        ContainerHandout genSkills = ContainerHandout.create( "Generic Skills", "ho3" );
+        ContainerHandout comSkills = ContainerHandout.create( "Combat Skills", "ho4" );
+        ContainerHandout magSkills = ContainerHandout.create( "Magic Skills", "ho5" );
+        ContainerHandout traits = ContainerHandout.create( "Traits", "ho6" );
+        TextHandout drink = TextHandout.create( "Drink", "ho7" );
+        TextHandout endurance = TextHandout.create( "Endurance", "ho8" );
+        TextHandout axes = TextHandout.create( "Axes", "ho9" );
+        TextHandout swords = TextHandout.create( "Swords", "ho10" );
+        TextHandout knuckles = TextHandout.create( "Bare Knuckles", "ho11" );
+        TextHandout firebolt = TextHandout.create( "Firebolt", "ho12" );
+        TextHandout lightningbolt = TextHandout.create( "Lightning Bolt", "ho13" );
+        TextHandout honest = TextHandout.create( "Very honest", "ho14" );
+        TextHandout strong = TextHandout.create( "Very strong", "ho15" );
+        TextHandout impatient = TextHandout.create( "Not very patient", "ho16" );
+        skull.addPiece( skills, "ho1" );
+        skull.addPiece( genSkills, "ho1ho2" );
+        skull.addPiece( comSkills, "ho1ho2" );
+        skull.addPiece( magSkills, "ho1ho2" );
+        skull.addPiece( drink, "ho1ho2ho3" );
+        skull.addPiece( endurance, "ho1ho2ho3" );
+        skull.addPiece( axes, "ho1ho2ho4" );
+        skull.addPiece( swords, "ho1ho2ho4" );
+        skull.addPiece( knuckles, "ho1ho2ho4" );
+        skull.addPiece( firebolt, "ho1ho2ho5" );
+        skull.addPiece( lightningbolt, "ho1ho2ho5" );
+        skull.addPiece( traits, "ho1" );
+        skull.addPiece( honest, "ho1ho6" );
+        skull.addPiece( strong, "ho1ho6" );
+        skull.addPiece( impatient, "ho1ho6" );
+
+        ContainerHandout quest = ContainerHandout.create( "Quest Leaflet", "ho17" );
+        TextHandout questText = TextHandout.create( "Sinister howls from the wrecked castle at night fill the peaceful"
+                + " villagers with fear. Coincidentally, there are also rumors about a great treasure in that "
+                + "haunted ruin.", "ho18" );
+        quest.addPiece( questText, "ho17" );
+
+        handouts.add( skull );
+        handouts.add( quest );
 
         JSONArray hoArr = new JSONArray();
 //        handouts.forEach( ho -> hoArr.put( new JSONObject(ho.toJsonString()) ) );

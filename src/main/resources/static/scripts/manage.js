@@ -39,6 +39,13 @@ let game = {
 let cm = {
     contentList: null,
 
+    /** Builds the full list of all valid content items given in 'data'. A content item in 'data' qualifies as 'valid'
+     * if it has a not-zero-length string property name and a string property 'desc'. Html elements are created for each
+     * contenmt item and added to the DOM.
+     * @author Dragonstb
+     * @since 0.0.5;
+     * @param {Array} data An array of objects with string properties 'name' and 'desc'.
+     */
     addFullList: function( data ) {
         if( this.contentList === null ) {
             console.log( 'cannot build content list: root element has not been initialized yet' );
@@ -83,10 +90,6 @@ let cm = {
 
 document.addEventListener('DOMContentLoaded', afterLoadingContentManager);
 
-
-// class names
-const NODISPLAY = "nodisplay";
-
 function afterLoadingContentManager() {
     console.log( 'fetching from server? '+fetchFromServer );
 
@@ -120,15 +123,15 @@ function addButtonActions() {
     deleteContentBtn.addEventListener('click', deleteContent);
 }
 
+/** Fetches the data of the content items from the server.
+ * @author Dragonstb
+ * @since 0.0.5;
+ */
 function fetchContents() {
 
     if( fetchFromServer ) {
-        console.log( 'no server yet' );
         let target = '/manage/contentlist';
-        // TODO: game.js uses similar construction => make and use a client sided request handler
-        getContentData(target).then(
-                                (resp) => {resolveContentResponse(resp);}
-                        ); // TODO: define error function
+        requester.requestData(target, resolveContentsSuccess, resolveContentFailure);
     }
     else {
         // for local browsing and for local testing without server
@@ -143,26 +146,6 @@ function fetchContents() {
         resolveContentsSuccess(items);
     }
 
-    async function getContentData(url) {
-        const resp = await fetch(url, {
-            method: "GET",
-            cache: "no-cache",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
-        return resp.json();
-    }
-
-    function resolveContentResponse( data ) {
-        if( data === null || data === undefined ) {
-            resolveContentFailure( null );
-        }
-        else {
-            resolveContentsSuccess( data );
-        }
-    }
-
     function resolveContentsSuccess( data ) {
         console.log("succceeded in fetching the contents");
         if( data ) {
@@ -170,16 +153,11 @@ function fetchContents() {
             let hook = document.querySelector('#content-list');
             cm.contentList = hook;
             cm.addFullList( data );
-//            let anchor = document.querySelector('#handout-anchor');
-//            game.handouts.builders.digestHandoutData( anchor, data );
         }
     }
 
-    function resolveContentFailure( data ) {
+    function resolveContentFailure() {
         console.log("failed in fetching the contents");
-        if( data ) {
-            console.dir( data );
-        }
     }
 }
 

@@ -37,7 +37,11 @@ let game = {
  * @type object
  */
 let cm = {
+    LIST_ELEM: 'list-elem-',
+    WORKBENCH_ELEM: 'workbench-elem-',
     contentList: null,
+    contentMap: new Map(),
+    workbenchNode: null,
 
     /** Builds the full list of all valid content items given in 'data'. A content item in 'data' qualifies as 'valid'
      * if it has a not-zero-length string property name and a string property 'desc'. Html elements are created for each
@@ -67,8 +71,34 @@ let cm = {
                 continue;
             }
 
+            // create content object and add to map with unique id as key
+            let contentObject = this.makeContentObject( this, item, idx );
+            this.contentMap.set( idx, contentObject );
+
+            // add to DOM
+            this.contentList.appendChild( contentObject.listElem );
+        }
+    },
+
+    /** Creates the content object for the content item. This object contains an HTML element for the list.
+     * @author Dragonstb
+     * @since 0.0.5;
+     * @param {object} item The data of the content item.
+     * @returns {object} The content object.
+     */
+    makeContentObject: function( cm, item, idNum ) {
+
+        /** Creates the HTML element for the list of content items.
+         * @author Dragonstb
+         * @since 0.0.5;
+         * @param {Object} item The item data as object.
+         * @param {number} idNum An unique index number. No other content object can have this number.
+         * @returns {HTMLElement} The div to be appended to the overwie list.
+         */
+        function makeListElement( item, idNum ) {
             // main panel of item
             let panel = document.createElement( 'div' );
+            panel.setAttribute( 'id', cm.LIST_ELEM + idNum );
 
             // field for name
             let nameField = document.createElement( 'div' );
@@ -82,9 +112,58 @@ let cm = {
             descField.innerHTML = item.desc;
             panel.appendChild( descField );
 
-            // add to DOM
-            this.contentList.appendChild( panel );
+            return panel;
         }
+
+        let workbenchElemBuilder = {
+
+            // functions for creating workbench objects of handouts
+            handout: function( item, idNum ) {
+                let data = {
+                    label: item.name,
+                    type: 'container',
+                    id: cm.WORKBENCH_ELEM + idNum,
+                    pieces: item.pieces
+                };
+
+                return game.handouts.builders.container.createNew( data, '', 0 );
+            }
+        };
+
+        function makeWorkbenchElement( item, idNum ) {
+            if( !workbenchElemBuilder.hasOwnProperty(item.type) ) {
+                return null;
+            }
+
+            return workbenchElemBuilder[ item.type ]( item, idNum );
+        }
+
+        let listElem = makeListElement( item, idNum );
+        // invoke content manager's function with personal idx number as argument
+        listElem.addEventListener( 'click', function(){cm.clickListElem( idNum );} );
+
+        let workbenchElem = makeWorkbenchElement( item, idNum );
+
+
+        // build content object
+        let contentObject = {
+            listElem: listElem,
+            workbenchElem: workbenchElem
+        };
+
+        return contentObject;
+    },
+
+    clickListElem: function( idNum ) {
+
+        let contentObject = cm.contentMap.get( idNum );
+        console.dir( contentObject );
+
+        for( let child of cm.workbenchNode.children) {
+            cm.workbenchNode.removeChild( child );
+        }
+
+        cm.workbenchNode.appendChild( contentObject.workbenchElem );
     }
 };
 
@@ -137,11 +216,99 @@ function fetchContents() {
         // for local browsing and for local testing without server
         // TODO: do this in another way
         let items = [
-            {name:'Blank character sheet',desc:"A template"},
-            {name:'Skull the Babarien',desc:"Character sheet"},
-            {name:'Thunder the Wizard',desc:"Character sheet"},
-            {name:'Quest Leaflet',desc:"The quest for the first mission"},
-            {name:'A mysterious letter',desc:"Writing from the mayor about a mine near the village"}
+            {name:'Blank character sheet',desc:"A template", type:"handout",
+                pieces: [
+                    {
+                        label:'Skills',type:'container',
+                        pieces: [
+                            {label:'Generic skills',type:'container',pieces: []},
+                            {label:'Combat skills',type:'container',pieces:[]},
+                            {label:'Magic skills',type:'container',pieces:[]}
+                        ]
+                    },
+                    {
+                        label:'Traits',type:'container',
+                        pieces: []
+                    }
+                ]
+            },
+            {name:'Skull the Babarien',desc:"Character sheet", type:"handout",
+                pieces: [
+                    {
+                        label:'Skills',type:'container',
+                        pieces: [
+                            {label:'Generic skills',type:'container', pieces: [
+                                {type:'text', text:'Drink'},
+                                {type:'text', text:'Endurance'}
+                            ]},
+                            {label:'Combat skills',type:'container', pieces:[
+                                {type:'text', text:'Axes'},
+                                {type:'text', text:'Swords'},
+                                {type:'text', text:'Bare Knuckles'}
+                            ]},
+                            {label:'Magic skills',type:'container', pieces:[
+                                {type:'text', text:'Firebolt'},
+                                {type:'text', text:'Lighning Bolt'}
+                            ]}
+                        ]
+                    },
+                    {
+                        label:'Traits',type:'container',
+                        pieces: [
+                            {type:'text', text:'very honest'},
+                            {type:'text', text:'very strong'},
+                            {type:'text', text:'not very patient'}
+                        ]
+                    }
+                ]
+            },
+            {name:'Thunder the Wizard',desc:"Character sheet", type:"handout",
+                pieces: [
+                    {
+                        label:'Skills',type:'container',
+                        pieces: [
+                            {label:'Generic skills',type:'container',pieces: [
+                                {type:'text', text:'Intimidate'},
+                                {type:'text', text:'Dancing'}
+                            ]},
+                            {label:'Combat skills',type:'container',pieces:[
+                                {type:'text', text:'Staffs'},
+                                {type:'text', text:'Bows'}
+                            ]},
+                            {label:'Magic skills',type:'container',pieces:[
+                                {type:'text', text:'Fireball'},
+                                {type:'text', text:'Energy Shield'},
+                                {type:'text', text:'Storm'},
+                                {type:'text', text:'Thunderbolt'},
+                                {type:'text', text:'Meteor Strike'},
+                                {type:'text', text:'Healing'}
+                            ]}
+                        ]
+                    },
+                    {
+                        label:'Traits',type:'container',
+                        pieces: [
+                            {type:'text', text:'capable runner'},
+                            {type:'text', text:'dabbling crafter'},
+                            {type:'text', text:'good observer'}
+                        ]
+                    }
+                ]
+            },
+            {name:'Quest Leaflet',desc:"The quest for the first mission",type:"handout",
+                pieces: [
+                    {type:'text', text:'Sinister howls from the wrecked castle at night fill the peaceful '+
+                            'villagers with fear. Coincidentally, there are also rumors about a great treasure in that'+
+                            ' haunted ruin.'}
+                ]
+            },
+            {name:'A mysterious letter',desc:"Writing from the mayor about a mine near the village",type:"handout",
+                pieces: [
+                    {type:'text', text:'Greeting Marty, I hope everything runs well in the mine? This is going to be '+
+                            'great if we can find what we are looking for there. I remind you that it is of utmost '+
+                            'importance that no one takes a notice of our actions! Remember what is at stake.'}
+                ]
+            }
         ];
         resolveContentsSuccess(items);
     }
@@ -152,6 +319,8 @@ function fetchContents() {
             console.dir( data );
             let hook = document.querySelector('#content-list');
             cm.contentList = hook;
+            let workbenchNode = document.querySelector('#workbench');
+            cm.workbenchNode = workbenchNode;
             cm.addFullList( data );
         }
     }

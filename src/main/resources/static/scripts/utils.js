@@ -31,5 +31,15 @@
 const constants = {
     NODISPLAY: 'nodisplay', // name of css class for hidden elements
     HEAD: 'head', // some constant strings for ids of parts of complicated control elements
-    BODY: 'body' // some constant strings for ids of parts of complicated control elements
+    BODY: 'body', // some constant strings for ids of parts of complicated control elements
+    /** Row for the buttons for changing the order of handout pieces and deleting a handout piece. */
+    EDIT_ROW: 'edit-row',
+    /** For an "one up" element. */
+    UP: 'up',
+    /** For an "one down" element. */
+    DOWN: 'down',
+    /** For an element of deletion. */
+    DELETE: 'delete',
+    /** For an element of adding. */
+    ADD: 'add'
 };

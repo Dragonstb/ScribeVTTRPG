@@ -41,6 +41,37 @@ const builders = {
             if( this.hasOwnProperty( handout.type ) ) {
                 let child = this[handout.type].createNew( handout, appendix, depth );
                 if( child ) {
+                    // _____ row of edit buttons _____
+                    if( depth > 0 ) {
+                        // because depth == 0 is the outer most container which is the root of a handout and, therefore,
+                        // must exist and be singular on this uppermost level
+                        let id = child.getAttribute( 'id' );
+                        let editRowId = id+'-'+constants.EDIT_ROW;
+                        let upId = id+'-'+constants.UP;
+                        let downId = id+'-'+constants.DOWN;
+                        let deleteId = id+'-'+constants.DELETE;
+
+                        let editRow = document.createElement( 'div' );
+                        editRow.setAttribute( 'id', editRowId );
+
+                        let upButton = document.createElement( 'button' );
+                        upButton.setAttribute( 'id', upId );
+                        upButton.innerText = 'up'; // TODO: localize
+                        editRow.appendChild( upButton );
+
+                        let downButton = document.createElement( 'button' );
+                        downButton.setAttribute( 'id', downId );
+                        downButton.innerText = 'down'; // TODO: localize
+                        editRow.appendChild( downButton );
+
+                        let deleteButton = document.createElement( 'button' );
+                        deleteButton.setAttribute( 'id', deleteId );
+                        deleteButton.innerText = 'X'; // TODO: localize
+                        editRow.appendChild( deleteButton );
+
+                        child.appendChild( editRow );
+                    }
+                    
                     parent.appendChild( child );
                 }
             }

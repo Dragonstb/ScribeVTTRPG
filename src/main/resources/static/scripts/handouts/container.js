@@ -36,6 +36,7 @@ builders.container = {
         let id = appendix + data.id;
         let headId = id+'-'+constants.HEAD;
         let bodyId = id+'-'+constants.BODY;
+        let addId = id+'-'+constants.ADD;
 
         function createView( data ) {
             // <div id=data.id>
@@ -43,6 +44,14 @@ builders.container = {
             //   <div id=bodyId class="nodisplay">
             //     <span>some text</span>
             //   </div>
+            //   <div>
+            //      <button id=addId />
+            //   </div>
+            //   <div id=editRowId>          -+
+            //      <button id=upId />        |
+            //      <button id=downId />      +- default part, becomes added by the builders.js
+            //      <button id=deleteId />    |
+            //   </div>                      -+
             // </div>
 
             // TODO: maybe validate input
@@ -85,6 +94,12 @@ builders.container = {
                 let useDepth = depth < 3 ? depth+1 : 3;
                 builders.digestHandoutData( content, data.pieces, id, useDepth );
             }
+
+            // _____ button for adding a new handout piece _____
+            let addButton = document.createElement( 'button' );
+            addButton.setAttribute( 'id', addId );
+            addButton.innerText = '+'; // TODO: localize
+            handout.appendChild( addButton );
 
             return handout;
         }

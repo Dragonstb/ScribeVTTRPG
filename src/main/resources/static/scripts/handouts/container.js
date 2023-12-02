@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-game.handouts.builders.container = {
+builders.container = {
 
     /** Creates a container handout element for the DOM.
      * @author Dragonstb
@@ -83,7 +83,7 @@ game.handouts.builders.container = {
             // _____ children _____
             if( data.hasOwnProperty('pieces') ) {
                 let useDepth = depth < 3 ? depth+1 : 3;
-                game.handouts.builders.digestHandoutData( content, data.pieces, id, useDepth );
+                builders.digestHandoutData( content, data.pieces, id, useDepth );
             }
 
             return handout;

@@ -101,7 +101,7 @@ function fetchHandouts() {
     function resolveHandoutSuccess( data ) {
         if( data ) {
             let anchor = document.querySelector('#handout-anchor');
-            game.handouts.builders.digestHandoutData( anchor, data );
+            builders.digestHandoutData( anchor, data );
         }
     }
 

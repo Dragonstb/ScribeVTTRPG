@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-game.handouts.builders = {
+const builders = {
 
     /** Creates the handouts as elements nodes and appends them to the given parent elemen.
      * @author Dragonstb

@@ -26,11 +26,11 @@
 
 // TODO: don't reuse object 'game' wwhich is used by game.js, but use a different, specialized object of other name.
 // Both object may make use of the same builder then => cut builder from game
-let game = {
-    handouts: {
-        builders: {}
-    }
-};
+//let game = {
+//    handouts: {
+//        builders: {}
+//    }
+//};
 
 /** The content manager.
  *
@@ -126,7 +126,7 @@ let cm = {
                     pieces: item.pieces
                 };
 
-                return game.handouts.builders.container.createNew( data, '', 0 );
+                return builders.container.createNew( data, '', 0 );
             }
         };
 

@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-game.handouts.builders.text = {
+builders.text = {
 
     createNew: function( data, appendix, depth ) {
 

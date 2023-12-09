@@ -126,7 +126,7 @@ let cm = {
                     pieces: item.pieces
                 };
 
-                return builders.container.createNew( data, '', 0 );
+                return builders.container.createNew( data, cm.handlePieceAction, '', 0 );
             }
         };
 
@@ -144,7 +144,6 @@ let cm = {
 
         let workbenchElem = makeWorkbenchElement( item, idNum );
 
-
         // build content object
         let contentObject = {
             listElem: listElem,
@@ -157,13 +156,16 @@ let cm = {
     clickListElem: function( idNum ) {
 
         let contentObject = cm.contentMap.get( idNum );
-        console.dir( contentObject );
 
         for( let child of cm.workbenchNode.children) {
             cm.workbenchNode.removeChild( child );
         }
 
         cm.workbenchNode.appendChild( contentObject.workbenchElem );
+    },
+
+    handlePieceAction: function( actionJson ) {
+        console.log( 'Manage: ' + JSON.stringify(actionJson) );
     }
 };
 
@@ -219,15 +221,15 @@ function fetchContents() {
             {name:'Blank character sheet',desc:"A template", type:"handout",
                 pieces: [
                     {
-                        label:'Skills',type:'container',
+                        label:'Skills',type:'container', id:'wb1',
                         pieces: [
-                            {label:'Generic skills',type:'container',pieces: []},
-                            {label:'Combat skills',type:'container',pieces:[]},
-                            {label:'Magic skills',type:'container',pieces:[]}
+                            {label:'Generic skills',type:'container', id:'wb2',pieces: []},
+                            {label:'Combat skills',type:'container', id:'wb3',pieces:[]},
+                            {label:'Magic skills',type:'container', id:'wb4',pieces:[]}
                         ]
                     },
                     {
-                        label:'Traits',type:'container',
+                        label:'Traits',type:'container', id:'wb5',
                         pieces: []
                     }
                 ]
@@ -235,29 +237,29 @@ function fetchContents() {
             {name:'Skull the Babarien',desc:"Character sheet", type:"handout",
                 pieces: [
                     {
-                        label:'Skills',type:'container',
+                        label:'Skills',type:'container', id:'wb6',
                         pieces: [
-                            {label:'Generic skills',type:'container', pieces: [
-                                {type:'text', text:'Drink'},
-                                {type:'text', text:'Endurance'}
+                            {label:'Generic skills',type:'container', id:'wb7', pieces: [
+                                {type:'text', id:'wb8', text:'Drink'},
+                                {type:'text', id:'wb9', text:'Endurance'}
                             ]},
-                            {label:'Combat skills',type:'container', pieces:[
-                                {type:'text', text:'Axes'},
-                                {type:'text', text:'Swords'},
-                                {type:'text', text:'Bare Knuckles'}
+                            {label:'Combat skills',type:'container', id:'wb10', pieces:[
+                                {type:'text', id:'wb11', text:'Axes'},
+                                {type:'text', id:'wb12', text:'Swords'},
+                                {type:'text', id:'wb13', text:'Bare Knuckles'}
                             ]},
-                            {label:'Magic skills',type:'container', pieces:[
-                                {type:'text', text:'Firebolt'},
-                                {type:'text', text:'Lighning Bolt'}
+                            {label:'Magic skills',type:'container', id:'wb14', pieces:[
+                                {type:'text', id:'wb15', text:'Firebolt'},
+                                {type:'text', id:'wb16', text:'Lighning Bolt'}
                             ]}
                         ]
                     },
                     {
-                        label:'Traits',type:'container',
+                        label:'Traits',type:'container', id:'wb17',
                         pieces: [
-                            {type:'text', text:'very honest'},
-                            {type:'text', text:'very strong'},
-                            {type:'text', text:'not very patient'}
+                            {type:'text', id:'wb18', text:'very honest'},
+                            {type:'text', id:'wb19', text:'very strong'},
+                            {type:'text', id:'wb20', text:'not very patient'}
                         ]
                     }
                 ]
@@ -265,46 +267,46 @@ function fetchContents() {
             {name:'Thunder the Wizard',desc:"Character sheet", type:"handout",
                 pieces: [
                     {
-                        label:'Skills',type:'container',
+                        label:'Skills',type:'container', id:'wb21',
                         pieces: [
-                            {label:'Generic skills',type:'container',pieces: [
-                                {type:'text', text:'Intimidate'},
-                                {type:'text', text:'Dancing'}
+                            {label:'Generic skills',type:'container', id:'wb22',pieces: [
+                                {type:'text', id:'wb23', text:'Intimidate'},
+                                {type:'text', id:'wb24', text:'Dancing'}
                             ]},
-                            {label:'Combat skills',type:'container',pieces:[
-                                {type:'text', text:'Staffs'},
-                                {type:'text', text:'Bows'}
+                            {label:'Combat skills',type:'container', id:'wb25',pieces:[
+                                {type:'text', id:'wb26', text:'Staffs'},
+                                {type:'text', id:'wb27', text:'Bows'}
                             ]},
-                            {label:'Magic skills',type:'container',pieces:[
-                                {type:'text', text:'Fireball'},
-                                {type:'text', text:'Energy Shield'},
-                                {type:'text', text:'Storm'},
-                                {type:'text', text:'Thunderbolt'},
-                                {type:'text', text:'Meteor Strike'},
-                                {type:'text', text:'Healing'}
+                            {label:'Magic skills',type:'container', id:'wb28',pieces:[
+                                {type:'text', id:'wb29', text:'Fireball'},
+                                {type:'text', id:'wb30', text:'Energy Shield'},
+                                {type:'text', id:'wb31', text:'Storm'},
+                                {type:'text', id:'wb32', text:'Thunderbolt'},
+                                {type:'text', id:'wb33', text:'Meteor Strike'},
+                                {type:'text', id:'wb34', text:'Healing'}
                             ]}
                         ]
                     },
                     {
-                        label:'Traits',type:'container',
+                        label:'Traits',type:'container', id:'wb35',
                         pieces: [
-                            {type:'text', text:'capable runner'},
-                            {type:'text', text:'dabbling crafter'},
-                            {type:'text', text:'good observer'}
+                            {type:'text', id:'wb36', text:'capable runner'},
+                            {type:'text', id:'wb37', text:'dabbling crafter'},
+                            {type:'text', id:'wb38', text:'good observer'}
                         ]
                     }
                 ]
             },
             {name:'Quest Leaflet',desc:"The quest for the first mission",type:"handout",
                 pieces: [
-                    {type:'text', text:'Sinister howls from the wrecked castle at night fill the peaceful '+
+                    {type:'text', id:'wb39', text:'Sinister howls from the wrecked castle at night fill the peaceful '+
                             'villagers with fear. Coincidentally, there are also rumors about a great treasure in that'+
                             ' haunted ruin.'}
                 ]
             },
             {name:'A mysterious letter',desc:"Writing from the mayor about a mine near the village",type:"handout",
                 pieces: [
-                    {type:'text', text:'Greeting Marty, I hope everything runs well in the mine? This is going to be '+
+                    {type:'text', id:'wb40', text:'Greeting Marty, I hope everything runs well in the mine? This is going to be '+
                             'great if we can find what we are looking for there. I remind you that it is of utmost '+
                             'importance that no one takes a notice of our actions! Remember what is at stake.'}
                 ]

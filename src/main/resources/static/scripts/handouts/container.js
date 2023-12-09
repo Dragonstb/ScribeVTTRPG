@@ -31,7 +31,7 @@ builders.container = {
      * @param {Object} Data of the handout
      * @returns {HTMLElement} The HTML element that represents the handout on the screen.
      */
-    createNew: function( data, appendix, depth ) {
+    createNew: function( data, actionCallback, appendix, depth ) {
 
         let id = appendix + data.id;
         let headId = id+'-'+constants.HEAD;
@@ -49,7 +49,7 @@ builders.container = {
             //   </div>
             //   <div id=editRowId>          -+
             //      <button id=upId />        |
-            //      <button id=downId />      +- default part, becomes added by the builders.js
+            //      <button id=downId />      +- default part, becomes added by builders.js
             //      <button id=deleteId />    |
             //   </div>                      -+
             // </div>
@@ -62,7 +62,6 @@ builders.container = {
             handout.setAttribute( 'id', id );
 
             // _____ head _____
-            // TODO: count depth on nested containers for choosing appropiate h
             let headline;
             switch( depth ) {
                 case 0:
@@ -92,13 +91,15 @@ builders.container = {
             // _____ children _____
             if( data.hasOwnProperty('pieces') ) {
                 let useDepth = depth < 3 ? depth+1 : 3;
-                builders.digestHandoutData( content, data.pieces, id, useDepth );
+                builders.digestHandoutData( content,  data.pieces, actionCallback, id, useDepth );
             }
 
             // _____ button for adding a new handout piece _____
             let addButton = document.createElement( 'button' );
             addButton.setAttribute( 'id', addId );
             addButton.innerText = '+'; // TODO: localize
+            let addAction = builders.makeAddAction( addId ).build();
+            addButton.addEventListener( 'click', event => actionCallback(addAction) );
             handout.appendChild( addButton );
 
             return handout;

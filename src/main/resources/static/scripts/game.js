@@ -1,7 +1,11 @@
 let game = {
     handouts: {},
     room: null,
-    fetchFromServer: false
+    fetchFromServer: false,
+
+    handlePieceAction: function( actionData ) {
+        console.log( 'Game: '+JSON.stringify(actionData) );
+    }
 };
 
 document.addEventListener('DOMContentLoaded', afterLoadingGame);
@@ -101,7 +105,7 @@ function fetchHandouts() {
     function resolveHandoutSuccess( data ) {
         if( data ) {
             let anchor = document.querySelector('#handout-anchor');
-            builders.digestHandoutData( anchor, data );
+            builders.digestHandoutData( anchor, data, game.handlePieceAction );
         }
     }
 

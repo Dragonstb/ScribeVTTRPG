@@ -26,7 +26,16 @@
 
 builders.text = {
 
-    createNew: function( data, appendix, depth ) {
+    /** Creates the UI of a text handout piece.
+     * @author Dragonstb
+     * @since 0.0.5;
+     * @param {object} data The data describing the handout piece.
+     * @param {function} actionCallback A function called when any edit action occured on this handout piece.
+     * @param {string} appendix A strin added to the front of each element id in this handout piece.
+     * @param {type} depth Depth level of the handout piece in the container structure of a handout.
+     * @returns {HTMLElement} The DOM element representing the handout piece.
+     */
+    createNew: function( data, actionCallback, appendix, depth ) {
 
         let id = appendix + data.id;
 

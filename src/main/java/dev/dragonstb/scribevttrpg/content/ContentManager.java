@@ -29,7 +29,6 @@ package dev.dragonstb.scribevttrpg.content;
 import dev.dragonstb.scribevttrpg.game.handouts.AbstractHandoutPiece;
 import java.util.List;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 /** An instance of an implementation manages a registered user's private campaign contents, . All requests from clients on content items end up here, may it be from the game web page (via a
  * {@link dev.dragonstb.scribevttrpg.game.handouts.HandoutManager handout manager}) ot from the manage contents web

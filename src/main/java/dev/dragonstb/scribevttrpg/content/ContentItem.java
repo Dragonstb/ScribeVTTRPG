@@ -114,7 +114,10 @@ public abstract class ContentItem {
      * @since 0.0.5;
      * @param name New name of the content item. Must be non-null.
      */
-    public void setName( @NonNull String name ) {
+    public void setName( @NonNull String name ) throws IllegalArgumentException {
+        if( name == null ) {
+            throw new IllegalArgumentException( "Argument cannot be null." );
+        }
         this.name = name;
     }
 
@@ -127,4 +130,13 @@ public abstract class ContentItem {
     public Optional<String> getDescription() {
         return Optional.ofNullable( description );
     }
+
+    /**
+     * @since 0.0.5;
+     * @param description
+     */
+    public void setDescription( String description ) {
+        this.description = description;
+    }
+
 }

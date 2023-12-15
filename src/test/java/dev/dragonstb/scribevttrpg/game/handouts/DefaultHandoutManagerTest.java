@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
- * @author dragon
+ * @author Dragonstb
  */
 public class DefaultHandoutManagerTest {
 

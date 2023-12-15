@@ -74,10 +74,10 @@ public class ContentHandout extends ContentItem{
     }
 
     @Override
-    public void setName( String name ) {
+    public void setName( @NonNull String name ) throws IllegalArgumentException {
+        super.setName( name );
         // use also as label of the handout
         handout.setLabel( name );
-        super.setName( handout.getLabel() );
     }
 
 

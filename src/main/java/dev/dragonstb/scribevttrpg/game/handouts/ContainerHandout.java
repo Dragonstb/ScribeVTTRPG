@@ -44,7 +44,7 @@ import org.springframework.lang.NonNull;
 public final class ContainerHandout extends AbstractHandoutPiece{
 
     /** A label of the container. This one is displayed in the corresponding GUI element. */
-    @NonNull private final String label;
+    @NonNull private String label;
 
     /** List pf child pieces. */
     private final List<AbstractHandoutPiece> pieces = new ArrayList<>();
@@ -206,5 +206,14 @@ public final class ContainerHandout extends AbstractHandoutPiece{
 
         return obj;
     }
+
+    /**
+     * @since 0.0.5;
+     * @param label New label of teh container. Must be non-null.
+     */
+    public void setLabel( @NonNull String label ) {
+        this.label = label;
+    }
+
 
 }

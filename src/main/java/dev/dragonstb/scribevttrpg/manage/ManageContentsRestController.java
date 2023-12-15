@@ -26,6 +26,9 @@
 
 package dev.dragonstb.scribevttrpg.manage;
 
+import dev.dragonstb.scribevttrpg.content.ContentManager;
+import dev.dragonstb.scribevttrpg.content.DefaultContentManager;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +43,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManageContentsRestController {
 
     @GetMapping("/manage/contentlist")
-    public String getContentList() {
+    public String getContentList( HttpServletRequest request ) {
 
+        /*
         // TODO: use game master's real content rather than this mock contents
         JSONObject item, aux;
         JSONArray itemList = new JSONArray();
@@ -200,7 +204,7 @@ public class ManageContentsRestController {
 
             aux = new JSONObject();
             aux.put( "type", "text" );
-            aux.put( "text", "Intinidate" );
+            aux.put( "text", "Intimidate" );
             list.put( aux );
 
             aux = new JSONObject();
@@ -333,7 +337,19 @@ public class ManageContentsRestController {
         item.put( "pieces", pieces );
         itemList.put( item );
 
+
         return itemList.toString();
+        */
+
+        // TODO: use constant instead of harcoded string "contentmanager"
+        ContentManager cm = (ContentManager)request.getSession().getAttribute("contentManager");
+        if( cm == null ) {
+            cm = new DefaultContentManager();
+            request.getSession().setAttribute( "contentManager", cm );
+        }
+
+        JSONArray contents = cm.getContentsAsJson( null );
+        return contents.toString();
     }
 
 }

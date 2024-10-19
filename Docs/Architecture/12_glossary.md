@@ -7,8 +7,8 @@ The buzz words used within this project. They are also definistions. Thus, pleas
  handouts and/or move tokens. The GM may withdraw these rights as she/he likes it (and regrant, rewithdraw, reregrant,
 ...).
 
-**http session:** The http session that relates consecutive http requests to a sibgle person. To be differentiated from
-the *session*, which is a bunch pf people having found together and playing their game.
+**http session:** The http session that relates consecutive http requests to a single person. To be differentiated from
+the *session*, which is a bunch of people having found together and playing their game.
 
 **participant:** Groups all kind of participants in a *session* together. Thus, a *gm*, a *player*, or a *spectator*.
 

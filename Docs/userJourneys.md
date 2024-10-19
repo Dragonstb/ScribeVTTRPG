@@ -1,4 +1,4 @@
-Some user stories explaining how ScribeVTTRPG is used and how it works.
+Some user journeys explaining how ScribeVTTRPG is used and how it works.
 
 # GM starts a new session
 

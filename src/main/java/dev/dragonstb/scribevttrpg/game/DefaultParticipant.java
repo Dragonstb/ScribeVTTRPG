@@ -37,6 +37,8 @@ import org.springframework.lang.NonNull;
  */
 public class DefaultParticipant implements Participant{
 
+    /** The participant's name. */
+    @NonNull private final String name;
     /** The role the participant has in the game session. */
     @NonNull private final ParticipantRole role;
     /** Lists of handouts that can be read by the participant. To some of these, there might also be write access.
@@ -49,6 +51,7 @@ public class DefaultParticipant implements Participant{
      * @param role The role the participant occupies.
      */
     private DefaultParticipant(@NonNull ParticipantRole role, @NonNull List<ContainerHandout> handouts) {
+        this.name = "TODO: make name constructable";
         this.handouts = handouts;
         this.role = role;
     }
@@ -63,6 +66,11 @@ public class DefaultParticipant implements Participant{
     public static DefaultParticipant create(@NonNull ParticipantRole role, @NonNull List<ContainerHandout> handouts) {
         DefaultParticipant part = new DefaultParticipant(role, handouts);
         return part;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

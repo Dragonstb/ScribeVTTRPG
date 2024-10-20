@@ -31,6 +31,7 @@ import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -60,7 +61,7 @@ public class GameManager {
      * @throws IllegalArgumentException Room name does not match requirements.
      * @throws RuntimeException Room name has been taken by someone else.
      */
-    public Game addGame(String roomName) throws IllegalArgumentException, RuntimeException {
+    public Game createGame(String roomName) throws IllegalArgumentException, RuntimeException {
         if( roomName == null || roomName.length() < settings.getMinRoomNameLength() ) {
             throw new IllegalArgumentException( "name of the room must have at least "
                     +settings.getMinRoomNameLength()+" characters." );
@@ -76,4 +77,15 @@ public class GameManager {
 
         return game;
     }
+
+    /** Gets the game associated to the given room name.
+     * @author Dragonstb
+     * @param roomName Name of the room the game takes place in.
+     * @return If existing, an optional containing the game associated with the room name. An empty optional otherwise.
+     */
+    public Optional<Game> getGame(@NonNull String roomName) {
+        Optional<Game> opt = Optional.ofNullable( games.get(roomName) );
+        return opt;
+    }
+
 }

@@ -38,4 +38,10 @@ public interface Constants {
     public static final String EMPTY_STRING = "";
     /** A default charset. */
     public static final Charset DEFAULT_CHARSET = Charset.forName("utf-8");
+
+    // Keys used in maps
+    /** Key for http session attribute {@link dev.dragonstb.scribevttrpg.content.ContentManager content manager}. */
+    public static final String KEY_CONTENT_MANAGER = "contentManager";
+    /** Key for http session attribute <i>participations</i>. */
+    public static final String KEY_PARTICIPATIONS = "participations";
 }

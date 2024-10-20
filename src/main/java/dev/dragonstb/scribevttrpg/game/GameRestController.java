@@ -29,15 +29,22 @@ package dev.dragonstb.scribevttrpg.game;
 import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.TextHandout;
+import dev.dragonstb.scribevttrpg.utils.Constants;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,16 +80,12 @@ public class GameRestController {
         String roomName = jbod.getString("roomName");
 
         // TODO: access session variables with annotations
-        Map<String, Participant> participations = (HashMap<String, Participant>)request.getSession().getAttribute("participations");
-        if( participations == null ) {
-            participations = new HashMap<>();
-            request.getSession().setAttribute("participations", participations);
-        }
-
+        HttpSession httpSession = request.getSession();
+        Map<String, Participant> participations = getParticipationsAndCreateIfNeeded( httpSession );
         Game game;
         // TODO: enable catches once the catch bodies are filled
 //        try {
-            game = gameManager.addGame( roomName );
+            game = gameManager.createGame( roomName );
 //        }
 //        catch(IllegalArgumentException e) {
 //            // TODO: name is null or not long enough -> report
@@ -103,11 +106,30 @@ public class GameRestController {
         return json.toString();
     }
 
-    @GetMapping("/materials/{*}")
-    public String getMaterials() {
-        // TODO: check if you are allowed to see the materials
+    @GetMapping("/materials/{roomName:.+}")
+    public String getMaterials( HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName ) {
         // TODO: validate room name
-        // TODO: check if you are participant in the given room
+        HttpSession httpSession = request.getSession();
+        Map<String, Participant> participations = getParticipationsAndCreateIfNeeded( httpSession );
+        if( !participations.containsKey( roomName ) ) {
+            // TODO: check out for a nice status code
+            return setErrorAndGetResponse( response, "Not participating in this room", 400);
+        }
+        Participant participant = participations.get( roomName );
+        if( participant == null ) {
+            // TODO: check out for a nice status code
+            return setErrorAndGetResponse( response, "Not participating in this room", 400);
+        }
+
+        Optional<Game> opt = gameManager.getGame( roomName );
+        if( opt.isEmpty() ) {
+            // TODO: check out for a nice status code
+            return setErrorAndGetResponse( response, "Could not find game", 500);
+        }
+        Game game = opt.get();
+        
+
+        // TODO: check if you are allowed to see the materials
 
         // TODO: take handouts from campaign
         List<ContainerHandout> handouts = new ArrayList<>();
@@ -159,4 +181,36 @@ public class GameRestController {
         return hoArr.toString();
     }
 
+    /** Gets the attribute "participations" from the http session object. This is a map that maps room names to the
+     * user participations in gaming sessions.<br><br>
+     * If the attribute is not set, a new, empty map is added. Therefore, this method garuantees the return of a nonnull
+     * map.
+     * @param session The http session. Must be not-null
+     * @return The map of romm names to participations. Never null.
+     */
+    @NonNull
+    final static Map<String, Participant> getParticipationsAndCreateIfNeeded(@NonNull HttpSession session) {
+        // TODO: do we really need this method beyond this calls and beyond of unit tests?
+        Map<String, Participant> participations = (HashMap<String, Participant>)session.getAttribute( Constants.KEY_PARTICIPATIONS );
+        if( participations == null ) {
+            participations = new HashMap<>();
+            session.setAttribute( Constants.KEY_PARTICIPATIONS, participations );
+        }
+        return participations;
+    }
+
+    /** Sets the status code of the response and returns a stringified Json containing the message.
+     * @author Dragonstb
+     * @param response Http Response. Must not be null.
+     * @param message Error message added to the response. Must not be null.
+     * @param httpStatus New http status code for the response. Please set something useful here.
+     * @return Stringified json for the response body.
+     */
+    @NonNull
+    final static String setErrorAndGetResponse( @NonNull HttpServletResponse response, @NonNull String message, int httpStatus ) {
+        response.setStatus( httpStatus );
+        JSONObject json = new JSONObject();
+        json.put( "Error", message );
+        return json.toString();
+    }
 }

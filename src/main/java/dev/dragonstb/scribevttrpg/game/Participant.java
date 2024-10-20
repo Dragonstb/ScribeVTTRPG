@@ -37,6 +37,14 @@ import org.springframework.lang.NonNull;
  */
 public interface Participant {
 
+    /** Returns the participant's name.
+     * @author Dragonstb
+     * @since 0.0.6;
+     * @return The participant's name. This is never {@code null}.
+     */
+    @NonNull
+    public String getName();
+
     /** The participant's role in the game.
      * @author Dragonstb
      * @since 0.0.4;

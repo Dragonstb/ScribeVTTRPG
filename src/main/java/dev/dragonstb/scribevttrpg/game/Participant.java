@@ -30,7 +30,7 @@ import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-/** Methods that a participant of a game is asked to execute by other classes.
+/** Some data about the participant.
  *
  * @author Dragonstb
  * @since 0.0.4;
@@ -57,6 +57,8 @@ public interface Participant {
      * @author Dragonstb
      * @since 0.0.4;
      * @return The handouts the participant can see.
+     * @deprecated since 0.0.6: Request to handouts are forwarded from the API controller to the handout manager
+     * directly, not anymore via this detour. The Participant is a pure informative class now.
      */
     @NonNull
     public List<ContainerHandout> getHandouts();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Dragonstb
+ * Copyright (c) 2024, Dragonstb
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,42 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
-import dev.dragonstb.scribevttrpg.game.ParticipantRole;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
-/** Manages handouts.
+/** This class references a {@link dev.dragonstb.scribevttrpg.game.handouts.AbstractHandoutPiece handout piece} and
+ * tracks who can access the handout piece in which way. An implementation of {@link dev.dragonstb.scribevttrpg.game.handouts.HandoutManager HandoutManager}
+ * can use a map <i>id of handout piece to access guard<i> for building user specific views and for referencing the correct
+ * guard when addressing a certain piece.
  *
  * @author Dragonstb
- * @since 0.0.4;
+ * @since 0.0.6;
  */
-public interface HandoutManager {
+final class HandoutAccessGuard {
 
-    /** Depending on the role specified, this method returns either the gm's list of handouts, the spectators'
-     * list of handouts, or a new, empty list for a player.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @param role The role for which a list is returned.
-     * @return Either
-     * <ul>
-     *  <li> for {@code gm}, the list of all handouts. This list is shared among all gms (as soon as multiple gms become
-     * allowed.)</li>
-     *  <li> for {@code player}, a new ans empty instance of a list.</li>
-     *  <li> or for {@code spectator}, the list of handouts seen by the spectators. This list is shared among all
-     * spectators, too.</li>
-     * </ul>
-     * @deprecated since 0.0.6 Access to individual handout pieces is now managed by a list of {@link HandoutAccessGuards}.
-     */
+    /** The handout piece this guard tracks the access rights for. */
     @NonNull
-    @Deprecated
-    public List<ContainerHandout> getListForRole(@NonNull ParticipantRole role);
+    private final AbstractHandoutPiece handout;
 
-    /** Adds the handout to the handout manager. The container and all of the content within can only be accessed by
-     * the GM.
-     * @author Dragonstb
+    /** IDs of players who can read the handout piece. */
+    @NonNull
+    private final List<String> playerCanRead = new ArrayList<>();
+
+    /** IDs of players who can edit the handout piece. */
+    @NonNull
+    private final List<String> playerCanEdit = new ArrayList<>();
+
+    /** Can spectators see this handout piece? */
+    private boolean spectatorsCanRead = false;
+
+    /** Generates.
      * @since 0.0.6
-     * @param handout Handout that is added.
+     * @param handout The handout piece guarded by the new instance.
      */
-    public void addHandout(@NonNull ContainerHandout handout);
+    HandoutAccessGuard( AbstractHandoutPiece handout ) {
+        this.handout = handout;
+    }
+
 
 }

@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +52,7 @@ public class GameManager {
     /** Lists all ongoing games. The keys are the room names of the games. */
     @NonNull
     private final Map<String, Game> games = new HashMap<>();
+    ApplicationContext appCtx;
 
     // TODO: delete stale games somehow
 
@@ -62,6 +65,7 @@ public class GameManager {
      * @throws RuntimeException Room name has been taken by someone else.
      */
     public Game createGame(String roomName) throws IllegalArgumentException, RuntimeException {
+        // TODO: synchronize, as two GMs may want to open two rooms with the same name at the same time
         if( roomName == null || roomName.length() < settings.getMinRoomNameLength() ) {
             throw new IllegalArgumentException( "name of the room must have at least "
                     +settings.getMinRoomNameLength()+" characters." );

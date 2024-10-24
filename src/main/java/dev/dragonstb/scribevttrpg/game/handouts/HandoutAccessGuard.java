@@ -42,7 +42,7 @@ final class HandoutAccessGuard {
 
     /** The handout piece this guard tracks the access rights for. */
     @NonNull
-    private final AbstractHandoutPiece handout;
+    private final AbstractHandoutPiece piece;
 
     /** IDs of players who can read the handout piece. */
     @NonNull
@@ -57,11 +57,20 @@ final class HandoutAccessGuard {
 
     /** Generates.
      * @since 0.0.6
-     * @param handout The handout piece guarded by the new instance.
+     * @param piece The handout piece guarded by the new instance.
      */
-    HandoutAccessGuard( AbstractHandoutPiece handout ) {
-        this.handout = handout;
+    HandoutAccessGuard( @NonNull AbstractHandoutPiece piece ) {
+        this.piece = piece;
     }
 
-
+    /** Gets the handout piece guarded by {@code this}.
+     * @author Dragonstb
+     * @since 0.0.6
+     * @return The guarded handout piece.
+     */
+    @NonNull
+    AbstractHandoutPiece getPiece() {
+        // TODO: do we need this method outside of this class beyond automated testing?
+        return piece;
+    }
 }

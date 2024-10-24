@@ -81,13 +81,21 @@ public class DefaultHandoutManager implements HandoutManager {
      * @author Dragonstb
      * @since 0.0.4;
      * @return The list of all handouts.
-     * @deprecated since 0.0.6 Access to individual handout pieces is now managed by a list of {@link HandoutAccessGuards}.
      */
     @NonNull
-    @Deprecated
     List<ContainerHandout> getAllHandouts() {
         // TODO: do we need this method outside of unit tests?
         return allHandouts;
+    }
+
+    /** Gets the map of handout access guards.
+     * @since 0.0.6
+     * @author Dragonstb
+     * @return The map of "id of guarded handout piece to guard"
+     */
+    @NonNull
+    Map<String, HandoutAccessGuard> getGuards() {
+        return guards;
     }
 
     /** The list of handouts the spectators can read.

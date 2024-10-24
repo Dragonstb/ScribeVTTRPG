@@ -103,6 +103,7 @@ public class GameRestController {
         json.put("success", true);
         json.put("room", roomName);
 
+        // TODO: respond with https status code "201 created"
         return json.toString();
     }
 
@@ -127,7 +128,7 @@ public class GameRestController {
             return setErrorAndGetResponse( response, "Could not find game", 500);
         }
         Game game = opt.get();
-        
+
 
         // TODO: check if you are allowed to see the materials
 

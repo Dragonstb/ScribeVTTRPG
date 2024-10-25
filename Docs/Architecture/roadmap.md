@@ -162,3 +162,7 @@ decline the request and don't let the person into the room. This way, I can cont
 
 - Successfully creating a new *room* shall be responded with status code "201 created"
 - Transition to Java 23
+- Redesign the way how nested handout pieces within containers are addressed by their ID. Currently, the ID of the
+  parents and the piece's ID are simply concatenated. But now think of a container "jan" with a child "edoe", alongside
+  a second container "jane" with a child "doe". Addressing the child "janedoe" would not be unique. So we need a
+  separator character between the IDs of the generations. Thsi character would become illegal for IDs

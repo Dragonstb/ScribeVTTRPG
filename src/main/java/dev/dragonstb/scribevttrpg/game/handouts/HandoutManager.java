@@ -26,7 +26,6 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
-import dev.dragonstb.scribevttrpg.game.ParticipantRole;
 import java.util.List;
 import org.springframework.lang.NonNull;
 
@@ -38,11 +37,27 @@ import org.springframework.lang.NonNull;
 public interface HandoutManager {
 
     /** Adds the handout to the handout manager. The container and all of the content within can only be accessed by
-     * the GM.
+     * the GM in the first place.
      * @author Dragonstb
      * @since 0.0.6
      * @param handout Handout that is added.
+     * @throws IllegalArgumentException When an ID is already taken.
      */
     public void addHandout(@NonNull ContainerHandout handout);
 
+    /** Adds the handouts to the handout manager. The container and all of the content within can only be accessed by
+     * the GM in the first place.
+     * @author Dragonstb
+     * @since 0.0.6
+     * @param handouts Handouts that are added.
+     */
+    public void addHandouts( @NonNull List<ContainerHandout> handouts );
+
+    /** Gets the handouts.
+     * @since 0.0.6;
+     * @author Dragonstb
+     * @return The handouts.
+     */
+    @NonNull
+    public List<ContainerHandout> getHandouts();
 }

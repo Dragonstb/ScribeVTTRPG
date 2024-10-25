@@ -52,7 +52,6 @@ public class GameManager {
     /** Lists all ongoing games. The keys are the room names of the games. */
     @NonNull
     private final Map<String, Game> games = new HashMap<>();
-    ApplicationContext appCtx;
 
     // TODO: delete stale games somehow
 
@@ -88,8 +87,11 @@ public class GameManager {
      * @return If existing, an optional containing the game associated with the room name. An empty optional otherwise.
      */
     public Optional<Game> getGame(@NonNull String roomName) {
+        // TODO: think of moving the GameManager to package [...].scribevttrpg.game; this method can become package
+        //   private then
         Optional<Game> opt = Optional.ofNullable( games.get(roomName) );
         return opt;
     }
+
 
 }

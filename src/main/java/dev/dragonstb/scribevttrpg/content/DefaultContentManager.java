@@ -31,8 +31,8 @@ import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.TextHandout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -72,11 +72,17 @@ public final class DefaultContentManager implements ContentManager {
         return json;
     }
 
-
-
     @Override
-    public List<AbstractHandoutPiece> getHandouts( String campaignName ) {
-        return null;
+    public List<ContainerHandout> getHandouts( String campaignName ) {
+        // TODO: take campaign name into account
+        // TODO: return all handouts in case of 'null' as argument
+        // TODO: assignment of content items to campaigns (each item can be assigned to multiple campaigns)
+        List<ContainerHandout> handouts = contents.stream()
+                .filter( cnt -> cnt.getType() == ContentType.handout )
+                .filter( cnt -> !cnt.getName().equals("sheet template") )
+                .map( cnt -> ((ContentHandout)cnt).getHandout() )
+                .collect( Collectors.toList() );
+        return handouts;
     }
 
     /** Loads all contents and writes then into {@code this.contents}.

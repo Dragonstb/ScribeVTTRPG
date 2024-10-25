@@ -26,6 +26,9 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
+import java.util.List;
 import org.springframework.lang.NonNull;
 
 /** The services a game offers as part of a public API. Other classes may mainly use this interface.
@@ -43,4 +46,11 @@ public interface GameService {
      * @return A new instance.
      */
     public Participant createAndAddParticipant(@NonNull ParticipantRole role);
+
+    /** Returns the handout manager of the game.
+     * @since 0.0.6;
+     * @return The handout manager of the game.
+     */
+    @NonNull
+    HandoutManager getHandoutManager();
 }

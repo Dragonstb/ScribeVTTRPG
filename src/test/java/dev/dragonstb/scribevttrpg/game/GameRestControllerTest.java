@@ -62,18 +62,4 @@ public class GameRestControllerTest {
         assertNotNull( result );
     }
 
-    @Test
-    public void testSetErrorAndGetResponse() {
-        HttpServletResponse response = new MockHttpServletResponse();
-        String msg = "Hello bad request";
-        int status = 444;
-
-        String result = GameRestController.setErrorAndGetResponse( response, msg, status );
-        assertNotNull( result );
-        JSONObject json = new JSONObject( result );
-        assertTrue( json.has( "Error" ) );
-        assertEquals( msg, json.getString("Error") );
-        assertEquals( 1, json.length() );
-    }
-
 }

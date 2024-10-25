@@ -27,13 +27,13 @@
 package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.content.ContentManager;
+import dev.dragonstb.scribevttrpg.content.DefaultContentManager;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
-import dev.dragonstb.scribevttrpg.game.handouts.TextHandout;
+import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import dev.dragonstb.scribevttrpg.utils.Constants;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +49,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -75,9 +76,11 @@ public class GameRestController {
         // TODO: validate campaign name; this also includes checking if it is one of the game master's campaign at all
         // TODO: check if room name is unused, respond creation failure if used
         // TODO: create room for the campaign
+        // TODO: synchronize, as more than one game with the same name may be created at the same time
 
         JSONObject jbod = new JSONObject(body); // TODO: use converter
         String roomName = jbod.getString("roomName");
+        String campaignName = jbod.getString( "campaign" );
 
         // TODO: access session variables with annotations
         HttpSession httpSession = request.getSession();
@@ -94,6 +97,16 @@ public class GameRestController {
 //            // TODO: name is in use already -> report
 //        }
 
+        // fetch materials for campaign and add them to the game
+        ContentManager cm = (ContentManager)request.getSession().getAttribute( Constants.KEY_CONTENT_MANAGER );
+        if( cm == null ) {
+            cm = new DefaultContentManager();
+            request.getSession().setAttribute( Constants.KEY_CONTENT_MANAGER, cm );
+        }
+        List<ContainerHandout> handouts = cm.getHandouts( campaignName );
+        HandoutManager handoutManager = game.getHandoutManager();
+        handoutManager.addHandouts( handouts );
+
         // add yourself as gm
         Participant part = game.createAndAddParticipant( ParticipantRole.gm );
         participations.put( roomName, part );
@@ -108,75 +121,30 @@ public class GameRestController {
     }
 
     @GetMapping("/materials/{roomName:.+}")
-    public String getMaterials( HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName ) {
+    public String getMaterials( HttpServletRequest request, @PathVariable String roomName ) {
         // TODO: validate room name
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = getParticipationsAndCreateIfNeeded( httpSession );
         if( !participations.containsKey( roomName ) ) {
             // TODO: check out for a nice status code
-            return setErrorAndGetResponse( response, "Not participating in this room", 400);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not participating in this room");
         }
         Participant participant = participations.get( roomName );
         if( participant == null ) {
             // TODO: check out for a nice status code
-            return setErrorAndGetResponse( response, "Not participating in this room", 400);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not participating in this room");
         }
 
         Optional<Game> opt = gameManager.getGame( roomName );
         if( opt.isEmpty() ) {
             // TODO: check out for a nice status code
-            return setErrorAndGetResponse( response, "Could not find game", 500);
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Could not find game");
         }
         Game game = opt.get();
 
-
-        // TODO: check if you are allowed to see the materials
-
-        // TODO: take handouts from campaign
-        List<ContainerHandout> handouts = new ArrayList<>();
-        ContainerHandout skull = ContainerHandout.create( "Skull the Barbarian", "ho1" );
-        ContainerHandout skills = ContainerHandout.create( "Skills", "ho2" );
-        ContainerHandout genSkills = ContainerHandout.create( "Generic Skills", "ho3" );
-        ContainerHandout comSkills = ContainerHandout.create( "Combat Skills", "ho4" );
-        ContainerHandout magSkills = ContainerHandout.create( "Magic Skills", "ho5" );
-        ContainerHandout traits = ContainerHandout.create( "Traits", "ho6" );
-        TextHandout drink = TextHandout.create( "Drink", "ho7" );
-        TextHandout endurance = TextHandout.create( "Endurance", "ho8" );
-        TextHandout axes = TextHandout.create( "Axes", "ho9" );
-        TextHandout swords = TextHandout.create( "Swords", "ho10" );
-        TextHandout knuckles = TextHandout.create( "Bare Knuckles", "ho11" );
-        TextHandout firebolt = TextHandout.create( "Firebolt", "ho12" );
-        TextHandout lightningbolt = TextHandout.create( "Lightning Bolt", "ho13" );
-        TextHandout honest = TextHandout.create( "Very honest", "ho14" );
-        TextHandout strong = TextHandout.create( "Very strong", "ho15" );
-        TextHandout impatient = TextHandout.create( "Not very patient", "ho16" );
-        skull.addPiece( skills, "ho1" );
-        skull.addPiece( genSkills, "ho1ho2" );
-        skull.addPiece( comSkills, "ho1ho2" );
-        skull.addPiece( magSkills, "ho1ho2" );
-        skull.addPiece( drink, "ho1ho2ho3" );
-        skull.addPiece( endurance, "ho1ho2ho3" );
-        skull.addPiece( axes, "ho1ho2ho4" );
-        skull.addPiece( swords, "ho1ho2ho4" );
-        skull.addPiece( knuckles, "ho1ho2ho4" );
-        skull.addPiece( firebolt, "ho1ho2ho5" );
-        skull.addPiece( lightningbolt, "ho1ho2ho5" );
-        skull.addPiece( traits, "ho1" );
-        skull.addPiece( honest, "ho1ho6" );
-        skull.addPiece( strong, "ho1ho6" );
-        skull.addPiece( impatient, "ho1ho6" );
-
-        ContainerHandout quest = ContainerHandout.create( "Quest Leaflet", "ho17" );
-        TextHandout questText = TextHandout.create( "Sinister howls from the wrecked castle at night fill the peaceful"
-                + " villagers with fear. Coincidentally, there are also rumors about a great treasure in that "
-                + "haunted ruin.", "ho18" );
-        quest.addPiece( questText, "ho17" );
-
-        handouts.add( skull );
-        handouts.add( quest );
-
+        HandoutManager handoutManager = game.getHandoutManager();
+        List<ContainerHandout> handouts = handoutManager.getHandouts(); // TODO: user ID and role as arguments
         JSONArray hoArr = new JSONArray();
-//        handouts.forEach( ho -> hoArr.put( new JSONObject(ho.toJsonString()) ) );
         handouts.forEach( ho -> hoArr.put( ho.toJsonObject() ) );
 
         return hoArr.toString();
@@ -200,18 +168,4 @@ public class GameRestController {
         return participations;
     }
 
-    /** Sets the status code of the response and returns a stringified Json containing the message.
-     * @author Dragonstb
-     * @param response Http Response. Must not be null.
-     * @param message Error message added to the response. Must not be null.
-     * @param httpStatus New http status code for the response. Please set something useful here.
-     * @return Stringified json for the response body.
-     */
-    @NonNull
-    final static String setErrorAndGetResponse( @NonNull HttpServletResponse response, @NonNull String message, int httpStatus ) {
-        response.setStatus( httpStatus );
-        JSONObject json = new JSONObject();
-        json.put( "Error", message );
-        return json.toString();
-    }
 }

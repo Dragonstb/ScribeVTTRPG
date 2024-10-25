@@ -26,7 +26,7 @@
 
 package dev.dragonstb.scribevttrpg.content;
 
-import dev.dragonstb.scribevttrpg.game.handouts.AbstractHandoutPiece;
+import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import java.util.List;
 import org.json.JSONArray;
 
@@ -69,7 +69,7 @@ public interface ContentManager {
      * are returned.
      * @return List of handouts for specified campaign. If passing {@code null} here, all handouts are returned.
      */
-    public List<AbstractHandoutPiece> getHandouts( String campaignName );
+    public List<ContainerHandout> getHandouts( String campaignName );
 
 
 }

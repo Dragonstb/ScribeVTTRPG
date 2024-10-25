@@ -68,9 +68,24 @@ public class DefaultHandoutManager implements HandoutManager {
     }
 
     @Override
+    public void addHandouts( List<ContainerHandout> handouts ) {
+        handouts.forEach( handout -> {
+            if( handout != null ) {
+                try {
+                    addHandout( handout );
+                }
+                catch (IllegalArgumentException iae) {
+                    // TODO: think about what to do here (for now: nothing, the handout is not added to the game session)
+                }
+            }
+        });
+    }
+
+    @Override
     public void addHandout( @NonNull ContainerHandout handout ) {
         List<AbstractHandoutPiece> preleminaryList = new ArrayList<>();
         addPiece( handout, preleminaryList ); // populates preleminaryMap, may throw IllegalArgumentException
+        // you are here means: no conflicts in ID
         preleminaryList.forEach( piece -> {
             HandoutAccessGuard guard = new HandoutAccessGuard( piece );
             guards.put( piece.getId(), guard );
@@ -99,4 +114,12 @@ public class DefaultHandoutManager implements HandoutManager {
             children.forEach(child -> addPiece(child, preleminaryList) );
         }
     }
+
+    @Override
+    public List<ContainerHandout> getHandouts() {
+        // TODO: pass participant ID and role and filter returned handouts for those that are visible to the user
+        return allHandouts;
+    }
+
+
 }

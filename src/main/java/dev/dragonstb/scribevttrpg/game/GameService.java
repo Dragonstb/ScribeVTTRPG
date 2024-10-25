@@ -42,5 +42,5 @@ public interface GameService {
      * @param role The role the participant has in the game session.
      * @return A new instance.
      */
-    public Participant addParticipant(@NonNull ParticipantRole role);
+    public Participant createAndAddParticipant(@NonNull ParticipantRole role);
 }

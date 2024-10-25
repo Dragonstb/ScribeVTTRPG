@@ -95,7 +95,7 @@ public class GameRestController {
 //        }
 
         // add yourself as gm
-        Participant part = game.addParticipant( ParticipantRole.gm );
+        Participant part = game.createAndAddParticipant( ParticipantRole.gm );
         participations.put( roomName, part );
 
         // build response

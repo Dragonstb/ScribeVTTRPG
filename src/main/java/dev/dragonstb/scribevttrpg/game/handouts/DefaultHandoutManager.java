@@ -46,37 +46,6 @@ public class DefaultHandoutManager implements HandoutManager {
     /** List of the handout gards that track the access rights. */
     private final Map<String, HandoutAccessGuard> guards = new HashMap<>();
 
-    /** The list of handouts the spectators can sse. Entries of this list are a subset of the entries in
-     * {@code allHandouts}.
-     @deprecated since 0.0.6 Access now managed by a list of {@link HandoutAccessGuards}.*/
-    @Deprecated
-    private final List<ContainerHandout> spectatorHandouts = new ArrayList<>();
-    /** For each player, a list of handouts the player can see. Each entry in any of these lists is also an entry in
-     * {@code allHandouts}.
-     @deprecated since 0.0.6 Access now managed by a list of {@link HandoutAccessGuards}.*/
-    @Deprecated
-    private final List<List<ContainerHandout>> playerLists = new ArrayList<>();
-
-    @Override
-    @Deprecated
-    public List<ContainerHandout> getListForRole(ParticipantRole role) {
-        List<ContainerHandout> list = switch( role ) {
-            case gm -> {
-                yield allHandouts;
-            }
-            case player -> {
-                List<ContainerHandout> newList = new ArrayList<>();
-                playerLists.add( newList );
-                yield newList;
-            }
-            case spectator -> {
-                yield spectatorHandouts;
-            }
-        };
-
-        return list;
-    }
-
     /** The list of all handouts.
      * @author Dragonstb
      * @since 0.0.4;
@@ -96,32 +65,6 @@ public class DefaultHandoutManager implements HandoutManager {
     @NonNull
     Map<String, HandoutAccessGuard> getGuards() {
         return guards;
-    }
-
-    /** The list of handouts the spectators can read.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The list of handouts the spectators can read.
-     * @deprecated since 0.0.6 Access to individual handout pieces is now managed by a list of {@link HandoutAccessGuards}.
-     */
-    @NonNull
-    @Deprecated
-    List<ContainerHandout> getSpectatorHandouts() {
-        // TODO: do we need this method outside of unit tests?
-        return spectatorHandouts;
-    }
-
-    /** The list of lists of handouts for players. Each player has his/her own list.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The list of lists of handouts for players. Each player has his/her own list.
-     * @deprecated since 0.0.6 Access to individual handout pieces is now managed by a list of {@link HandoutAccessGuards}.
-     */
-    @NonNull
-    @Deprecated
-    List<List<ContainerHandout>> getPlayerLists() {
-        // TODO: do we need this method outside of unit tests?
-        return playerLists;
     }
 
     @Override

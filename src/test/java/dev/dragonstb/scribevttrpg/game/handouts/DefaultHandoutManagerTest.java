@@ -61,31 +61,6 @@ public class DefaultHandoutManagerTest {
     }
 
     @Test
-    public void testGetListForRole_gm() {
-        ParticipantRole role = ParticipantRole.gm;
-        List<ContainerHandout> list = manager.getListForRole( role );
-
-        assertTrue( list == manager.getAllHandouts() );
-    }
-
-    @Test
-    public void testGetListForRole_spectator() {
-        ParticipantRole role = ParticipantRole.spectator;
-        List<ContainerHandout> list = manager.getListForRole( role );
-
-        assertTrue( list == manager.getSpectatorHandouts());
-    }
-
-    @Test
-    public void testGetListForRole_player() {
-        ParticipantRole role = ParticipantRole.player;
-        List<ContainerHandout> list = manager.getListForRole( role );
-
-        assertTrue( manager.getPlayerLists().contains( list ) );
-        assertTrue( list.isEmpty() );
-    }
-
-    @Test
     public void testAddHandout_ok() {
         String label = "thisisacreativelabel";
         String id = "123456789";

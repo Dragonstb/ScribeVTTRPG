@@ -37,25 +37,6 @@ import org.springframework.lang.NonNull;
  */
 public interface HandoutManager {
 
-    /** Depending on the role specified, this method returns either the gm's list of handouts, the spectators'
-     * list of handouts, or a new, empty list for a player.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @param role The role for which a list is returned.
-     * @return Either
-     * <ul>
-     *  <li> for {@code gm}, the list of all handouts. This list is shared among all gms (as soon as multiple gms become
-     * allowed.)</li>
-     *  <li> for {@code player}, a new ans empty instance of a list.</li>
-     *  <li> or for {@code spectator}, the list of handouts seen by the spectators. This list is shared among all
-     * spectators, too.</li>
-     * </ul>
-     * @deprecated since 0.0.6 Access to individual handout pieces is now managed by a list of {@link HandoutAccessGuards}.
-     */
-    @NonNull
-    @Deprecated
-    public List<ContainerHandout> getListForRole(@NonNull ParticipantRole role);
-
     /** Adds the handout to the handout manager. The container and all of the content within can only be accessed by
      * the GM.
      * @author Dragonstb

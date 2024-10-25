@@ -45,17 +45,11 @@ public class DefaultParticipantTest {
     @Test
     public void testCreate() {
         ParticipantRole role = ParticipantRole.gm;
-        ContainerHandout handout = ContainerHandout.create( "Eliza", "ho-1" );
-        List<ContainerHandout> handouts = new ArrayList<>();
-        handouts.add( handout );
 
-        DefaultParticipant part = DefaultParticipant.create(role, handouts);
+        DefaultParticipant part = DefaultParticipant.create( role );
 
         assertNotNull( part );
         assertEquals( role, part.getRole() );
-        List<ContainerHandout> theHandouts = part.getHandouts();
-        assertEquals( handouts.size(), theHandouts.size() );
-        assertEquals( handout, theHandouts.get( 0 ) );
     }
 
 }

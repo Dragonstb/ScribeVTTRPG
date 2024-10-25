@@ -68,7 +68,7 @@ public class GameTest {
         ParticipantRole role = ParticipantRole.player;
         Game game = Game.create( roomName, manager );
 
-        Participant part = game.addParticipant( role );
+        Participant part = game.createAndAddParticipant( role );
 
         assertEquals( role, part.getRole() );
         assertTrue( game.getParticipant().contains( part ) );

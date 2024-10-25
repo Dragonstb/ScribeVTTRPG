@@ -53,13 +53,4 @@ public interface Participant {
     @NonNull
     public ParticipantRole getRole();
 
-    /** The handouts the participant can see.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The handouts the participant can see.
-     * @deprecated since 0.0.6: Request to handouts are forwarded from the API controller to the handout manager
-     * directly, not anymore via this detour. The Participant is a pure informative class now.
-     */
-    @NonNull
-    public List<ContainerHandout> getHandouts();
 }

@@ -75,9 +75,8 @@ public class Game implements GameService {
     }
 
     @Override
-    public Participant addParticipant(@NonNull ParticipantRole role) {
-        List<ContainerHandout> handouts = handoutManager.getListForRole(role);
-        DefaultParticipant part = DefaultParticipant.create(role, handouts);
+    public Participant createAndAddParticipant(@NonNull ParticipantRole role) {
+        DefaultParticipant part = DefaultParticipant.create(role);
         participant.add( part );
         return part;
     }

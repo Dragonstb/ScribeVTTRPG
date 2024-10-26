@@ -26,10 +26,13 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
-import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.lang.NonNull;
 
 /**
@@ -37,7 +40,10 @@ import org.springframework.lang.NonNull;
  * @author Dragonstb
  * @since 0.0.4;
  */
-public class Game implements GameService {
+public final class Game implements GameService {
+
+    /** The application context of the game. */
+    private final ApplicationContext appContext;
 
     /** The name of the room the session takes place. This is also part of the path of the URL. */
     @NonNull
@@ -57,20 +63,20 @@ public class Game implements GameService {
      * @param roomName Name of the room for the game.
      * @param manager A handout manager the game can use.
      */
-    private Game(@NonNull String roomName, @NonNull HandoutManager manager) {
+    private Game( @NonNull String roomName ) {
+        appContext = new AnnotationConfigApplicationContext( GameAppContextConfig.class );
         this.roomName = roomName;
-        this.handoutManager = manager;
+        this.handoutManager = appContext.getBean( DefaultHandoutManager.class );
     }
 
     /** Creates a new instance.
      * @author Dragonstb
      * @since 0.0.4;
      * @param roomName Name of the room for the game.
-     * @param manager A handout manager the game can use.
      * @return A new game.
      */
-    public static Game create(@NonNull String roomName, @NonNull HandoutManager manager) {
-        Game game = new Game(roomName, manager);
+    public static Game create( @NonNull String roomName ) {
+        Game game = new Game(roomName);
         return game;
     }
 

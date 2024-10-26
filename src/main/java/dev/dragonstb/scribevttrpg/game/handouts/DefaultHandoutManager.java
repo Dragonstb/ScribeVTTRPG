@@ -26,18 +26,19 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
-import dev.dragonstb.scribevttrpg.game.ParticipantRole;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
+@Component
 public class DefaultHandoutManager implements HandoutManager {
 
     /** List of all handouts. This is the list the gm acts on. */

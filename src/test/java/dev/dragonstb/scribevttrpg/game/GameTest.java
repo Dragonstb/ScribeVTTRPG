@@ -55,7 +55,7 @@ public class GameTest {
 
     @Test
     public void testCreate() {
-        Game game = Game.create( roomName, manager );
+        Game game = Game.create(roomName);
 
         assertEquals( roomName, game.getRoomName() );
         List<Participant> participants = game.getParticipant();
@@ -66,7 +66,7 @@ public class GameTest {
     @Test
     public void testAddParticipant() {
         ParticipantRole role = ParticipantRole.player;
-        Game game = Game.create( roomName, manager );
+        Game game = Game.create(roomName);
 
         Participant part = game.createAndAddParticipant( role );
 

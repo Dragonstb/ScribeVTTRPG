@@ -74,8 +74,7 @@ public class GameManager {
             throw new RuntimeException( "This name is already taken." );
         }
 
-        HandoutManager handoutManager = new DefaultHandoutManager();
-        Game game = Game.create(roomName, handoutManager);
+        Game game = Game.create(roomName);
         games.put(roomName, game);
 
         return game;

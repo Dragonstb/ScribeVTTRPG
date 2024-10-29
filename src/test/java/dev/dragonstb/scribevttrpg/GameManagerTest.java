@@ -25,11 +25,8 @@
  */
 package dev.dragonstb.scribevttrpg;
 
-import dev.dragonstb.scribevttrpg.game.Game;
-import dev.dragonstb.scribevttrpg.game.ParticipantRole;
-import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import dev.dragonstb.scribevttrpg.game.GameService;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -46,9 +43,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 public class GameManagerTest {
 
     private GameManager manager;
-
-    @MockBean
-    private HandoutManager handouts;
 
     public GameManagerTest() {
     }
@@ -78,10 +72,10 @@ public class GameManagerTest {
     @Test
     public void testGetGame_existing_game() {
         String roomName = "abcdefghijkl";
-        Game game = manager.createGame( roomName );
+        GameService game = manager.createGame( roomName );
         assertNotNull( game, "Game is null" );
 
-        Optional<Game> opt = manager.getGame( roomName );
+        Optional<GameService> opt = manager.getGame( roomName );
         assertNotNull( opt, "Optional is null" );
         assertTrue( opt.isPresent(), "Optional is empty" );
         assertEquals( game, opt.get() );
@@ -90,10 +84,10 @@ public class GameManagerTest {
     @Test
     public void testGetGame_nonexisting_game() {
         String roomName = "abcdefghijkl";
-        Game game = manager.createGame( roomName );
+        GameService game = manager.createGame( roomName );
         assertNotNull( game, "Game is null" );
 
-        Optional<Game> opt = manager.getGame( roomName+roomName );
+        Optional<GameService> opt = manager.getGame( roomName+roomName );
         assertNotNull( opt, "Optional is null" );
         assertTrue( opt.isEmpty(), "Optional is present" );
     }

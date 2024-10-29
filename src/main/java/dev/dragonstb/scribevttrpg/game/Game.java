@@ -29,7 +29,6 @@ package dev.dragonstb.scribevttrpg.game;
 import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -51,7 +50,7 @@ public final class Game implements GameService {
 
     /** List of participants. */
     @NonNull
-    private final List<Participant> participant = new ArrayList<>(); // TODO: will surely turn to be a map identifier -> participant
+    private final List<Participant> participants = new ArrayList<>(); // TODO: will surely turn to be a map identifier -> participant
 
     /** Handout manager. */
     @NonNull
@@ -76,14 +75,19 @@ public final class Game implements GameService {
      * @return A new game.
      */
     public static Game create( @NonNull String roomName ) {
+        // TODO: move check for valid name from GameManager to here
         Game game = new Game(roomName);
         return game;
     }
 
     @Override
     public Participant createAndAddParticipant(@NonNull ParticipantRole role) {
-        DefaultParticipant part = DefaultParticipant.create(role);
-        participant.add( part );
+        // TODO: check if game is "open", throw exception if not
+        Participant part = DefaultParticipant.create(role);
+        synchronized ( participants ) {
+            // TODO: check if identity is free, throw exception if not
+            participants.add( part );
+        }
         return part;
     }
 
@@ -108,9 +112,15 @@ public final class Game implements GameService {
      * @return The list of participants.
      */
     @NonNull
-    List<Participant> getParticipant() {
+    List<Participant> getParticipants() {
         // TODO: Do we really need this outside of unit tests?
-        return participant;
+        return participants;
     }
+
+    @Override
+    public boolean isParticipating( Participant participant ) {
+        return participants.contains( participant );
+    }
+
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Dragonstb
+ * Copyright (c) 2024, Dragonstb
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,40 +24,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package dev.dragonstb.scribevttrpg.game.handouts;
+package dev.dragonstb.scribevttrpg.utils;
 
-import java.util.List;
-import org.springframework.lang.NonNull;
-
-/** Manages handouts.
+/** Localization keys for the message sources.
  *
  * @author Dragonstb
- * @since 0.0.4;
+ * @since 0.0.6;
  */
-public interface HandoutManager {
+public interface LocKeys {
 
-    /** Adds the handout to the handout manager. The container and all of the content within can only be accessed by
-     * the GM in the first place.
-     * @author Dragonstb
-     * @since 0.0.6
-     * @param handout Handout that is added.
-     * @throws IllegalArgumentException When an ID is already taken.
-     */
-    public void addHandout(@NonNull ContainerHandout handout);
-
-    /** Adds the handouts to the handout manager. The container and all of the content within can only be accessed by
-     * the GM in the first place.
-     * @author Dragonstb
-     * @since 0.0.6
-     * @param handouts Handouts that are added. Does nothing if the argument is {@code null}.
-     */
-    public void addHandouts( List<ContainerHandout> handouts );
-
-    /** Gets the handouts.
-     * @since 0.0.6;
-     * @author Dragonstb
-     * @return The handouts.
-     */
-    @NonNull
-    public List<ContainerHandout> getHandouts();
+    /** When creating a room: the chosen name for the room is occupied. */
+    public static final String CREATE_ROOM_NAME_TAKEN = "web.create.roomNameTaken";
+    /** When creating a room: the chosen name has an invalid format (length, characters used). */
+    public static final String CREATE_ROOM_NAME_INVALID = "web.create.roomNameInvalid";
 }

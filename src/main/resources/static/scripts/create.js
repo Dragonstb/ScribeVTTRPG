@@ -53,6 +53,9 @@ function afterLoadingPage() {
                 roomName: roomName
             };
 
+            // hide previous error message
+            document.querySelector('#errorDisplay').classList.add('nodisplay');
+
             // TODO: turn on the aria-live="polite" waiting overlay that states "please wait" or similar
             // send request
             sendCreateGameRequest(target, body)
@@ -106,9 +109,21 @@ function afterLoadingPage() {
     }
 
     function onCreateError(data) {
-        // TODO: reflect error on screen
         console.log('failed');
-        console.log(data);
+        errDisplay = document.querySelector('#errorDisplay');
+        if( data ) {
+            console.dir(data);
+            if( data.hasOwnProperty('message') && data.message && typeof data.message === 'string') {
+                errDisplay.innerText = data.message;
+            }
+            else{
+            }
+        }
+        else{
+            errDisplay.innerText = "A problem occured when creating the room. Your chosen name for hte room might"
+                + " be taken, or the name does not fullfill the constraints. Please try again with another name.";
+        }
+        errDisplay.classList.remove('nodisplay');
     }
 
     function onCreateSuccess(data) {

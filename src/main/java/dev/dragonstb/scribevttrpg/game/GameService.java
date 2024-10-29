@@ -26,9 +26,7 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
-import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
-import java.util.List;
 import org.springframework.lang.NonNull;
 
 /** The services a game offers as part of a public API. Other classes may mainly use this interface.
@@ -53,4 +51,12 @@ public interface GameService {
      */
     @NonNull
     HandoutManager getHandoutManager();
+
+    /** Checks if the given participant participates in this game.
+     * @since 0.0.6;
+     * @param participant The given articipant.
+     * @return {@code True} if and only if the given participant participates in this game.
+     */
+    public boolean isParticipating( @NonNull Participant participant );
+
 }

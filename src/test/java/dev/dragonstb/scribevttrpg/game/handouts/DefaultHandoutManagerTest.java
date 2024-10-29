@@ -25,7 +25,6 @@
  */
 package dev.dragonstb.scribevttrpg.game.handouts;
 
-import dev.dragonstb.scribevttrpg.game.ParticipantRole;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;

@@ -27,14 +27,11 @@
 package dev.dragonstb.scribevttrpg;
 
 import dev.dragonstb.scribevttrpg.game.Game;
-import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
-import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
+import dev.dragonstb.scribevttrpg.game.GameService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -63,19 +60,21 @@ public class GameManager {
      * @throws IllegalArgumentException Room name does not match requirements.
      * @throws RuntimeException Room name has been taken by someone else.
      */
-    public Game createGame(String roomName) throws IllegalArgumentException, RuntimeException {
-        // TODO: synchronize, as two GMs may want to open two rooms with the same name at the same time
+    public GameService createGame(String roomName) throws IllegalArgumentException, RuntimeException {
         if( roomName == null || roomName.length() < settings.getMinRoomNameLength() ) {
             throw new IllegalArgumentException( "name of the room must have at least "
                     +settings.getMinRoomNameLength()+" characters." );
         }
 
-        if( games.containsKey(roomName) ) {
-            throw new RuntimeException( "This name is already taken." );
-        }
+        Game game;
+        synchronized (games) {
+            if( games.containsKey(roomName) ) {
+                throw new RuntimeException( "This name is already taken." );
+            }
 
-        Game game = Game.create(roomName);
-        games.put(roomName, game);
+            game = Game.create(roomName);
+            games.put(roomName, game);
+        }
 
         return game;
     }
@@ -85,10 +84,10 @@ public class GameManager {
      * @param roomName Name of the room the game takes place in.
      * @return If existing, an optional containing the game associated with the room name. An empty optional otherwise.
      */
-    public Optional<Game> getGame(@NonNull String roomName) {
+    public Optional<GameService> getGame(@NonNull String roomName) {
         // TODO: think of moving the GameManager to package [...].scribevttrpg.game; this method can become package
         //   private then
-        Optional<Game> opt = Optional.ofNullable( games.get(roomName) );
+        Optional<GameService> opt = Optional.ofNullable( games.get(roomName) );
         return opt;
     }
 

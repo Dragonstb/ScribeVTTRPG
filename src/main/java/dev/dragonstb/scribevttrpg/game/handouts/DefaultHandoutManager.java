@@ -70,6 +70,10 @@ public class DefaultHandoutManager implements HandoutManager {
 
     @Override
     public void addHandouts( List<ContainerHandout> handouts ) {
+        if( handouts == null) {
+            return;
+        }
+        
         handouts.forEach( handout -> {
             if( handout != null ) {
                 try {

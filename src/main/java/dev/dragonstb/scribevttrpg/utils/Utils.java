@@ -25,6 +25,8 @@
  */
 package dev.dragonstb.scribevttrpg.utils;
 
+import java.util.Base64;
+import java.util.UUID;
 import org.springframework.lang.NonNull;
 
 /** Some utility functions.
@@ -48,6 +50,23 @@ public class Utils {
     @NonNull
     public static String composeDocumentTitle(@NonNull String page, @NonNull String service) {
         return page + " - " + service;
+    }
+
+    /** Returns a Base64 encoded version of the bits in the uuid.
+     * @since 0.0.6;
+     * @param uuid UUID of interest.
+     * @return Base64 encoded representation of the uuid.
+     */
+    @NonNull
+    public static String uuidToString( @NonNull UUID uuid ) {
+        long most = uuid.getMostSignificantBits();
+        long least = uuid.getLeastSignificantBits();
+        byte[] arr = new byte[8];
+        for ( byte idx = 0; idx < 4; idx++ ) {
+            arr[idx] = (byte)(most >> idx*8);
+            arr[idx+4] = (byte)(least >> idx*8);
+        }
+        return Base64.getEncoder().encodeToString( arr );
     }
 
 }

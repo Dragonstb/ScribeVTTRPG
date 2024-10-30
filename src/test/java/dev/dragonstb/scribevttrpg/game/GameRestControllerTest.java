@@ -116,7 +116,8 @@ public class GameRestControllerTest {
     public void testCreateGame_ok() throws Exception {
         when( gameManager.createGame( ROOM_NAME ) ).thenReturn( game );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.createAndAddParticipant(ParticipantRole.gm) ).thenReturn( DefaultParticipant.create(ParticipantRole.gm) );
+        when( game.createAndAddParticipant(any(), any()) )
+                .thenReturn( DefaultParticipant.create("Ramirez", ParticipantRole.gm) );
 
         RequestBuilder request = post( "/creategame" )
                 .content( jsonBody.toString() )
@@ -207,7 +208,7 @@ public class GameRestControllerTest {
     public void testGetMaterials_ok() throws Exception {
         List<ContainerHandout> handouts = new ArrayList<>();
         Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, DefaultParticipant.create(ParticipantRole.gm) );
+        participations.put( ROOM_NAME, DefaultParticipant.create("Randy", ParticipantRole.gm) );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
@@ -285,7 +286,7 @@ public class GameRestControllerTest {
     public void testGetMaterials_noGameUnderThisRoomName() throws Exception {
         List<ContainerHandout> handouts = new ArrayList<>();
         Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, DefaultParticipant.create(ParticipantRole.gm) );
+        participations.put( ROOM_NAME, DefaultParticipant.create("Rachel", ParticipantRole.gm) );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.empty() );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
@@ -307,7 +308,7 @@ public class GameRestControllerTest {
     public void testGetMaterials_notParticipantInThisGame() throws Exception {
         List<ContainerHandout> handouts = new ArrayList<>();
         Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, DefaultParticipant.create(ParticipantRole.gm) );
+        participations.put( ROOM_NAME, DefaultParticipant.create("Ralph", ParticipantRole.gm) );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );

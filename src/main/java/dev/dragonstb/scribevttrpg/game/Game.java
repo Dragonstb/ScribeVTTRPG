@@ -81,9 +81,9 @@ public final class Game implements GameService {
     }
 
     @Override
-    public Participant createAndAddParticipant(@NonNull ParticipantRole role) {
+    public Participant createAndAddParticipant(@NonNull String name, @NonNull ParticipantRole role) {
         // TODO: check if game is "open", throw exception if not
-        Participant part = DefaultParticipant.create(role);
+        Participant part = DefaultParticipant.create(name, role);
         synchronized ( participants ) {
             // TODO: check if identity is free, throw exception if not
             participants.add( part );

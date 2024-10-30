@@ -38,11 +38,13 @@ public class DefaultParticipantTest {
     @Test
     public void testCreate() {
         ParticipantRole role = ParticipantRole.gm;
+        String name = "Olivia";
 
-        DefaultParticipant part = DefaultParticipant.create( role );
+        DefaultParticipant part = DefaultParticipant.create( name, role );
 
         assertNotNull( part );
         assertEquals( role, part.getRole() );
+        assertEquals( name, part.getName() );
     }
 
 }

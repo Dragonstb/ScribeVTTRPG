@@ -26,7 +26,10 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
+import static dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout.create;
 import dev.dragonstb.scribevttrpg.utils.Constants;
+import dev.dragonstb.scribevttrpg.utils.Utils;
+import java.util.UUID;
 import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
@@ -55,6 +58,17 @@ public class TextHandout extends AbstractHandoutPiece {
      */
     public static TextHandout create( String text, @NonNull String id ) {
         return new TextHandout(text, id );
+    }
+
+    /** Creates with a prefix "tx"followed by a base64 encoded random v4 UUID as id.
+     * @since 0.0.6
+     * @author Dragonstb
+     * @param text A new text handout piece.
+     * @return A new text handout piece.
+     */
+    public static TextHandout create( String text ) {
+        String id = "tx"+Utils.uuidToString( UUID.randomUUID() );
+        return create( text, id );
     }
 
     String getText() {

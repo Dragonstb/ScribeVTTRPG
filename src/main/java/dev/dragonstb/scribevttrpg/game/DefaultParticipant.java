@@ -44,21 +44,24 @@ public class DefaultParticipant implements Participant{
     /** Generates.
      * @author Dragonstb
      * @since 0.0.4;
+     * @param name The participant's name.
      * @param role The role the participant occupies.
      */
-    private DefaultParticipant(@NonNull ParticipantRole role) {
-        this.name = "TODO: make name constructable";
+    private DefaultParticipant(@NonNull String name, @NonNull ParticipantRole role) {
+        this.name = name;
         this.role = role;
     }
 
     /** Creates a new instance.
      * @author Dragonstb
      * @since 0.0.4;
+     * @param name The participant's name.
      * @param role The role the participant occupies. Must be {@code non-null}.
      * @return A new instance.
      */
-    public static DefaultParticipant create(@NonNull ParticipantRole role) {
-        DefaultParticipant part = new DefaultParticipant(role);
+    public static DefaultParticipant create(@NonNull String name, @NonNull ParticipantRole role) {
+        // TODO: validate name
+        DefaultParticipant part = new DefaultParticipant(name, role);
         return part;
     }
 

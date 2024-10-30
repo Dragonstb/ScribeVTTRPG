@@ -127,7 +127,7 @@ public class GameRestController {
         handoutManager.addHandouts( handouts );
 
         // add yourself as gm
-        Participant part = game.createAndAddParticipant( ParticipantRole.gm );
+        Participant part = game.createAndAddParticipant( "TODO: pick user's name from Principal", ParticipantRole.gm );
         participations.put( roomName, part );
 
         // build response

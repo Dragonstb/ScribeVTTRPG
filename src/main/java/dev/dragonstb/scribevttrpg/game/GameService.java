@@ -40,10 +40,11 @@ public interface GameService {
      * access to (this list might be empty, though, but not-null).
      * @author Dragonstb
      * @since 0.0.4;
+     * @param name The participant's name.
      * @param role The role the participant has in the game session.
      * @return A new instance.
      */
-    public Participant createAndAddParticipant(@NonNull ParticipantRole role);
+    public Participant createAndAddParticipant(@NonNull String name, @NonNull ParticipantRole role);
 
     /** Returns the handout manager of the game.
      * @since 0.0.6;

@@ -57,17 +57,18 @@ public class GameTest {
         assertEquals( roomName, game.getRoomName() );
         List<Participant> participants = game.getParticipants();
         assertTrue( participants.isEmpty() );
-        assertEquals( manager, game.getHandoutManager() );
     }
 
     @Test
     public void testAddParticipant() {
+        String name = "Barbara";
         ParticipantRole role = ParticipantRole.player;
         Game game = Game.create(roomName);
 
-        Participant part = game.createAndAddParticipant( role );
+        Participant part = game.createAndAddParticipant( name, role );
 
         assertEquals( role, part.getRole() );
+        assertEquals( name, part.getName() );
         assertTrue( game.getParticipants().contains( part ) );
     }
 

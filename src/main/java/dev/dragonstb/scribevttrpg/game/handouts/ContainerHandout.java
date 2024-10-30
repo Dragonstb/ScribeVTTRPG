@@ -26,10 +26,13 @@
 
 package dev.dragonstb.scribevttrpg.game.handouts;
 
+import dev.dragonstb.scribevttrpg.utils.Utils;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -77,6 +80,22 @@ public final class ContainerHandout extends AbstractHandoutPiece{
         return ch;
     }
 
+    /** Creates with a prefix "ct"followed by a base64 encoded random v4 UUID as id.
+     * @author Dragonstb
+     * @since 0.0.6;
+     * @param label Label for the container.
+     * @return A new container.
+     * @throws IllegalArgumentException When {@code name} is {@code null} or blank.
+     */
+    public static ContainerHandout create(String label) throws IllegalArgumentException {
+        if( label == null || label.isBlank() ) {
+            throw new IllegalArgumentException("Label cannot be null, nor blank");
+        }
+
+        String id = "ct"+Utils.uuidToString( UUID.randomUUID() );
+        return create( label, id );
+    }
+
     /** Adds the given piece either to the list of child pieces of {@code this} or to the list of child pieces of
      * a descendant of {@code this}. For finding the right place in the tree structure, the {@code parentId} is the
      * concatenation of the ids of all supposed-to-be ancestors of {@code piece}. It starts with the id of {@code this}
@@ -108,14 +127,14 @@ public final class ContainerHandout extends AbstractHandoutPiece{
         }
     }
 
-    /** Adds the piece to the list of child pieces.
+    /** Adds the piece to the list of child pieces in <i>this</i> container. Unlike {@code addPice(String, String)},
+     * this method here does not try to find the place within a nested container.
      * @author Dragonstb
      * @since 0.4;
      * @param piece Handout piece to be added.
      * @throws RuntimeException In case there is already a handout piece with the same id.
      */
-    private void addPieceHere( @NonNull AbstractHandoutPiece piece ) throws RuntimeException {
-        // TODO: could be private, for now package protected for simple unit testing
+    public void addPieceHere( @NonNull AbstractHandoutPiece piece ) throws RuntimeException {
         boolean yetNotListed = pieces.stream().noneMatch( pc -> pc.getId().equals( piece.getId()) );
         if( yetNotListed ) {
             pieces.add( piece );

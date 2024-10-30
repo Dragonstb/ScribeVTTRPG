@@ -26,42 +26,37 @@
 package dev.dragonstb.scribevttrpg;
 
 import dev.dragonstb.scribevttrpg.game.GameService;
-import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.Mockito.when;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  *
  * @author Dragonstb
  */
+@ContextConfiguration
+@ExtendWith(SpringExtension.class)
 public class GameManagerTest {
 
     private GameManager manager;
 
-    public GameManagerTest() {
-    }
-
-    @BeforeAll
-    public static void setUpClass() {
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-    }
+    @MockBean
+    private SettingsConfig settings;
 
     @BeforeEach
     public void setUp() {
-        manager = new GameManager();
-    }
-
-    @AfterEach
-    public void tearDown() {
+        ApplicationContext appCon = new AnnotationConfigApplicationContext(Config.class);
+        manager = appCon.getBean( GameManager.class );
     }
 
 //    @Test
@@ -72,6 +67,8 @@ public class GameManagerTest {
     @Test
     public void testGetGame_existing_game() {
         String roomName = "abcdefghijkl";
+        when( settings.getMinRoomNameLength() ).thenReturn( 2/*roomName.length()-1*/ );
+        System.out.println( ">>>>>>> "+settings.getMinRoomNameLength() );
         GameService game = manager.createGame( roomName );
         assertNotNull( game, "Game is null" );
 
@@ -92,6 +89,18 @@ public class GameManagerTest {
         assertTrue( opt.isEmpty(), "Optional is present" );
     }
 
+    // ______________________________________________________________________________________________________
 
+    @Configuration
+    static class Config {
+        @Bean
+        SettingsConfig getConfig() {
+            return new SettingsConfig();
+        }
 
+        @Bean
+        GameManager getManager() {
+            return new GameManager();
+        }
+    }
 }

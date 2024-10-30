@@ -29,6 +29,7 @@ import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import dev.dragonstb.scribevttrpg.utils.Constants;
+import dev.dragonstb.scribevttrpg.utils.LocKeys;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
@@ -46,7 +48,9 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.MessageSource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -60,6 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(GameRestController.class)
 public class GameRestControllerTest {
 
+    private static final Locale EN = Locale.ENGLISH;
     private static final String ROOM_NAME = "myroom";
     private static final String CAMPAIGN_NAME = "mycastle";
     private JSONObject jsonBody;
@@ -75,6 +80,9 @@ public class GameRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @BeforeEach
     public void setUp() {
@@ -102,6 +110,8 @@ public class GameRestControllerTest {
         assertNotNull( result );
     }
 
+    // _______________________  create game  _______________________
+
     @Test
     public void testCreateGame_ok() throws Exception {
         when( gameManager.createGame( ROOM_NAME ) ).thenReturn( game );
@@ -111,11 +121,26 @@ public class GameRestControllerTest {
         RequestBuilder request = post( "/creategame" )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH);
+                .locale(EN);
 
-        mockMvc.perform( request )
-                .andExpect( status().isCreated() );
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isCreated() )
 
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        JSONObject expect = new JSONObject();
+        expect.put( "success", true );
+        expect.put( "room", ROOM_NAME );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
 
     @Test
@@ -125,10 +150,26 @@ public class GameRestControllerTest {
         RequestBuilder request = post( "/creategame" )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH);
+                .locale(EN);
 
-        mockMvc.perform( request )
-                .andExpect( status().is(400) );
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().is(400) )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        JSONObject expect = new JSONObject();
+        expect.put( "success", false );
+        expect.put( "message", messageSource.getMessage( LocKeys.CREATE_ROOM_NAME_INVALID, null, EN) );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+
     }
 
     @Test
@@ -138,12 +179,29 @@ public class GameRestControllerTest {
         RequestBuilder request = post( "/creategame" )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH);
+                .locale(EN);
 
-        mockMvc.perform( request )
-                .andExpect( status().is(400) );
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().is(400) )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        JSONObject expect = new JSONObject();
+        expect.put( "success", false );
+        expect.put( "message", messageSource.getMessage( LocKeys.CREATE_ROOM_NAME_TAKEN, null, EN) );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+
     }
 
+    // ____________________________  get materials  ____________________________
 
     @Test
     public void testGetMaterials_ok() throws Exception {
@@ -160,11 +218,25 @@ public class GameRestControllerTest {
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH)
+                .locale(EN)
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
-        mockMvc.perform( request )
-                .andExpect( status().is(200) );
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().is(200) )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONArray jsonContent;
+        try {
+            jsonContent = new JSONArray( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic: "+content);
+            return;
+        }
+
+        JSONArray expect = new JSONArray("[]");
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+
     }
 
     @Test
@@ -180,7 +252,7 @@ public class GameRestControllerTest {
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH)
+                .locale(EN)
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
@@ -202,7 +274,7 @@ public class GameRestControllerTest {
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH)
+                .locale(EN)
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
@@ -224,7 +296,7 @@ public class GameRestControllerTest {
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH)
+                .locale(EN)
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
@@ -246,12 +318,11 @@ public class GameRestControllerTest {
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
-                .locale(Locale.ENGLISH)
+                .locale(EN)
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
                 .andExpect( status().is(500) );
     }
-
 
 }

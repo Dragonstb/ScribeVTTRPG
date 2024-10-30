@@ -102,6 +102,7 @@ public class GameRestController {
             response.setStatus(400);
             JSONObject json = new JSONObject();
             String key = LocKeys.CREATE_ROOM_NAME_INVALID;
+            json.put( "success", false );
             json.put( "message", messageSource.getMessage( key, null, "<"+key+">", loc) );
             return json.toString();
 
@@ -110,6 +111,7 @@ public class GameRestController {
             response.setStatus(400);
             JSONObject json = new JSONObject();
             String key = LocKeys.CREATE_ROOM_NAME_TAKEN;
+            json.put( "success", false );
             json.put( "message", messageSource.getMessage( key, null, "<"+key+">", loc) );
             return json.toString();
         }

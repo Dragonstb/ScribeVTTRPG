@@ -26,6 +26,9 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.participant.Participant;
+import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
+import dev.dragonstb.scribevttrpg.game.participant.DefaultParticipant;
 import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.ArrayList;

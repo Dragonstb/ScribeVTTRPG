@@ -23,34 +23,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package dev.dragonstb.scribevttrpg.game.participant;
 
-package dev.dragonstb.scribevttrpg.game;
-
-import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
-import java.util.List;
-import org.springframework.lang.NonNull;
-
-/** Some data about the participant.
+/** Roles the participants can have.
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
-public interface Participant {
+public enum ParticipantRole {
 
-    /** Returns the participant's name.
-     * @author Dragonstb
-     * @since 0.0.6;
-     * @return The participant's name. This is never {@code null}.
-     */
-    @NonNull
-    public String getName();
-
-    /** The participant's role in the game.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The participant's role in the game.
-     */
-    @NonNull
-    public ParticipantRole getRole();
+    /** The participant is a <i>game master</i>. */
+    gm,
+    /** The participant is a <i>player</i>. */
+    player,
+    /** The participant is a <i>spectator</i>. */
+    spectator
 
 }

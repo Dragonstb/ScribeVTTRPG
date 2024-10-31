@@ -23,28 +23,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package dev.dragonstb.scribevttrpg.game;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+package dev.dragonstb.scribevttrpg.game.participant;
 
-/**
+import org.springframework.lang.NonNull;
+
+/** Representation of a participant.
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
-public class DefaultParticipantTest {
+public class DefaultParticipant implements Participant{
 
-    @Test
-    public void testCreate() {
-        ParticipantRole role = ParticipantRole.gm;
-        String name = "Olivia";
+    /** The participant's name. */
+    @NonNull private final String name;
 
-        DefaultParticipant part = DefaultParticipant.create( name, role );
+    /** The role the participant has in the game session. */
+    @NonNull private final ParticipantRole role;
 
-        assertNotNull( part );
-        assertEquals( role, part.getRole() );
-        assertEquals( name, part.getName() );
+    /** Generates.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @param name The participant's name.
+     * @param role The role the participant occupies.
+     */
+    private DefaultParticipant(@NonNull String name, @NonNull ParticipantRole role) {
+        this.name = name;
+        this.role = role;
+    }
+
+    /** Creates a new instance.
+     * @author Dragonstb
+     * @since 0.0.4;
+     * @param name The participant's name.
+     * @param role The role the participant occupies. Must be {@code non-null}.
+     * @return A new instance.
+     */
+    public static DefaultParticipant create(@NonNull String name, @NonNull ParticipantRole role) {
+        // TODO: validate name
+        DefaultParticipant part = new DefaultParticipant(name, role);
+        return part;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public ParticipantRole getRole() {
+        return role;
     }
 
 }

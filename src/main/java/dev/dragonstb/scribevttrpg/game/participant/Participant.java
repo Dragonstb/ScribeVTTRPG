@@ -24,55 +24,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package dev.dragonstb.scribevttrpg.game;
+package dev.dragonstb.scribevttrpg.game.participant;
 
+import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
+import java.util.List;
 import org.springframework.lang.NonNull;
 
-/** Representation of a participant.
+/** Some data about the participant.
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
-public class DefaultParticipant implements Participant{
+public interface Participant {
 
-    /** The participant's name. */
-    @NonNull private final String name;
+    /** Returns the participant's name.
+     * @author Dragonstb
+     * @since 0.0.6;
+     * @return The participant's name. This is never {@code null}.
+     */
+    @NonNull
+    public String getName();
 
-    /** The role the participant has in the game session. */
-    @NonNull private final ParticipantRole role;
-
-    /** Generates.
+    /** The participant's role in the game.
      * @author Dragonstb
      * @since 0.0.4;
-     * @param name The participant's name.
-     * @param role The role the participant occupies.
+     * @return The participant's role in the game.
      */
-    private DefaultParticipant(@NonNull String name, @NonNull ParticipantRole role) {
-        this.name = name;
-        this.role = role;
-    }
-
-    /** Creates a new instance.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @param name The participant's name.
-     * @param role The role the participant occupies. Must be {@code non-null}.
-     * @return A new instance.
-     */
-    public static DefaultParticipant create(@NonNull String name, @NonNull ParticipantRole role) {
-        // TODO: validate name
-        DefaultParticipant part = new DefaultParticipant(name, role);
-        return part;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public ParticipantRole getRole() {
-        return role;
-    }
+    @NonNull
+    public ParticipantRole getRole();
 
 }

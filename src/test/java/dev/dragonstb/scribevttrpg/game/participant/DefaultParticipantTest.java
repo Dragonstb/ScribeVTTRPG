@@ -23,20 +23,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package dev.dragonstb.scribevttrpg.game;
+package dev.dragonstb.scribevttrpg.game.participant;
 
-/** Roles the participants can have.
+import dev.dragonstb.scribevttrpg.game.participant.DefaultParticipant;
+import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
  *
  * @author Dragonstb
  * @since 0.0.4;
  */
-public enum ParticipantRole {
+public class DefaultParticipantTest {
 
-    /** The participant is a <i>game master</i>. */
-    gm,
-    /** The participant is a <i>player</i>. */
-    player,
-    /** The participant is a <i>spectator</i>. */
-    spectator
+    @Test
+    public void testCreate() {
+        ParticipantRole role = ParticipantRole.gm;
+        String name = "Olivia";
+
+        DefaultParticipant part = DefaultParticipant.create( name, role );
+
+        assertNotNull( part );
+        assertEquals( role, part.getRole() );
+        assertEquals( name, part.getName() );
+    }
 
 }

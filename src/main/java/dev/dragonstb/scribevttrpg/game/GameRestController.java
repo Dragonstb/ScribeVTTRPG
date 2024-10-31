@@ -26,6 +26,8 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.participant.Participant;
+import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.content.ContentManager;
 import dev.dragonstb.scribevttrpg.content.DefaultContentManager;

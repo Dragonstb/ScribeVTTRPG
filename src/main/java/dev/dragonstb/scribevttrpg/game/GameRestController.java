@@ -144,6 +144,33 @@ public class GameRestController {
         return json.toString();
     }
 
+    @PostMapping("/joingame")
+    public String startJoinProcess( @RequestBody String body ) {
+        // TODO: validate json body
+        // TODO: validate name
+        // TODO: validate room name
+        JSONObject jbod;
+        String roomName;
+        String name;
+        try {
+            jbod = new JSONObject( body ); // TODO: use converter
+            roomName = jbod.getString( "roomName" );
+            name = jbod.getString( "name" );
+        } catch ( Exception e ) {
+            // TODO: have a look if there is a more appropiate status code
+            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
+        }
+
+        // TODO: check if identity is unique
+
+        // TODO: proper response
+        JSONObject json = new JSONObject();
+        json.put( "accepted", false );
+        json.put( "room", roomName );
+        json.put( "message", "Please wait until this functionality has become implemented." );
+        return json.toString();
+    }
+
     /** Returns the materials used in the game. Such materials can be
      * <ul>
      *   <li>Handouts</li>
@@ -192,7 +219,9 @@ public class GameRestController {
      * map.
      * @param session The http session. Must be not-null
      * @return The map of romm names to participations. Never null.
+     * @deprecated since 0.1.0 Please use the method in GameUtils
      */
+    @Deprecated
     @NonNull
     final static Map<String, Participant> getParticipationsAndCreateIfNeeded(@NonNull HttpSession session) {
         // TODO: do we really need this method beyond this calls and beyond of unit tests?

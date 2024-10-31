@@ -26,16 +26,16 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
-import dev.dragonstb.scribevttrpg.DefaultGameManager;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.utils.Constants;
+import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
 
 /** Provides some methods that are broadly used in various places.
  *
@@ -79,6 +79,7 @@ public class GameUtils {
             return Optional.empty();
         }
 
+        // TODO: clean up detected inconsistent states
         Participant participant = participations.get( roomName );
         if( participant == null ) {
             throw new RuntimeException( EXC_NULL_PARTICIPATION );
@@ -95,5 +96,25 @@ public class GameUtils {
         }
 
         return opt;
+    }
+
+    /** Gets the attribute "participations" from the http session object. This is a map that maps room names to the
+     * user participations in gaming sessions.<br><br>
+     * If the attribute is not set, a new, empty map is added. Therefore, this method garuantees the return of a nonnull
+     * map.
+     * @since 0.1.0
+     * @author Dragonstb
+     * @param session The http session. Must be not-null
+     * @return The map of romm names to participations. Never null.
+     */
+    @NonNull
+    final static Map<String, Participant> getParticipationsAndCreateIfNeeded(@NonNull HttpSession session) {
+        // TODO: do we really need this method beyond this calls and beyond of unit tests?
+        Map<String, Participant> participations = (HashMap<String, Participant>)session.getAttribute( Constants.KEY_PARTICIPATIONS );
+        if( participations == null ) {
+            participations = new HashMap<>();
+            session.setAttribute( Constants.KEY_PARTICIPATIONS, participations );
+        }
+        return participations;
     }
 }

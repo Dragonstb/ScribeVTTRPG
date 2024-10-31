@@ -52,7 +52,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -71,6 +70,7 @@ public class GameRestControllerTest {
     private static final Locale EN = Locale.ENGLISH;
     private static final String ROOM_NAME = "myroom";
     private static final String CAMPAIGN_NAME = "mycastle";
+    private static final String USER_NAME = "Lenny";
     private JSONObject jsonBody;
 
     @MockBean
@@ -133,7 +133,6 @@ public class GameRestControllerTest {
 
         MvcResult response = mockMvc.perform( request )
                 .andExpect( status().isCreated() )
-
                 .andReturn();
 
         String content = response.getResponse().getContentAsString();
@@ -207,6 +206,39 @@ public class GameRestControllerTest {
         expect.put( "message", messageSource.getMessage( LocKeys.CREATE_ROOM_NAME_TAKEN, null, EN) );
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
 
+    }
+
+    // ____________________________  request join process  ____________________________
+
+    @Test
+    public void testStartJoinProcess() throws Exception {
+        jsonBody = new JSONObject();
+        jsonBody.put( "roomName", ROOM_NAME );
+        jsonBody.put( "name", USER_NAME );
+
+        RequestBuilder request = post( "/joingame" )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .locale(EN);
+
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isOk() )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        JSONObject expect = new JSONObject();
+        expect.put( "accepted", false );
+        expect.put( "room", ROOM_NAME );
+        expect.put( "message", "Please wait until this functionality has become implemented." );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
 
     // ____________________________  get materials  ____________________________

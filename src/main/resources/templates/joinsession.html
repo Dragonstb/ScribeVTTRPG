@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title th:text="${documentTitle}">Join Session</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
+        <script src="../static/scripts/join.js" th:src="@{/scripts/join.js}"></script>
+    </head>
+    <body>
+        <h1 th:text="${pageTitle}">Join Session</h1>
+        <p th:text="${welcomeText}">Nice to see you</p>
+        <div>
+            <form id="joinForm">
+                <label for="nameField" th:text="${nameFieldLabel}">Enter your name:</label>
+                <input type="text" id="nameField" name="nameField" required="" minlength="1" maxlength="120" />
+                <label for="password" th:text="${roomPasswordLabel}">password:</label>
+                <input type="text" id="password" name="password" />
+                <input type="hidden" id="roomName" name="roomName" th:value="${roomName}" value="living room" />
+            </form>
+            <button id="join-session-btn" type="button" form="joinForm" th:text="${requestJoinLabel}" x-target="local"
+                    th:x-target="'../joingame'">request participation</button>
+            <p class="nodisplay" id="errorDisplay">No problems</p>
+        </div>
+    </body>
+</html>

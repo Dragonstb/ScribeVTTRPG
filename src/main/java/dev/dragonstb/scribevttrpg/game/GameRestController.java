@@ -141,6 +141,20 @@ public class GameRestController {
         return json.toString();
     }
 
+    /** Returns the materials used in the game. Such materials can be
+     * <ul>
+     *   <li>Handouts</li>
+     *   <li>Dice</li>
+     *   <li>...</li>
+     * </ul>
+     *
+     * @author Dragonstb
+     * @param request The servlet request.
+     * @param roomName The name of the room where the game takes place.
+     * @return The materials as json string.
+     * @throws ResponseStatusException when the user's participation in the game that is specified by {@code roomName}
+     * cannot be verified by the server.
+     */
     @GetMapping("/materials/{roomName:.+}")
     public String getMaterials( HttpServletRequest request, @PathVariable String roomName ) {
         // TODO: validate room name

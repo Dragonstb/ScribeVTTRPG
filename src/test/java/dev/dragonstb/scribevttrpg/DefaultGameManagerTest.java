@@ -46,9 +46,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)
-public class GameManagerTest {
+public class DefaultGameManagerTest {
 
-    private GameManager manager;
+    private DefaultGameManager manager;
 
     @MockBean
     private SettingsConfig settings;
@@ -56,7 +56,7 @@ public class GameManagerTest {
     @BeforeEach
     public void setUp() {
         ApplicationContext appCon = new AnnotationConfigApplicationContext(Config.class);
-        manager = appCon.getBean( GameManager.class );
+        manager = appCon.getBean( DefaultGameManager.class );
     }
 
 //    @Test
@@ -99,8 +99,8 @@ public class GameManagerTest {
         }
 
         @Bean
-        GameManager getManager() {
-            return new GameManager();
+        DefaultGameManager getManager() {
+            return new DefaultGameManager();
         }
     }
 }

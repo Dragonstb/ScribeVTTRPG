@@ -67,8 +67,7 @@ public class DefaultGameManagerTest {
     @Test
     public void testGetGame_existing_game() {
         String roomName = "abcdefghijkl";
-        when( settings.getMinRoomNameLength() ).thenReturn( 2/*roomName.length()-1*/ );
-        System.out.println( ">>>>>>> "+settings.getMinRoomNameLength() );
+        when( settings.getMinRoomNameLength() ).thenReturn( roomName.length()-1 );
         GameService game = manager.createGame( roomName );
         assertNotNull( game, "Game is null" );
 

@@ -71,6 +71,9 @@ public class GameRestController {
     private GameManager gameManager;
 
     @Autowired
+    private GameUtils gameUtils;
+
+    @Autowired
     private MessageSource messageSource;
 
     /** This method creates a new game. The game is created with the favourite room name, as long as this name has not
@@ -160,28 +163,21 @@ public class GameRestController {
         // TODO: validate room name
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = getParticipationsAndCreateIfNeeded( httpSession );
-        if( !participations.containsKey( roomName ) ) {
-            // TODO: check out for a nice status code
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not participating in this room");
-        }
-        Participant participant = participations.get( roomName );
-        if( participant == null ) {
-            // TODO: check out for a nice status code
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not participating in this room");
+
+        // check user's participation
+        Optional<GameService> opt;
+        try {
+            opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
+        } catch ( Exception e ) {
+            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
         }
 
-        Optional<GameService> opt = gameManager.getGame( roomName );
         if( opt.isEmpty() ) {
-            // TODO: check out for a nice status code
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not find game");
+            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
         }
+
+        // assemble response
         GameService game = opt.get();
-
-        if( !game.isParticipating(participant) ) {
-            // TODO: check out for a nice status code
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not participating in this room");
-        }
-
         HandoutManager handoutManager = game.getHandoutManager();
         List<ContainerHandout> handouts = handoutManager.getHandouts(); // TODO: user ID and role as arguments
         JSONArray hoArr = new JSONArray();

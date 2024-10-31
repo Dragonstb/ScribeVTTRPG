@@ -52,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -80,6 +81,9 @@ public class GameRestControllerTest {
 
     @MockBean
     private GameService game;
+
+    @MockBean
+    private GameUtils gameUtils;
 
     @Autowired
     private MockMvc mockMvc;
@@ -213,7 +217,7 @@ public class GameRestControllerTest {
         Map<String, Participant> participations = new HashMap<>();
         participations.put( ROOM_NAME, DefaultParticipant.create("Randy", ParticipantRole.gm) );
 
-        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+        when( gameUtils.getGameUserIsParticipatingIn( participations, ROOM_NAME ) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
         when( game.isParticipating(any()) ).thenReturn( true );
         when( handoutManager.getHandouts() ).thenReturn( handouts );
@@ -244,14 +248,10 @@ public class GameRestControllerTest {
     }
 
     @Test
-    public void testGetMaterials_roomNotInParticipations() throws Exception {
-        List<ContainerHandout> handouts = new ArrayList<>();
+    public void testGetMaterials_notParticipating() throws Exception {
         Map<String, Participant> participations = new HashMap<>();
 
-        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.isParticipating(any()) ).thenReturn( true );
-        when( handoutManager.getHandouts() ).thenReturn( handouts );
+        when( gameUtils.getGameUserIsParticipatingIn( any(), any() ) ).thenReturn( Optional.empty() );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
@@ -264,16 +264,10 @@ public class GameRestControllerTest {
     }
 
     @Test
-    public void testGetMaterials_participationForThisRoomIsNull() throws Exception {
-        List<ContainerHandout> handouts = new ArrayList<>();
+    public void testGetMaterials_inconsistentParticipationRegistrations() throws Exception {
         Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, null );
 
-        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.isParticipating(any()) ).thenReturn( true );
-        when( handoutManager.getHandouts() ).thenReturn( handouts );
-
+        when( gameUtils.getGameUserIsParticipatingIn( any(), any() ) ).thenThrow( RuntimeException.class );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
@@ -283,50 +277,6 @@ public class GameRestControllerTest {
 
         mockMvc.perform( request )
                 .andExpect( status().is(400) );
-    }
-
-    @Test
-    public void testGetMaterials_noGameUnderThisRoomName() throws Exception {
-        List<ContainerHandout> handouts = new ArrayList<>();
-        Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, DefaultParticipant.create("Rachel", ParticipantRole.gm) );
-
-        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.empty() );
-        when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.isParticipating(any()) ).thenReturn( true );
-        when( handoutManager.getHandouts() ).thenReturn( handouts );
-
-
-        RequestBuilder request = get( "/materials/"+ROOM_NAME )
-                .content( jsonBody.toString() )
-                .contentType("application/json")
-                .locale(EN)
-                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
-
-        mockMvc.perform( request )
-                .andExpect( status().is(500) );
-    }
-
-    @Test
-    public void testGetMaterials_notParticipantInThisGame() throws Exception {
-        List<ContainerHandout> handouts = new ArrayList<>();
-        Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, DefaultParticipant.create("Ralph", ParticipantRole.gm) );
-
-        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.isParticipating(any()) ).thenReturn( false );
-        when( handoutManager.getHandouts() ).thenReturn( handouts );
-
-
-        RequestBuilder request = get( "/materials/"+ROOM_NAME )
-                .content( jsonBody.toString() )
-                .contentType("application/json")
-                .locale(EN)
-                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
-
-        mockMvc.perform( request )
-                .andExpect( status().is(500) );
     }
 
 }

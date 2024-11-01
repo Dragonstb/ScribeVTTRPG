@@ -28,10 +28,41 @@ document.addEventListener('DOMContentLoaded', afterLoadingPage);
 
 function afterLoadingPage() {
 
+    const roomName = document.querySelector('#room-name').innerText;
     let abortBtn = document.querySelector('#abort-join-btn');
     abortBtn.addEventListener('click', abortJoinSession);
 
-    console.log('TODO: connect to Server Sided Events');
+    let target = abortBtn.getAttribute('x-target');
+    let eventSource;
+
+    if( target !== 'local' ) {
+//        eventSource = new EventSource('../joindecision/'+roomName);
+//        eventSource.onevent = (event) => processEvent(event);
+//        eventSource.onmessage = (event) => processMessage(event);
+//        eventSource.onerror = (event) => processError(event);
+        // TODO: activate event sourcing
+    }
+    else {
+        console.log('No event sourcing in local mode');
+    }
+
+    function processEvent(event) {
+        // TODO: method body
+        console.log('event! '+event.event);
+        console.dir(event.data);
+    }
+
+    function processMessage(event) {
+        // TODO: method body
+        console.log('message!');
+        console.dir(event.data);
+    }
+
+    function processError(event) {
+        // TODO: method body
+        console.error('error!');
+        console.dir(event);
+    }
 
     function abortJoinSession() {
         console.log('not yet implemented');
@@ -48,6 +79,18 @@ function afterLoadingPage() {
         let elem = document.querySelector('#errorDisplay');
         elem.classList.add('nodisplay');
         elem.innerText = "";
+    }
+
+    async function sendAbortRequest(url) {
+        const resp = await fetch(url, {
+            method: "GET",
+            cache: "no-cache"
+        });
+        return resp.json();
+    }
+
+    function resolveAbortResponse(data) {
+        // TODO: method body
     }
 }
 

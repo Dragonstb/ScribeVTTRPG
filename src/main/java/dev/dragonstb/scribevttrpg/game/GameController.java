@@ -30,14 +30,12 @@ import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.utils.LocKeys;
 import dev.dragonstb.scribevttrpg.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,6 +67,7 @@ public class GameController {
         // TODO: check room existence and serve room not found page for non-existing room names
 
         // check user's status of participation
+        // TODO: also consider the new status of 'waiting'
         Optional<GameService> opt;
         try {
             opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
@@ -110,6 +109,7 @@ public class GameController {
         /* TODO: circumvent double check when user is redirected to here from /game/{roomName}. Use get parameters or
                  session attributes or so. Still make sure that room name exists and such, preventing join pages for
                  non-existing rooms being served. */
+        // TODO: also consider the new status of 'waiting'
         Optional<GameService> opt;
         try {
             opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
@@ -224,6 +224,7 @@ public class GameController {
         model.addAttribute( "pageTitle", pageTitle );
         model.addAttribute( "waitText", waitText );
         model.addAttribute( "abortJoinLabel", btnLabel );
+        model.addAttribute( "roomName", roomName );
 
         return "wait";
     }

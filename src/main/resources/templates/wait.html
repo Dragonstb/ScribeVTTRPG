@@ -9,13 +9,14 @@
     </head>
     <body>
         <h1 th:text="${pageTitle}">Please wait</h1>
+        <div id="room-name" class="nodisplay" th:text="${roomName}">local</div>
         <p th:text="${waitText}">
             We have informed the creator of the room that you want to join the game. Please wait until a decision on
             your request been made.
         </p>
         <div>
             <button id="abort-join-btn" type="button" th:text="${abortJoinLabel}" x-target="local"
-                    th:x-target="'../abortjoin'">abort joining</button>
+                    th:x-target="'../abortjoin/'+${roomName}">abort joining</button>
         </div>
         <p class="nodisplay" id="errorDisplay">No problems</p>
     </body>

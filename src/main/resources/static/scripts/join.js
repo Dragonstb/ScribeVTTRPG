@@ -65,7 +65,7 @@ function afterLoadingPage() {
 
             // TODO: turn on the aria-live="polite" waiting overlay that states "please wait" or similar
             // send request
-            sendjoinRequest(target, body)
+            sendJoinRequest(target, body)
                     .then(
                             (resp) => {resolveJoinResponse(resp);}
                     );
@@ -85,7 +85,7 @@ function afterLoadingPage() {
      * @param {object} body The request body.
      * @returns {object} The response object.
      */
-    async function sendjoinRequest(url, body) {
+    async function sendJoinRequest(url, body) {
         const resp = await fetch(url, {
             method: "POST",
             cache: "no-cache",

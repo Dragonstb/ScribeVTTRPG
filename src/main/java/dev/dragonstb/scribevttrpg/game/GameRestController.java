@@ -48,6 +48,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +58,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 
 /**
  *
@@ -214,6 +216,72 @@ public class GameRestController {
 
         return hoArr.toString();
     }
+
+    /** Listens for clients in need of a server-sent event that eventually tells them if they can join the game
+     * session or not.
+     * @author Dragonstb
+     * @since 0.1.0
+     * @param request The servlet request object.
+     * @param roomName The name of the room.
+     * @return A Flux feeding the server-sent events.
+     */
+    @GetMapping( path = "/joindecision/{roomName:.+}", produces = MediaType.TEXT_EVENT_STREAM_VALUE )
+    public Flux<String> getJoinDecisionSSE( HttpServletRequest request, @PathVariable String roomName) {
+            // TODO: validate room name
+            // TODO: check if user is waiting for or participating in this room, react properly
+            // TODO: check user is not already connected
+            HttpSession httpSession = request.getSession();
+            Map<String, JoinDecisionFeed> joinDecisions = (Map<String, JoinDecisionFeed>)httpSession.getAttribute( "joinDecisions" );
+            if( joinDecisions == null ) {
+                joinDecisions = new HashMap<>();
+                httpSession.setAttribute( "joinDecisions", joinDecisions );
+            }
+
+            JoinDecisionFeed dec = joinDecisions.get( roomName );
+            if( dec == null ) {
+                dec = new JoinDecisionFeed();
+                joinDecisions.put( roomName, dec );
+            }
+
+            return dec.getFlux();
+    }
+
+    /**
+     * @since 0.1.0
+     * @param request
+     * @param roomName
+     * @return
+     */
+    @GetMapping("/abortjoin/{roomName:.+}")
+    public String abortJoin( HttpServletRequest request, @PathVariable String roomName) {
+        // TODO: validate room name
+        // TODO: check if waiting
+        // TODO: remove from waiting list
+        // TODO: notify room creator about user-sided abortion of join process
+        HttpSession httpSession = request.getSession();
+        Map<String, JoinDecisionFeed> joinDecisions = (Map<String, JoinDecisionFeed>)httpSession.getAttribute( "joinDecisions" );
+        if( joinDecisions == null ) {
+            joinDecisions = new HashMap<>();
+            httpSession.setAttribute( "joinDecisions", joinDecisions );
+        }
+
+        boolean ok = false;
+        JoinDecisionFeed dec = joinDecisions.get( roomName );
+
+        if( dec != null ) {
+            // TODO: synchronize, as the room creater may let the user in at the same time
+            ok = true;
+            joinDecisions.remove( roomName );
+        }
+
+        // TODO: proper response
+        // TODO: close connection
+        JSONObject json = new JSONObject();
+        json.put( "ok?", ok);
+
+        return json.toString();
+    }
+
 
     /** Gets the attribute "participations" from the http session object. This is a map that maps room names to the
      * user participations in gaming sessions.<br><br>

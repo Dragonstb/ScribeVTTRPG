@@ -37,6 +37,7 @@ public enum ParticipantRole {
     /** The participant is a <i>player</i>. */
     player,
     /** The participant is a <i>spectator</i>. */
-    spectator
-
+    spectator,
+    /** Not an actual participant, but a <i>prospect participant</i>. he/she is waiting for being let in or rejected. */
+    prospect
 }

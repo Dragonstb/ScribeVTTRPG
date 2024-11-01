@@ -46,4 +46,5 @@ public interface Constants {
     public static final String KEY_PARTICIPATIONS = "participations";
     /** Key for http session attribute <i>waitings</i>. */
     public static final String KEY_WAITINGS = "waitings";
+
 }

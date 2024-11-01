@@ -30,11 +30,11 @@ import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.utils.LocKeys;
 import dev.dragonstb.scribevttrpg.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -43,10 +43,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.server.ResponseStatusException;
 
 /** The request controller for the game web page
  *
@@ -63,10 +60,12 @@ public class GameController {
     private MessageSource messageSource;
 
     @GetMapping("/game/{roomName:.+}")
-    public String getGamePage(HttpServletRequest request, @PathVariable String roomName, @RequestHeader("Accept-Language") Locale loc, Model model) {
+    public String getGamePage(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestHeader("Accept-Language") Locale loc, Model model) {
         // TODO: validate room name
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
+
+        // TODO: check room existence and serve room not found page for non-existing room names
 
         // check user's status of participation
         Optional<GameService> opt;
@@ -81,18 +80,40 @@ public class GameController {
             return serveGamePage( roomName, model, loc );
         }
         else {
-            return serveJoinPage( roomName, model, loc );
+            // TODO: String "redirect:..." leads to response status 302, more apropiate is 303 => change response
+            //       type of method, allowing for specified status code
+            return "redirect:" + Utils.getJoinPath( roomName );
         }
 
-//        String baseTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
-//        String campaignName="hello RPG world"; // TODO: fetch campaign title from the room associated with the name
-//        String documentTitle = Utils.composeDocumentTitle(campaignName, baseTitle);
-//
-//        model.addAttribute("pageTitle", campaignName);
-//        model.addAttribute("documentTitle", documentTitle);
-//        model.addAttribute("roomName", roomName);
-//
-//        return "game";
+    }
+
+    @GetMapping("/join/{roomName:.+}")
+    public String getJoinPage(HttpServletRequest request, @PathVariable String roomName,
+            @RequestHeader("Accept-Language") Locale loc, Model model ) {
+        // TODO: validate room name
+        HttpSession httpSession = request.getSession();
+        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
+
+        // TODO: check room existence and serve room not found page for non-existing room names
+
+        // check user's status of participation
+        /* TODO: circumvent double check when user is redirected to here from /game/{roomName}. Use get parameters or
+                 session attributes or so. Still make sure that room name exists and such, preventing join pages for
+                 non-existing rooms being served. */
+        Optional<GameService> opt;
+        try {
+            opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
+        } catch ( Exception e ) {
+            // exceptions thrown by inconsistent state count as 'is currently not participating'
+            opt = Optional.empty();
+        }
+
+        if( opt.isPresent() ) {
+            return "redirect:/game/"+roomName;
+        }
+        else {
+            return serveJoinPage( roomName, model, loc );
+        }
     }
 
     /** Assembles the model for the game page.

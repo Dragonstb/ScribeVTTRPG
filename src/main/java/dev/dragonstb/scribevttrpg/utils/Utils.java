@@ -69,4 +69,24 @@ public class Utils {
         return Base64.getEncoder().encodeToString( arr );
     }
 
+
+    // _________________________  get pathes  _________________________
+
+    /** Gets the path to the join pages(s).
+     * @author Dragonstb
+     * @since 0.1.0
+     * @param roomName Name of the room.
+     * @return "/join/{roomName}" if and only if {@code roomName} is neither {@code null} nor blank. Otherwise just
+     * "/join".
+     */
+    public static String getJoinPath( String roomName ) {
+        StringBuilder builder = new StringBuilder();
+        builder.append( "/join" );
+        if( roomName != null && !roomName.isBlank() ) {
+            builder.append( "/" );
+            builder.append( roomName );
+        }
+        return builder.toString();
+    }
+
 }

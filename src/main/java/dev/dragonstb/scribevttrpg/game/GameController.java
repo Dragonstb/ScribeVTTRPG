@@ -60,7 +60,8 @@ public class GameController {
     private MessageSource messageSource;
 
     @GetMapping("/game/{roomName:.+}")
-    public String getGamePage(HttpServletRequest request, HttpServletResponse response, @PathVariable String roomName, @RequestHeader("Accept-Language") Locale loc, Model model) {
+    public String getGamePage(HttpServletRequest request, @PathVariable String roomName,
+            @RequestHeader("Accept-Language") Locale loc, Model model) {
         // TODO: validate room name
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
@@ -87,6 +88,15 @@ public class GameController {
 
     }
 
+    /** Returns the page where people who want to join the game can set their name and hand in their join request.
+     * @since 0.1.0
+     * @author Dragonstb
+     * @param request The servlet request object.
+     * @param roomName The name of the room the person wants to enter.
+     * @param loc Localization to be used.
+     * @param model The MVC object.
+     * @return Name of the join page.
+     */
     @GetMapping("/join/{roomName:.+}")
     public String getJoinPage(HttpServletRequest request, @PathVariable String roomName,
             @RequestHeader("Accept-Language") Locale loc, Model model ) {
@@ -115,6 +125,31 @@ public class GameController {
             return serveJoinPage( roomName, model, loc );
         }
     }
+
+    /** Returns the page on that people who want to join the game wait until their join request is accepted or
+     * rejected.
+     * @since 0.1.0
+     * @author Dragonstb
+     * @param request The servlet request object.
+     * @param roomName The name of the room the person wants to enter.
+     * @param loc Localization to be used.
+     * @param model The MVC object.
+     * @return Name of the join page.
+     */
+    @GetMapping("/wait/{roomName:.+}")
+    public String getWaitPage(HttpServletRequest request, @PathVariable String roomName,
+            @RequestHeader("Accept-Language") Locale loc, Model model) {
+        // TODO: validate room name
+//        HttpSession httpSession = request.getSession();
+//        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
+
+        // TODO: check room existence and serve room not found page for non-existing room names
+        // TODO: check if user is already participating or actually not waiting. Redirect to game page or join page,
+        //       respectively
+
+        return serveWaitPage( roomName, model, loc );
+    }
+
 
     /** Assembles the model for the game page.
      * @author Dragonstb;
@@ -165,6 +200,32 @@ public class GameController {
         model.addAttribute( "requestJoinLabel", btnLabel );
 
         return "joinsession";
+    }
+
+    /** Assembles the model for the wait page.
+     * @since 0.1.0
+     * @author Dragonstb
+     * @param roomName Name of the room.
+     * @param model Page model.
+     * @param loc Locale used for the localization.
+     * @return Name of the join page html file.
+     */
+    private String serveWaitPage( @NonNull String roomName, @NonNull Model model, @NonNull Locale loc) {
+        String baseTitle = getMessage( LocKeys.BASE_TITLE, loc);
+        String docTitlePart = getMessage( LocKeys.WAIT_DOC_TITLE, loc );
+        String documentTitle = Utils.composeDocumentTitle(docTitlePart, baseTitle != null ? baseTitle : "ScribeVTTRPG");
+        String pageTitle = getMessage( LocKeys.WAIT_PAGE_TITLE, loc );
+        String waitText = getMessage( LocKeys.WAIT_WAIT_TEXT, loc );
+        String btnLabel = getMessage( LocKeys.WAIT_ABORT_LABEL, loc );
+
+        // TODO: weave room name into the welcome text, or the page title
+        // TODO: prefill name field with user name from Principal, if the user is logged in
+        model.addAttribute( "documentTitle", documentTitle );
+        model.addAttribute( "pageTitle", pageTitle );
+        model.addAttribute( "waitText", waitText );
+        model.addAttribute( "abortJoinLabel", btnLabel );
+
+        return "wait";
     }
 
     /** Gets the localized string from the message source.

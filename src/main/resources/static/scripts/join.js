@@ -34,6 +34,7 @@ function afterLoadingPage() {
     function requestJoinSession() {
         let target = createBtn.getAttribute('x-target');
         if( target !== 'local') {
+            // TODO: validate user name
             // get user name
             let nameInput = document.querySelector('#nameField');
             let userName = null;
@@ -72,7 +73,7 @@ function afterLoadingPage() {
         }
         else {
             // this is for local browsing, when testing the pages without connecting to the server
-            window.location.href="./game.html";
+            window.location.href="./wait.html";
         }
     }
 
@@ -103,12 +104,12 @@ function afterLoadingPage() {
             return;
         }
 
-        let accepted = data.hasOwnProperty('accepted') && data.accepted && typeof data.accepted === 'bool';
+        let accepted = data.hasOwnProperty('accepted') && data.accepted && typeof data.accepted === 'boolean';
         let validRoom = data.hasOwnProperty('room') && data.room && typeof data.room === 'string'
                 && data.room.length > 0;
 
         if(accepted && validRoom) {
-            onCreateSuccess(data);
+            onRequestSuccess(data);
         }
         else {
             onRequestError(data);
@@ -135,8 +136,8 @@ function afterLoadingPage() {
         errDisplay.classList.remove('nodisplay');
     }
 
-    function onCreateSuccess(data) {
-        window.location.href="./wait/"+data.room;
+    function onRequestSuccess(data) {
+        window.location.href="../wait/"+data.room;
     }
 
 

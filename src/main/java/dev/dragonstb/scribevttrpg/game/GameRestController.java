@@ -161,13 +161,15 @@ public class GameRestController {
             throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
         }
 
+        // TODO: check user's non-participation
         // TODO: check if identity is unique
+        // TODO: add as waiting
 
         // TODO: proper response
         JSONObject json = new JSONObject();
-        json.put( "accepted", false );
+        json.put( "accepted", true );
         json.put( "room", roomName );
-        json.put( "message", "Please wait until this functionality has become implemented." );
+        json.put( "message", "Hello." );
         return json.toString();
     }
 

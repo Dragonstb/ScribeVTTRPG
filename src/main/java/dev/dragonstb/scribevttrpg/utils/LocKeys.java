@@ -54,4 +54,13 @@ public interface LocKeys {
     /** When starting the join process: label for the join button. */
     public static final String JOIN_JOIN_BUTTON_LABEL = "web.join.joinButtonLabel";
 
+    /** When waiting for join: document title for the tab. */
+    public static final String WAIT_DOC_TITLE = "web.wait.documentTitle";
+    /** When waiting for join: page title for the h1 tag. */
+    public static final String WAIT_PAGE_TITLE = "web.wait.pageTitle";
+    /** When waiting for join: text informing the user about the wait situation. */
+    public static final String WAIT_WAIT_TEXT = "web.wait.waitText";
+    /** When waiting for join: label for the abort button. */
+    public static final String WAIT_ABORT_LABEL = "web.wait.abortJoinLabel";
+
 }

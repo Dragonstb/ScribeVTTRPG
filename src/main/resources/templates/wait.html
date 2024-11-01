@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title th:text="${documentTitle}">Join Session</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="../static/css/general.css" th:href="@{/css/general.css}"/>
+        <script src="../static/scripts/wait.js" th:src="@{/scripts/wait.js}"></script>
+    </head>
+    <body>
+        <h1 th:text="${pageTitle}">Please wait</h1>
+        <p th:text="${waitText}">
+            We have informed the creator of the room that you want to join the game. Please wait until a decision on
+            your request been made.
+        </p>
+        <div>
+            <button id="abort-join-btn" type="button" th:text="${abortJoinLabel}" x-target="local"
+                    th:x-target="'../abortjoin'">abort joining</button>
+        </div>
+        <p class="nodisplay" id="errorDisplay">No problems</p>
+    </body>
+</html>

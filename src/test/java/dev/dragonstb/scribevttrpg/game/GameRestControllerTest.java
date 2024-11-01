@@ -235,9 +235,9 @@ public class GameRestControllerTest {
         }
 
         JSONObject expect = new JSONObject();
-        expect.put( "accepted", false );
+        expect.put( "accepted", true );
         expect.put( "room", ROOM_NAME );
-        expect.put( "message", "Please wait until this functionality has become implemented." );
+        expect.put( "message", "Hello." );
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
 

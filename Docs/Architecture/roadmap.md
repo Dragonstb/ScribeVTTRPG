@@ -14,7 +14,7 @@
 As a joining participant, who is browsing to a room and has not entered yet, I just want to enter the URL of the room.
 This should initialize the process of joining.
 
-**Priority class:** soon
+**Priority class:** in progress
 
 **DoD:**
 - when entering a valid URL of a room
@@ -33,7 +33,7 @@ As a joining participant, who is browsing to a room and has not entered yet but 
 successfully made my request to enter the room and am now waiting for the request to be processed. So I know that
 pressing that submit button on the welcome page (see related user story) has the desired effect.
 
-**Priority class:** soon
+**Priority class:** in progress
 
 **DoD:**
 - A waiting page is displayed to me. This page greets me, mentions the room name somewhere. The page states that the
@@ -47,7 +47,7 @@ room creator has been informed about my request and that I should wait.
 As a participant who has already joined a *room*, I want to see the game page immediately when reloading the page or
 browsing to it again. I don't want to go through all this joining again.
 
-**Priority class:** soon
+**Priority class:** imminent
 
 **DoD:**
 - I get the game page served immediately, without all this joining stuff.
@@ -70,7 +70,7 @@ browsing to it again. I don't want to go through all this joining again.
 As a room creator, I want the requestion person to appear in my requests-for-joining-list. From there, I cn decide how to
 deal with them
 
-**Priority class:** soon
+**Priority class:** imminent
 
 **DoD:**
 - When a new request comes in, the name the potential participant has entered appears in my requests-for-joining-list in
@@ -85,7 +85,7 @@ deal with them
 As a room creator, I either want to let a new *participant* into the room as either *player* or as *spectator*, or
 decline the request and don't let the person into the room. This way, I can control who enters and in which role.
 
-**Priority class:** soon
+**Priority class:** imminient
 
 **DoD:**
 - My decission is linked to the correct user who made a request for joining
@@ -162,7 +162,26 @@ decline the request and don't let the person into the room. This way, I can cont
 
 - Successfully creating a new *room* shall be responded with status code "201 created"
 - Transition to Java 23
+- Update dependencies in general
 - Redesign the way how nested handout pieces within containers are addressed by their ID. Currently, the ID of the
   parents and the piece's ID are simply concatenated. But now think of a container "jan" with a child "edoe", alongside
   a second container "jane" with a child "doe". Addressing the child "janedoe" would not be unique. So we need a
   separator character between the IDs of the generations. Thsi character would become illegal for IDs
+- User management and user login
+- Have you heard of this logging thingy? :)
+- Attach to a code analysis platform like Sonarqube
+- Attach to an accessibility check system like pa11y
+
+
+# Explanations
+
+## Priority categories
+
+Rough categorization when features are tackled, ordered from "now" to the "in the far, far future".
+
+1. in progress
+2. imminent
+3. soon
+4. near future
+5. somewhat later
+6. something for the far future

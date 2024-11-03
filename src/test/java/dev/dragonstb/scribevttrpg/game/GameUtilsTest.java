@@ -41,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.game.exceptions.GameNotFoundException;
+import dev.dragonstb.scribevttrpg.game.exceptions.NotInGameException;
 
 /**
  *
@@ -72,51 +74,63 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void testGetGameUserIsParticipatingIn_not_in_participations() {
-        Optional<GameService> opt = utils.getGameUserIsParticipatingIn( participations, roomName );
-        assertTrue( opt.isEmpty() );
+    public void testGetUserParticipationStatus_not_in_users_participations() {
+        when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
+
+        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( GameUtils.ParticipationStatus.none, status );
     }
 
     @Test
-    public void testGetGameUserIsParticipatingIn_participation_is_null() {
+    public void testGetUserParticipationStatus_participation_is_null() {
         participations.put( roomName, null );
-        // that means, there is a key like *roomName*, but the mapped value is null, not a Participant
-        RuntimeException exc = assertThrows( RuntimeException.class,
-                () -> utils.getGameUserIsParticipatingIn( participations, roomName) );
-        assertEquals( GameUtils.EXC_NULL_PARTICIPATION, exc.getMessage() );
+        when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
+
+        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( GameUtils.ParticipationStatus.none, status );
+        assertFalse( participations.containsKey(roomName) );
     }
 
     @Test
-    public void testGetGameUserIsParticipatingIn_no_related_game() {
-        // the user has a Participation under *roomName* in his participations, but the game manager has no game mapped
-        // under *roomName*
-        participations.put( roomName, participant );
+    public void testGetUserParticipationStatus_unkown_roomname() {
         when( gameManager.getGame(roomName) ).thenReturn( Optional.empty() );
-        RuntimeException exc = assertThrows( RuntimeException.class,
-                () -> utils.getGameUserIsParticipatingIn(participations, roomName) );
-        assertEquals( GameUtils.EXC_GAME_DOES_NOT_EXIST, exc.getMessage() );
+
+        GameNotFoundException exc = assertThrows( GameNotFoundException.class,
+                () -> utils.getUserParticipationStatus(participations, roomName) );
+        assertEquals( roomName, exc.getRoomName() );
     }
 
     @Test
-    public void testGetGameUserIsParticipatingIn_not_listed_in_game() {
+    public void testGetUserParticipationStatus_not_listed_in_game() {
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.isParticipating(participant) ).thenReturn( false );
+        when( game.isRelated(participant) ).thenReturn( false );
 
-        RuntimeException exc = assertThrows( RuntimeException.class,
-                () -> utils.getGameUserIsParticipatingIn(participations, roomName) );
-        assertEquals( GameUtils.EXC_NOT_LISTED_IN_GAME, exc.getMessage() );
+        NotInGameException exc = assertThrows( NotInGameException.class,
+                () -> utils.getUserParticipationStatus(participations, roomName) );
+        assertEquals( roomName, exc.getRoomName() );
+        assertFalse( participations.containsKey(roomName) );
     }
 
     @Test
-    public void testGetGameUserIsParticipatingIn_ok() {
+    public void testGetUserParticipationStatus_waiting() {
+        participant = DefaultParticipant.create( "Frederic", ParticipantRole.prospect );
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.isParticipating(participant) ).thenReturn( true );
+        when( game.isRelated(participant) ).thenReturn( true );
 
-        Optional<GameService> opt = utils.getGameUserIsParticipatingIn(participations, roomName);
-        assertTrue( opt.isPresent() );
-        assertEquals( game, opt.get() );
+        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( GameUtils.ParticipationStatus.waiting, status );
+    }
+
+    @Test
+    public void testGetUserParticipationStatus_ok() {
+        participations.put( roomName, participant );
+        when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
+        when( game.isRelated(participant) ).thenReturn( true );
+
+        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( GameUtils.ParticipationStatus.participating, status );
     }
 
 }

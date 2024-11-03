@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Dragonstb
+ * Copyright (c) 2024, Dragonstb
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package dev.dragonstb.scribevttrpg.game.participant;
+package dev.dragonstb.scribevttrpg.game.exceptions;
 
-import org.springframework.lang.NonNull;
-
-/** Some data about the participant.
+/** When you need a certain {@link dev.dragonstb.scribevttrpg.game.Game Game} but cannot find it. Most likely,
+ * there is no one registered by the room name you mentioned.
  *
  * @author Dragonstb
- * @since 0.0.4;
+ * @since 0.1.0;
  */
-public interface Participant {
+public final class GameNotFoundException extends RuntimeException{
 
-    /** Returns the participant's name.
-     * @author Dragonstb
-     * @since 0.0.6;
-     * @return The participant's name. This is never {@code null}.
+    /** The name of the room where the game was supposed to take place. */
+    private final String roomName;
+
+    /** Generates
+     * @since 0.1.0
+     * @param roomName The name of the room where the game was supposed to take place.
      */
-    @NonNull
-    public String getName();
+    public GameNotFoundException( String roomName ) {
+        this.roomName = roomName;
+    }
 
-    /** The participant's role in the game.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The participant's role in the game.
-     */
-    @NonNull
-    public ParticipantRole getRole();
-
-    /** Says if the participant's role indicates that she/he has completed the process of joining and is actually
-     * participating in the game already.
+    /** Gets the name of the room where the game was supposed to take place.
      * @since 0.1.0;
-     * @return Is actually participating?
+     * @return The room name.
      */
-    public boolean hasJoinedAlready();
+    public String getRoomName() {
+        return roomName;
+    }
 
 }

@@ -37,16 +37,44 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DefaultParticipantTest {
 
+    private final String name = "Olivia";
+
     @Test
     public void testCreate() {
         ParticipantRole role = ParticipantRole.gm;
-        String name = "Olivia";
-
         DefaultParticipant part = DefaultParticipant.create( name, role );
 
         assertNotNull( part );
         assertEquals( role, part.getRole() );
         assertEquals( name, part.getName() );
+    }
+
+    @Test
+    public void testHasJoinedAlready_gm() {
+        ParticipantRole role = ParticipantRole.gm;
+        DefaultParticipant part = DefaultParticipant.create( name, role );
+        assertTrue( part.hasJoinedAlready() );
+    }
+    
+    @Test
+    public void testHasJoinedAlready_player() {
+        ParticipantRole role = ParticipantRole.player;
+        DefaultParticipant part = DefaultParticipant.create( name, role );
+        assertTrue( part.hasJoinedAlready() );
+    }
+
+    @Test
+    public void testHasJoinedAlready_spectator() {
+        ParticipantRole role = ParticipantRole.spectator;
+        DefaultParticipant part = DefaultParticipant.create( name, role );
+        assertTrue( part.hasJoinedAlready() );
+    }
+
+    @Test
+    public void testHasJoinedAlready_prospect() {
+        ParticipantRole role = ParticipantRole.prospect;
+        DefaultParticipant part = DefaultParticipant.create( name, role );
+        assertFalse( part.hasJoinedAlready() );
     }
 
 }

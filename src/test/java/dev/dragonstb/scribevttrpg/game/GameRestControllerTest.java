@@ -251,7 +251,7 @@ public class GameRestControllerTest {
 
         when( gameUtils.getGameUserIsParticipatingIn( participations, ROOM_NAME ) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.isParticipating(any()) ).thenReturn( true );
+        when( game.hasJoinedAlready(any()) ).thenReturn( true );
         when( handoutManager.getHandouts() ).thenReturn( handouts );
 
 

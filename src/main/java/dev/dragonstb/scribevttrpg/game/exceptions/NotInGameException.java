@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Dragonstb
+ * Copyright (c) 2024, Dragonstb
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package dev.dragonstb.scribevttrpg.game.participant;
+package dev.dragonstb.scribevttrpg.game.exceptions;
 
-import org.springframework.lang.NonNull;
-
-/** Some data about the participant.
+/** When you have a participation registered under {@code roomname} in your collection of participations, but this
+ * instance of participations does not appear in the list of participants in the <i>existing</> game with the same
+ * {@code roomName}.
  *
  * @author Dragonstb
- * @since 0.0.4;
+ * @since 0.1.0;
  */
-public interface Participant {
+public final class NotInGameException extends RuntimeException{
 
-    /** Returns the participant's name.
-     * @author Dragonstb
-     * @since 0.0.6;
-     * @return The participant's name. This is never {@code null}.
+    /** The name of the room where the user thaught she/he would participate, but does not. */
+    private final String roomName;
+
+    /** Generates
+     * @since 0.1.0
+     * @param roomName The name of the room where the user thaught she/he would participate, but does not.
      */
-    @NonNull
-    public String getName();
+    public NotInGameException( String roomName ) {
+        this.roomName = roomName;
+    }
 
-    /** The participant's role in the game.
-     * @author Dragonstb
-     * @since 0.0.4;
-     * @return The participant's role in the game.
-     */
-    @NonNull
-    public ParticipantRole getRole();
-
-    /** Says if the participant's role indicates that she/he has completed the process of joining and is actually
-     * participating in the game already.
+    /** Gets the name of the room where the user thaught she/he would participate, but does not.
      * @since 0.1.0;
-     * @return Is actually participating?
+     * @return The room name.
      */
-    public boolean hasJoinedAlready();
+    public String getRoomName() {
+        return roomName;
+    }
 
 }

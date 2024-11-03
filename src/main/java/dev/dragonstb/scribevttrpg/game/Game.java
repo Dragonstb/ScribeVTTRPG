@@ -121,9 +121,13 @@ public final class Game implements GameService {
     }
 
     @Override
-    public boolean isParticipating( Participant participant ) {
-        return participants.contains( participant );
+    public boolean hasJoinedAlready( @NonNull Participant participant ) {
+        return isRelated( participant ) && participant.hasJoinedAlready();
     }
 
+    @Override
+    public boolean isRelated( @NonNull Participant participant ) {
+        return participants.contains( participant );
+    }
 
 }

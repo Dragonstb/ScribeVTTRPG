@@ -26,6 +26,12 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.GameManager;
+import static dev.dragonstb.scribevttrpg.game.GameUtils.ParticipationStatus.none;
+import static dev.dragonstb.scribevttrpg.game.GameUtils.ParticipationStatus.participating;
+import static dev.dragonstb.scribevttrpg.game.GameUtils.ParticipationStatus.waiting;
+import dev.dragonstb.scribevttrpg.game.exceptions.GameNotFoundException;
+import dev.dragonstb.scribevttrpg.game.exceptions.NotInGameException;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.utils.LocKeys;
 import dev.dragonstb.scribevttrpg.utils.Utils;
@@ -36,12 +42,15 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.server.ResponseStatusException;
 
 /** The request controller for the game web page
  *
@@ -64,27 +73,22 @@ public class GameController {
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        // TODO: check room existence and serve room not found page for non-existing room names
-
-        // check user's status of participation
-        // TODO: also consider the new status of 'waiting'
-        Optional<GameService> opt;
+        GameUtils.ParticipationStatus status;
         try {
-            opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
-        } catch ( Exception e ) {
-            // exceptions thrown by inconsistent state count as 'is currently not participating'
-            opt = Optional.empty();
+            status = gameUtils.getUserParticipationStatus( participations, roomName );
+        } catch ( GameNotFoundException gnfe ) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND );
+        } catch ( NotInGameException gnfe ) {
+            status = GameUtils.ParticipationStatus.none;
         }
 
-        if( opt.isPresent() ) {
-            return serveGamePage( roomName, model, loc );
-        }
-        else {
-            // TODO: String "redirect:..." leads to response status 302, more apropiate is 303 => change response
-            //       type of method, allowing for specified status code
-            return "redirect:" + Utils.getJoinPath( roomName );
-        }
+        String result = switch( status ) {
+            case participating -> serveGamePage( roomName, model, loc );
+            case none -> "redirect:" + Utils.getJoinPath( roomName );
+            case waiting -> "redirect:" + Utils.getWaitPath( roomName );
+        };
 
+        return result;
     }
 
     /** Returns the page where people who want to join the game can set their name and hand in their join request.
@@ -103,27 +107,22 @@ public class GameController {
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        // TODO: check room existence and serve room not found page for non-existing room names
-
-        // check user's status of participation
-        /* TODO: circumvent double check when user is redirected to here from /game/{roomName}. Use get parameters or
-                 session attributes or so. Still make sure that room name exists and such, preventing join pages for
-                 non-existing rooms being served. */
-        // TODO: also consider the new status of 'waiting'
-        Optional<GameService> opt;
+        GameUtils.ParticipationStatus status;
         try {
-            opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
-        } catch ( Exception e ) {
-            // exceptions thrown by inconsistent state count as 'is currently not participating'
-            opt = Optional.empty();
+            status = gameUtils.getUserParticipationStatus( participations, roomName );
+        } catch ( GameNotFoundException gnfe ) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND );
+        } catch ( NotInGameException gnfe ) {
+            status = GameUtils.ParticipationStatus.none;
         }
 
-        if( opt.isPresent() ) {
-            return "redirect:/game/"+roomName;
-        }
-        else {
-            return serveJoinPage( roomName, model, loc );
-        }
+        String result = switch( status ) {
+            case none -> serveJoinPage( roomName, model, loc );
+            case participating -> "redirect:" + Utils.getGamePath( roomName );
+            case waiting -> "redirect:" + Utils.getWaitPath( roomName );
+        };
+
+        return result;
     }
 
     /** Returns the page on that people who want to join the game wait until their join request is accepted or
@@ -140,16 +139,26 @@ public class GameController {
     public String getWaitPage(HttpServletRequest request, @PathVariable String roomName,
             @RequestHeader("Accept-Language") Locale loc, Model model) {
         // TODO: validate room name
-//        HttpSession httpSession = request.getSession();
-//        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
+        HttpSession httpSession = request.getSession();
+        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        // TODO: check room existence and serve room not found page for non-existing room names
-        // TODO: check if user is already participating or actually not waiting. Redirect to game page or join page,
-        //       respectively
+        GameUtils.ParticipationStatus status;
+        try {
+            status = gameUtils.getUserParticipationStatus( participations, roomName );
+        } catch ( GameNotFoundException gnfe ) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND );
+        } catch ( NotInGameException gnfe ) {
+            status = GameUtils.ParticipationStatus.none;
+        }
 
-        return serveWaitPage( roomName, model, loc );
+        String result = switch( status ) {
+            case waiting -> serveWaitPage( roomName, model, loc );
+            case participating -> "redirect:" + Utils.getGamePath( roomName );
+            case none -> "redirect:" + Utils.getJoinPath( roomName );
+        };
+
+        return result;
     }
-
 
     /** Assembles the model for the game page.
      * @author Dragonstb;

@@ -75,4 +75,9 @@ public class DefaultParticipant implements Participant{
         return role;
     }
 
+    @Override
+    public boolean hasJoinedAlready() {
+        return role != ParticipantRole.prospect;
+    }
+
 }

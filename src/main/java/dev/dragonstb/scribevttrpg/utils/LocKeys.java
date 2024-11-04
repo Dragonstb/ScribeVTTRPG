@@ -53,6 +53,10 @@ public interface LocKeys {
     public static final String JOIN_PW_LABEL = "web.join.roomPasswordLabel";
     /** When starting the join process: label for the join button. */
     public static final String JOIN_JOIN_BUTTON_LABEL = "web.join.joinButtonLabel";
+    /** When starting the join process: Text message satting that no room with the given name has been found. */
+    public static final String JOIN_NO_SUCH_ROOM = "web.join.noSuchRoom";
+    /** When starting the join process: text stating that the name is already occupied by someone else. */
+    public static final String JOIN_NAME_OCCUPIED = "web.join.nameOccupied";
 
     /** When waiting for join: document title for the tab. */
     public static final String WAIT_DOC_TITLE = "web.wait.documentTitle";

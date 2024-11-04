@@ -77,7 +77,16 @@ function afterLoadingPage() {
         }
     }
 
-    /** Sends the request for creating a new room for a new session
+    /** Sends the request for creating a new room for a new session.
+     *
+     * example request:
+     * POST /joingame
+     * Content-Type: application/json
+     * {
+     *   "name": "X. Ample",
+     *   "roomName": "Living Room"
+     * }
+     *
      * @author Dragonstb
      * @since 0.1.0;
      * @param {string} url The URL the request is addressed to. Requires the campaign name and the room name as

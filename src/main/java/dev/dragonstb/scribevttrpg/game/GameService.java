@@ -26,10 +26,10 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.exceptions.IdentityNotUniqueException;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
-import java.util.List;
 import org.springframework.lang.NonNull;
 
 /** The services a game offers as part of a public API. Other classes may mainly use this interface.
@@ -46,8 +46,10 @@ public interface GameService {
      * @param name The participant's name.
      * @param role The role the participant has in the game session.
      * @return A new instance.
+     * @throws IdentityNotUniqueException When there is already a participant in the game with the same identity.
      */
-    public Participant createAndAddParticipant(@NonNull String name, @NonNull ParticipantRole role);
+    @NonNull
+    public Participant createAndAddParticipant(@NonNull String name, @NonNull ParticipantRole role) throws IdentityNotUniqueException;
 
     /** Returns the handout manager of the game.
      * @since 0.0.6;

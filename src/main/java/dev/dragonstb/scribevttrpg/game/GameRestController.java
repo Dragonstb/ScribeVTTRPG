@@ -31,6 +31,7 @@ import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.content.ContentManager;
 import dev.dragonstb.scribevttrpg.content.DefaultContentManager;
+import dev.dragonstb.scribevttrpg.game.exceptions.IdentityNotUniqueException;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import dev.dragonstb.scribevttrpg.utils.Constants;
@@ -44,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -147,7 +149,8 @@ public class GameRestController {
     }
 
     @PostMapping("/joingame")
-    public String startJoinProcess( @RequestBody String body ) {
+    public String startJoinProcess( @RequestBody String body, HttpServletRequest request, HttpServletResponse response,
+            @RequestHeader(name="Accept-Language", defaultValue="en") Locale loc ) {
         // TODO: validate json body
         // TODO: validate name
         // TODO: validate room name
@@ -162,16 +165,65 @@ public class GameRestController {
             // TODO: have a look if there is a more appropiate status code
             throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
         }
+        // TODO: validate name and roomName
 
-        // TODO: check user's non-participation
-        // TODO: check if identity is unique
-        // TODO: add as waiting
+        Optional<GameService> opt;
+        opt = gameManager.getGame( roomName );
+        if( opt.isEmpty() ) {
+            // TODO: serve a nice page which states that the room does not exists (404 not found) or, if the user
+            // played before in this room, that the room has been closed in the meantime (410 gone). Note: as we cannot
+            // decide on the server if the latter one is true (we don't want to put the effort for this), we send 404
+            // anyway
+            response.setStatus( 404 );
+            JSONObject json = new JSONObject();
+            json.put( "accepted", false );
+            json.put( "message", "Hello." );
+            return json.toString();
+        }
 
-        // TODO: proper response
+        HttpSession httpSession = request.getSession();
+        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
+
         JSONObject json = new JSONObject();
-        json.put( "accepted", true );
-        json.put( "room", roomName );
-        json.put( "message", "Hello." );
+        GameService game = opt.get();
+        synchronized( participations ) {
+            Participant participant = participations.get( roomName );
+            if( participant == null ) {
+                try {
+                    participant = game.createAndAddParticipant( name, ParticipantRole.prospect );
+                    participations.put( roomName, participant );
+                    json.put( "accepted", true );
+                    json.put( "room", roomName );
+                } catch ( IdentityNotUniqueException inue ) {
+                    json.put( "accepted", false );
+                    String key = LocKeys.JOIN_NAME_OCCUPIED;
+                    String msg = messageSource.getMessage( key, null, "<"+key+">", loc);
+                    json.put( "message", msg );
+                }
+            }
+            else {
+                json.put( "accepted", false );
+                if( game.hasJoinedAlready(participant) ) {
+                    // already participating
+                    // TODO: trigger auto-redirect to /game/{roomName}
+                    json.put( "message", "You are already participating in this room" );
+                }
+                else if( game.isRelated(participant) ) {
+                    // already waiting
+                    // TODO: trigger auto-redirect to /wait/{roomName}
+                    json.put( "message", "You are already waiting here." );
+                }
+                else {
+                    // inconsistent state, existing participant which is not part of the game. The game is assumed to be
+                    // right in this point, so delete participation
+                    participations.remove( roomName );
+                    // TODO: automatically go back to the beginning of the synchronized block and start the join
+                    //       process. For now, the user has to this for us
+                    json.put( "message", "A problem occured, but we cleaned it up. Please simply try again." );
+                }
+            }
+        }
+
         return json.toString();
     }
 

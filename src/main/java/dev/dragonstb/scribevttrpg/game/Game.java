@@ -26,6 +26,7 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.exceptions.IdentityNotUniqueException;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.game.participant.DefaultParticipant;
@@ -84,12 +85,18 @@ public final class Game implements GameService {
     }
 
     @Override
-    public Participant createAndAddParticipant(@NonNull String name, @NonNull ParticipantRole role) {
-        // TODO: check if game is "open", throw exception if not
+    public Participant createAndAddParticipant(@NonNull String name, @NonNull ParticipantRole role) throws IdentityNotUniqueException {
+        // TODO: check if game is "open", throw exception if not (openess flag of game yet to be implemented)
         Participant part = DefaultParticipant.create(name, role);
         synchronized ( participants ) {
-            // TODO: check if identity is free, throw exception if not
-            participants.add( part );
+            boolean exists = participants.stream().anyMatch( other -> other.getName().equals(name) );
+            if( !exists ) {
+                // TODO: fire message that a new (prospect) participant has been added (message system yet to be implemented)
+                participants.add( part );
+            }
+            else {
+                throw new IdentityNotUniqueException( name );
+            }
         }
         return part;
     }

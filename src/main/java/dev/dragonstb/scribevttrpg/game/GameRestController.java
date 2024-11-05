@@ -251,24 +251,33 @@ public class GameRestController {
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        // check user's participation
         Optional<GameService> opt = gameManager.getGame( roomName );
         if( opt.isEmpty() ) {
-            // TODO: error 404
-            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND );
         }
 
+        Participant participation;
         GameService game = opt.get();
         GameUtils.ParticipationStatus status;
-        try {
-            // TODO: can ask game directly for participation status
-            status = gameUtils.getUserParticipationStatus( participations, roomName );
-        } catch ( Exception e ) {
-            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
-        }
 
-        if( status != GameUtils.ParticipationStatus.participating ) {
-            throw new ResponseStatusException( HttpStatus.UNAUTHORIZED );
+        synchronized ( participations ) {
+            participation = participations.get( roomName );
+            if( participation == null ) {
+                if( participations.containsKey(roomName) ) {
+                    participations.remove( roomName );
+                }
+                throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
+            }
+
+            status = game.getParticipationStatus( participation );
+            if( status != GameUtils.ParticipationStatus.participating ) {
+                if( status == GameUtils.ParticipationStatus.none ) {
+                    // inconsistent state between 'participations' and 'game.participants', fix it assuming that the game
+                    // is correct in this point
+                    participations.remove( roomName );
+                }
+                throw new ResponseStatusException( HttpStatus.UNAUTHORIZED );
+            }
         }
 
         // assemble response

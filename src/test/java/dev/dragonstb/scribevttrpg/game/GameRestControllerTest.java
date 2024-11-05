@@ -455,10 +455,10 @@ public class GameRestControllerTest {
     public void testGetMaterials_ok() throws Exception {
         List<ContainerHandout> handouts = new ArrayList<>();
         Map<String, Participant> participations = new HashMap<>();
-        participations.put( ROOM_NAME, DefaultParticipant.create("Randy", ParticipantRole.gm) );
+        Participant participation = DefaultParticipant.create("Randy", ParticipantRole.gm);
+        participations.put( ROOM_NAME, participation );
 
-        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME ) )
-                .thenReturn( GameUtils.ParticipationStatus.participating );
+        when( game.getParticipationStatus(participation) ).thenReturn( GameUtils.ParticipationStatus.participating );
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
         when( handoutManager.getHandouts() ).thenReturn( handouts );
@@ -484,15 +484,28 @@ public class GameRestControllerTest {
 
         JSONArray expect = new JSONArray("[]");
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+    }
 
+    @Test
+    public void testGetMaterials_no_such_room() throws Exception {
+        Map<String, Participant> participations = new HashMap<>();
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.empty() );
+
+        RequestBuilder request = get( "/materials/"+ROOM_NAME )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .locale(EN)
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
+
+        mockMvc.perform( request )
+                .andExpect( status().isNotFound() );
     }
 
     @Test
     public void testGetMaterials_notParticipating() throws Exception {
         Map<String, Participant> participations = new HashMap<>();
 
-        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME ) )
-                .thenReturn( GameUtils.ParticipationStatus.none );
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
@@ -502,16 +515,35 @@ public class GameRestControllerTest {
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
-                .andExpect( status().is(401) );
+                .andExpect( status().is(400) );
+    }
+
+    @Test
+    public void testGetMaterials_notParticipating_bogusKey() throws Exception {
+        Map<String, Participant> participations = new HashMap<>();
+        participations.put( ROOM_NAME, null );
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+
+        RequestBuilder request = get( "/materials/"+ROOM_NAME )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .locale(EN)
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
+
+        mockMvc.perform( request )
+                .andExpect( status().is(400) );
+
+        assertFalse( participations.containsKey(ROOM_NAME) );
     }
 
     @Test
     public void testGetMaterials_inconsistentParticipationRegistrations() throws Exception {
         Map<String, Participant> participations = new HashMap<>();
-        Participant participation = DefaultParticipant.create( "Emilyy", ParticipantRole.gm );
+        Participant participation = DefaultParticipant.create( "Emily", ParticipantRole.gm );
         participations.put( ROOM_NAME, participation );
 
-        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME) ).thenReturn( GameUtils.ParticipationStatus.none );
+        when( game.getParticipationStatus(participation) ).thenReturn( GameUtils.ParticipationStatus.none );
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
@@ -522,6 +554,30 @@ public class GameRestControllerTest {
 
         mockMvc.perform( request )
                 .andExpect( status().is(401) );
+
+        assertFalse( participations.containsKey(ROOM_NAME) );
+    }
+
+    @Test
+    public void testGetMaterials_waiting() throws Exception {
+        Map<String, Participant> participations = new HashMap<>();
+        Participant participation = DefaultParticipant.create( "Emily", ParticipantRole.prospect );
+        participations.put( ROOM_NAME, participation );
+
+        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME) ).thenReturn( GameUtils.ParticipationStatus.waiting );
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+
+        RequestBuilder request = get( "/materials/"+ROOM_NAME )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .locale(EN)
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
+
+        mockMvc.perform( request )
+                .andExpect( status().is(401) );
+
+        assertTrue( participations.containsKey(ROOM_NAME), "key room name is missing" );
+        assertEquals( participation, participations.get(ROOM_NAME), "participations have been modified");
     }
 
 }

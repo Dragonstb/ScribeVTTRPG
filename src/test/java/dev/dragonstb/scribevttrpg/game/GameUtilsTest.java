@@ -77,8 +77,8 @@ public class GameUtilsTest {
     public void testGetUserParticipationStatus_not_in_users_participations() {
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
 
-        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
-        assertEquals( GameUtils.ParticipationStatus.none, status );
+        ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( ParticipationStatus.none, status );
     }
 
     @Test
@@ -86,8 +86,8 @@ public class GameUtilsTest {
         participations.put( roomName, null );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
 
-        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
-        assertEquals( GameUtils.ParticipationStatus.none, status );
+        ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( ParticipationStatus.none, status );
         assertFalse( participations.containsKey(roomName) );
     }
 
@@ -104,7 +104,7 @@ public class GameUtilsTest {
     public void testGetUserParticipationStatus_not_listed_in_game() {
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.none );
+        when( game.getParticipationStatus(participant) ).thenReturn( ParticipationStatus.none );
 
         NotInGameException exc = assertThrows( NotInGameException.class,
                 () -> utils.getUserParticipationStatus(participations, roomName) );
@@ -117,20 +117,20 @@ public class GameUtilsTest {
         participant = DefaultParticipant.create( "Frederic", ParticipantRole.prospect );
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.waiting );
+        when( game.getParticipationStatus(participant) ).thenReturn( ParticipationStatus.waiting );
 
-        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
-        assertEquals( GameUtils.ParticipationStatus.waiting, status );
+        ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( ParticipationStatus.waiting, status );
     }
 
     @Test
     public void testGetUserParticipationStatus_ok() {
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.participating );
+        when( game.getParticipationStatus(participant) ).thenReturn( ParticipationStatus.participating );
 
-        GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
-        assertEquals( GameUtils.ParticipationStatus.participating, status );
+        ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
+        assertEquals( ParticipationStatus.participating, status );
     }
 
 }

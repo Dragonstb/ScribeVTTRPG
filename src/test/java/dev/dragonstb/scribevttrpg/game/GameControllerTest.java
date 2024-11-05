@@ -26,21 +26,17 @@
 package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.GameManager;
-import dev.dragonstb.scribevttrpg.game.participant.DefaultParticipant;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
-import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.utils.Constants;
 import dev.dragonstb.scribevttrpg.utils.Utils;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.MessageSource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -82,7 +78,7 @@ public class GameControllerTest {
     public void testGetGamePage_not_participating() throws Exception {
         String expect = Utils.getJoinPath( roomName );
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.none );
+                .thenReturn( ParticipationStatus.none );
 
         RequestBuilder request = get( "/game/"+roomName )
                 .locale(EN)
@@ -101,7 +97,7 @@ public class GameControllerTest {
 //        participations.put( roomName, part );
 
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.waiting );
+                .thenReturn( ParticipationStatus.waiting );
 
         RequestBuilder request = get( "/game/"+roomName )
                 .locale(EN)
@@ -116,7 +112,7 @@ public class GameControllerTest {
     @Test
     public void testGetGamePage_is_participating() throws Exception {
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.participating );
+                .thenReturn( ParticipationStatus.participating );
 
         RequestBuilder request = get( "/game/"+roomName )
                 .locale(EN)
@@ -136,7 +132,7 @@ public class GameControllerTest {
     public void testGetWaitPage_not_participating() throws Exception {
         String expect = Utils.getJoinPath( roomName );
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.none );
+                .thenReturn( ParticipationStatus.none );
 
         RequestBuilder request = get( "/wait/"+roomName )
                 .locale(EN)
@@ -152,7 +148,7 @@ public class GameControllerTest {
     public void testGetWaitPage_already_participating() throws Exception {
         String expect = Utils.getGamePath( roomName );
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.participating );
+                .thenReturn( ParticipationStatus.participating );
 
         RequestBuilder request = get( "/wait/"+roomName )
                 .locale(EN)
@@ -167,7 +163,7 @@ public class GameControllerTest {
     @Test
     public void testGetWaitPage_indeed_in_join_process() throws Exception {
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.waiting );
+                .thenReturn( ParticipationStatus.waiting );
 
         RequestBuilder request = get( "/wait/"+roomName )
                 .locale(EN)
@@ -187,7 +183,7 @@ public class GameControllerTest {
     public void testGetJoinPage_already_participating() throws Exception {
         String expect = Utils.getGamePath( roomName );
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.participating );
+                .thenReturn( ParticipationStatus.participating );
 
         RequestBuilder request = get( "/join/"+roomName )
                 .locale(EN)
@@ -203,7 +199,7 @@ public class GameControllerTest {
     public void testGetJoinPage_in_join_process() throws Exception {
         String expect = Utils.getWaitPath( roomName );
         when( gameUtils.getUserParticipationStatus(participations, roomName ) )
-                .thenReturn( GameUtils.ParticipationStatus.waiting );
+                .thenReturn( ParticipationStatus.waiting );
 
         RequestBuilder request = get( "/join/"+roomName )
                 .locale(EN)
@@ -218,7 +214,7 @@ public class GameControllerTest {
     @Test
     public void testGetJoinPage_indeed_new_to_the_game() throws Exception {
         when( gameUtils.getUserParticipationStatus(participations, roomName) )
-                .thenReturn( GameUtils.ParticipationStatus.none );
+                .thenReturn( ParticipationStatus.none );
 
         RequestBuilder request = get( "/join/"+roomName )
                 .locale(EN)

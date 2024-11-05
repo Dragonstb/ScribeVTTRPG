@@ -338,7 +338,7 @@ public class GameRestControllerTest {
         participations.put( ROOM_NAME, participant );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.waiting );
+        when( game.getParticipationStatus(participant) ).thenReturn( ParticipationStatus.waiting );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
@@ -376,7 +376,7 @@ public class GameRestControllerTest {
         participations.put( ROOM_NAME, participant );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.participating );
+        when( game.getParticipationStatus(participant) ).thenReturn( ParticipationStatus.participating );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
@@ -415,7 +415,7 @@ public class GameRestControllerTest {
         participations.put( ROOM_NAME, participant );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.none );
+        when( game.getParticipationStatus(participant) ).thenReturn( ParticipationStatus.none );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
@@ -457,7 +457,7 @@ public class GameRestControllerTest {
         Participant participation = DefaultParticipant.create("Randy", ParticipantRole.gm);
         participations.put( ROOM_NAME, participation );
 
-        when( game.getParticipationStatus(participation) ).thenReturn( GameUtils.ParticipationStatus.participating );
+        when( game.getParticipationStatus(participation) ).thenReturn( ParticipationStatus.participating );
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
         when( handoutManager.getHandouts() ).thenReturn( handouts );
@@ -542,7 +542,7 @@ public class GameRestControllerTest {
         Participant participation = DefaultParticipant.create( "Emily", ParticipantRole.gm );
         participations.put( ROOM_NAME, participation );
 
-        when( game.getParticipationStatus(participation) ).thenReturn( GameUtils.ParticipationStatus.none );
+        when( game.getParticipationStatus(participation) ).thenReturn( ParticipationStatus.none );
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
@@ -563,7 +563,7 @@ public class GameRestControllerTest {
         Participant participation = DefaultParticipant.create( "Emily", ParticipantRole.prospect );
         participations.put( ROOM_NAME, participation );
 
-        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME) ).thenReturn( GameUtils.ParticipationStatus.waiting );
+        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME) ).thenReturn( ParticipationStatus.waiting );
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )

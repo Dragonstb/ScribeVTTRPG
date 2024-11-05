@@ -35,12 +35,9 @@ import org.springframework.stereotype.Component;
 import dev.dragonstb.scribevttrpg.GameManager;
 import dev.dragonstb.scribevttrpg.game.exceptions.GameNotFoundException;
 import dev.dragonstb.scribevttrpg.game.exceptions.NotInGameException;
-import static dev.dragonstb.scribevttrpg.game.participant.ParticipantRole.prospect;
 import dev.dragonstb.scribevttrpg.utils.Constants;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 /** Provides some methods that are broadly used in various places.
  *
@@ -49,16 +46,6 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @Component
 public class GameUtils {
-
-    public static enum ParticipationStatus {
-        /** A user is participating. */
-        participating,
-        /** A user is waiting for being let in into the room. */
-        waiting,
-        /** The user is not participating. */
-        none
-    }
-
 
     @Autowired
     private GameManager gameManager;

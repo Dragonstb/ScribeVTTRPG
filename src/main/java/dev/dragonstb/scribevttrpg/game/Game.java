@@ -128,14 +128,14 @@ public final class Game implements GameService {
     }
 
     @Override
-    public GameUtils.ParticipationStatus getParticipationStatus( @NonNull Participant participant ) {
+    public ParticipationStatus getParticipationStatus( @NonNull Participant participant ) {
         boolean exists = participants.contains( participant );
         if( exists ) {
-            return participant.hasJoinedAlready() ? GameUtils.ParticipationStatus.participating :
-                    GameUtils.ParticipationStatus.waiting;
+            return participant.hasJoinedAlready() ? ParticipationStatus.participating :
+                    ParticipationStatus.waiting;
         }
         else {
-            return GameUtils.ParticipationStatus.none;
+            return ParticipationStatus.none;
         }
     }
 

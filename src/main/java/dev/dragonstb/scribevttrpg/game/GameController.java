@@ -27,9 +27,9 @@
 package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.GameManager;
-import static dev.dragonstb.scribevttrpg.game.GameUtils.ParticipationStatus.none;
-import static dev.dragonstb.scribevttrpg.game.GameUtils.ParticipationStatus.participating;
-import static dev.dragonstb.scribevttrpg.game.GameUtils.ParticipationStatus.waiting;
+import static dev.dragonstb.scribevttrpg.game.ParticipationStatus.none;
+import static dev.dragonstb.scribevttrpg.game.ParticipationStatus.participating;
+import static dev.dragonstb.scribevttrpg.game.ParticipationStatus.waiting;
 import dev.dragonstb.scribevttrpg.game.exceptions.GameNotFoundException;
 import dev.dragonstb.scribevttrpg.game.exceptions.NotInGameException;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
@@ -73,13 +73,13 @@ public class GameController {
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        GameUtils.ParticipationStatus status;
+        ParticipationStatus status;
         try {
             status = gameUtils.getUserParticipationStatus( participations, roomName );
         } catch ( GameNotFoundException gnfe ) {
             throw new ResponseStatusException( HttpStatus.NOT_FOUND );
         } catch ( NotInGameException gnfe ) {
-            status = GameUtils.ParticipationStatus.none;
+            status = ParticipationStatus.none;
         }
 
         String result = switch( status ) {
@@ -107,13 +107,13 @@ public class GameController {
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        GameUtils.ParticipationStatus status;
+        ParticipationStatus status;
         try {
             status = gameUtils.getUserParticipationStatus( participations, roomName );
         } catch ( GameNotFoundException gnfe ) {
             throw new ResponseStatusException( HttpStatus.NOT_FOUND );
         } catch ( NotInGameException gnfe ) {
-            status = GameUtils.ParticipationStatus.none;
+            status = ParticipationStatus.none;
         }
 
         String result = switch( status ) {
@@ -142,13 +142,13 @@ public class GameController {
         HttpSession httpSession = request.getSession();
         Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
-        GameUtils.ParticipationStatus status;
+        ParticipationStatus status;
         try {
             status = gameUtils.getUserParticipationStatus( participations, roomName );
         } catch ( GameNotFoundException gnfe ) {
             throw new ResponseStatusException( HttpStatus.NOT_FOUND );
         } catch ( NotInGameException gnfe ) {
-            status = GameUtils.ParticipationStatus.none;
+            status = ParticipationStatus.none;
         }
 
         String result = switch( status ) {

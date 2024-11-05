@@ -64,6 +64,6 @@ public interface GameService {
      * @param participant User of interest.
      * @return How is this user related to the game?
      */
-    public GameUtils.ParticipationStatus getParticipationStatus( @NonNull Participant participant );
+    public ParticipationStatus getParticipationStatus( @NonNull Participant participant );
 
 }

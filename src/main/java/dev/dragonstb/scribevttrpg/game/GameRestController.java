@@ -45,7 +45,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -203,7 +202,7 @@ public class GameRestController {
             }
             else {
                 json.put( "accepted", false );
-                GameUtils.ParticipationStatus status = game.getParticipationStatus( participant );
+                ParticipationStatus status = game.getParticipationStatus( participant );
                 switch( status ) {
                     case participating -> {
                         // TODO: provide link to /game/{roomName}
@@ -256,7 +255,7 @@ public class GameRestController {
 
         Participant participation;
         GameService game = opt.get();
-        GameUtils.ParticipationStatus status;
+        ParticipationStatus status;
 
         synchronized ( participations ) {
             participation = participations.get( roomName );
@@ -268,8 +267,8 @@ public class GameRestController {
             }
 
             status = game.getParticipationStatus( participation );
-            if( status != GameUtils.ParticipationStatus.participating ) {
-                if( status == GameUtils.ParticipationStatus.none ) {
+            if( status != ParticipationStatus.participating ) {
+                if( status == ParticipationStatus.none ) {
                     // inconsistent state between 'participations' and 'game.participants', fix it assuming that the game
                     // is correct in this point
                     participations.remove( roomName );

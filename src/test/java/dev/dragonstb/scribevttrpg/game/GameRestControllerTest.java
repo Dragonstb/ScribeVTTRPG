@@ -283,7 +283,7 @@ public class GameRestControllerTest {
 
         JSONObject expect = new JSONObject();
         expect.put( "accepted", false );
-        expect.put( "message", "room not found." ); // HINT: value of "message" yet not finalized, is subject to change
+        expect.put( "message", "No room with such a name could be found." ); // HINT: value of "message" yet not finalized, is subject to change
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
 
@@ -360,10 +360,9 @@ public class GameRestControllerTest {
             return;
         }
 
-        // HINT: response behavior is subject to change: is going to switch to redirecting the user
         JSONObject expect = new JSONObject();
         expect.put( "accepted", false );
-        expect.put( "message", "You are already waiting here." );
+        expect.put( "message", "You have already made a request for entering this room." );
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
 
@@ -402,7 +401,7 @@ public class GameRestControllerTest {
         // HINT: response behavior is subject to change: is going to switch to redirecting the user
         JSONObject expect = new JSONObject();
         expect.put( "accepted", false );
-        expect.put( "message", "You are already participating in this room" );
+        expect.put( "message", "You are already participating in this game." );
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
 

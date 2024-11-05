@@ -57,6 +57,10 @@ public interface LocKeys {
     public static final String JOIN_NO_SUCH_ROOM = "web.join.noSuchRoom";
     /** When starting the join process: text stating that the name is already occupied by someone else. */
     public static final String JOIN_NAME_OCCUPIED = "web.join.nameOccupied";
+    /** When starting the join process: text stating that you are already in the game. */
+    public static final String JOIN_ALREADY_PARTICIPATING = "web.join.alreadyParticipating";
+    /** When starting the join process: text stating that you are already waiting for this game. */
+    public static final String JOIN_ALREADY_WAITING = "web.join.alreadyWaiting";
 
     /** When waiting for join: document title for the tab. */
     public static final String WAIT_DOC_TITLE = "web.wait.documentTitle";

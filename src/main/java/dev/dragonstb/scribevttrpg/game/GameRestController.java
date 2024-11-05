@@ -178,7 +178,7 @@ public class GameRestController {
             response.setContentType( MediaType.APPLICATION_JSON_VALUE );
             JSONObject json = new JSONObject();
             json.put( "accepted", false );
-            json.put( "message", "room not found." );
+            json.put( "message", getMessage(LocKeys.JOIN_NO_SUCH_ROOM, loc) );
             return json.toString();
         }
 
@@ -198,9 +198,7 @@ public class GameRestController {
                     response.setStatus( HttpStatus.CREATED.value() );
                 } catch ( IdentityNotUniqueException inue ) {
                     json.put( "accepted", false );
-                    String key = LocKeys.JOIN_NAME_OCCUPIED;
-                    String msg = messageSource.getMessage( key, null, "<"+key+">", loc);
-                    json.put( "message", msg );
+                    json.put( "message", getMessage(LocKeys.JOIN_NAME_OCCUPIED, loc) );
                 }
             }
             else {
@@ -208,12 +206,12 @@ public class GameRestController {
                 GameUtils.ParticipationStatus status = game.getParticipationStatus( participant );
                 switch( status ) {
                     case participating -> {
-                        // TODO: trigger auto-redirect to /game/{roomName}
-                        json.put( "message", "You are already participating in this room" );
+                        // TODO: provide link to /game/{roomName}
+                        json.put( "message", getMessage( LocKeys.JOIN_ALREADY_PARTICIPATING, loc) );
                     }
                     case waiting -> {
-                        // TODO: trigger auto-redirect to /wait/{roomName}
-                        json.put( "message", "You are already waiting here." );
+                        // TODO: provide to /wait/{roomName}
+                        json.put( "message", getMessage( LocKeys.JOIN_ALREADY_WAITING, loc) );
                     }
                     case none -> {
                         // inconsistent state, existing participant which is not part of the game. The game is assumed to be
@@ -354,4 +352,14 @@ public class GameRestController {
         return json.toString();
     }
 
+    /**
+     * @since 0.1.0
+     * @author Dragonstb
+     * @param key Localization key
+     * @param locale Localization used
+     * @return Localized message.
+     */
+    private String getMessage( @NonNull String key, @NonNull Locale locale ) {
+        return messageSource.getMessage( key, null, "<"+key+">", locale);
+    }
 }

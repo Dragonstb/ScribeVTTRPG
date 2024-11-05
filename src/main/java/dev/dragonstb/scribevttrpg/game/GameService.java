@@ -63,15 +63,26 @@ public interface GameService {
      * @param participant The given participant.
      * @return {@code True} if and only if the given participant participates in this game <i>and</i> has completed the
      * joining process.
+     * @deprecated since 0.1.0: use {@code getParticipationStatus(Participant) instead.
      */
+    @Deprecated
     public boolean hasJoinedAlready( @NonNull Participant participant );
 
     /** Says if the participant is participating or joining.
      * @since 0.1.0;
      * @param participant The given participant.
      * @return Is related to the game.
+     * @deprecated since 0.1.0: use {@code getParticipationStatus(Participant) instead.
      */
+    @Deprecated
     public boolean isRelated( @NonNull Participant participant );
 
+    /** Returns the current participation status of the given participant in the game. This is exactly one of the
+     * three values <i>participating</i>, <i>waiting</i>, or <i>none</i>.
+     * @since 0.1.0
+     * @param participant User of interest.
+     * @return How is this user related to the game?
+     */
+    public GameUtils.ParticipationStatus getParticipationStatus( @NonNull Participant participant );
 
 }

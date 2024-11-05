@@ -29,6 +29,7 @@ import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.game.participant.DefaultParticipant;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.game.exceptions.IdentityNotUniqueException;
 import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import dev.dragonstb.scribevttrpg.utils.Constants;
@@ -58,6 +59,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 /**
  *
@@ -211,18 +213,25 @@ public class GameRestControllerTest {
     // ____________________________  request join process  ____________________________
 
     @Test
-    public void testStartJoinProcess() throws Exception {
+    public void testStartJoinProcess_ok() throws Exception {
         jsonBody = new JSONObject();
         jsonBody.put( "roomName", ROOM_NAME );
         jsonBody.put( "name", USER_NAME );
+        Participant participant = DefaultParticipant.create( USER_NAME, ParticipantRole.prospect );
+        Map<String, Participant> participations = new HashMap<>();
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+        when( game.createAndAddParticipant(USER_NAME, ParticipantRole.prospect) ).thenReturn( participant );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
                 .contentType("application/json")
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations )
                 .locale(EN);
 
         MvcResult response = mockMvc.perform( request )
-                .andExpect( status().isOk() )
+                .andExpect( status().isCreated())
+                .andExpect( header().string("content-type", "application/json") )
                 .andReturn();
 
         String content = response.getResponse().getContentAsString();
@@ -237,9 +246,211 @@ public class GameRestControllerTest {
         JSONObject expect = new JSONObject();
         expect.put( "accepted", true );
         expect.put( "room", ROOM_NAME );
-        expect.put( "message", "Hello." );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+
+        assertTrue( participations.containsKey(ROOM_NAME), "room name is not a key in participations" );
+        assertEquals( participant, participations.get(ROOM_NAME), "participant has not been added" );
+    }
+
+    @Test
+    public void testStartJoinProcess_no_such_room() throws Exception {
+        jsonBody = new JSONObject();
+        jsonBody.put( "roomName", ROOM_NAME );
+        jsonBody.put( "name", USER_NAME );
+        Map<String, Participant> participations = new HashMap<>();
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.empty() );
+
+        RequestBuilder request = post( "/joingame" )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations )
+                .locale(EN);
+
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isNotFound() )
+                .andExpect( header().string("content-type", "application/json") )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        JSONObject expect = new JSONObject();
+        expect.put( "accepted", false );
+        expect.put( "message", "room not found." ); // HINT: value of "message" yet not finalized, is subject to change
         assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
     }
+
+    @Test
+    public void testStartJoinProcess_identity_occupied() throws Exception {
+        jsonBody = new JSONObject();
+        jsonBody.put( "roomName", ROOM_NAME );
+        jsonBody.put( "name", USER_NAME );
+        Map<String, Participant> participations = new HashMap<>();
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+        when( game.createAndAddParticipant(USER_NAME, ParticipantRole.prospect) )
+                .thenThrow( IdentityNotUniqueException.class );
+        String key = LocKeys.JOIN_NAME_OCCUPIED;
+        String msg = messageSource.getMessage( key, null, "<"+key+">", EN);
+
+        RequestBuilder request = post( "/joingame" )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations )
+                .locale(EN);
+
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isOk() )
+                .andExpect( header().string("content-type", "application/json") )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        JSONObject expect = new JSONObject();
+        expect.put( "accepted", false );
+        expect.put( "message", msg );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+
+        assertFalse( participations.containsKey(ROOM_NAME), "room name is a key" );
+    }
+
+    @Test
+    public void testStartJoinProcess_already_waiting() throws Exception {
+        jsonBody = new JSONObject();
+        jsonBody.put( "roomName", ROOM_NAME );
+        jsonBody.put( "name", USER_NAME );
+        Participant participant = DefaultParticipant.create( USER_NAME, ParticipantRole.prospect );
+        Map<String, Participant> participations = new HashMap<>();
+        participations.put( ROOM_NAME, participant );
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+        when( game.hasJoinedAlready(participant) ).thenReturn( false );
+        when( game.isRelated(participant) ).thenReturn( true );
+
+        RequestBuilder request = post( "/joingame" )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations )
+                .locale(EN);
+
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isOk() )
+                .andExpect( header().string("content-type", "application/json") )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        // HINT: response behavior is subject to change: is going to switch to redirecting the user
+        JSONObject expect = new JSONObject();
+        expect.put( "accepted", false );
+        expect.put( "message", "You are already waiting here." );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+    }
+
+    @Test
+    public void testStartJoinProcess_already_participating() throws Exception {
+        jsonBody = new JSONObject();
+        jsonBody.put( "roomName", ROOM_NAME );
+        jsonBody.put( "name", USER_NAME );
+        Participant participant = DefaultParticipant.create( USER_NAME, ParticipantRole.prospect );
+        Map<String, Participant> participations = new HashMap<>();
+        participations.put( ROOM_NAME, participant );
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+        when( game.hasJoinedAlready(participant) ).thenReturn( true );
+        when( game.isRelated(participant) ).thenReturn( true );
+
+        RequestBuilder request = post( "/joingame" )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations )
+                .locale(EN);
+
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isOk() )
+                .andExpect( header().string("content-type", "application/json") )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        // HINT: response behavior is subject to change: is going to switch to redirecting the user
+        JSONObject expect = new JSONObject();
+        expect.put( "accepted", false );
+        expect.put( "message", "You are already participating in this room" );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+    }
+
+    @Test
+    public void testStartJoinProcess_inconsisten_state() throws Exception {
+        jsonBody = new JSONObject();
+        jsonBody.put( "roomName", ROOM_NAME );
+        jsonBody.put( "name", USER_NAME );
+        Participant participant = DefaultParticipant.create( USER_NAME, ParticipantRole.prospect );
+        Map<String, Participant> participations = new HashMap<>();
+        participations.put( ROOM_NAME, participant );
+
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
+        when( game.hasJoinedAlready(participant) ).thenReturn( false );
+        when( game.isRelated(participant) ).thenReturn( false );
+
+        RequestBuilder request = post( "/joingame" )
+                .content( jsonBody.toString() )
+                .contentType("application/json")
+                .sessionAttr( Constants.KEY_PARTICIPATIONS, participations )
+                .locale(EN);
+
+        MvcResult response = mockMvc.perform( request )
+                .andExpect( status().isOk() )
+                .andExpect( header().string("content-type", "application/json") )
+                .andReturn();
+
+        String content = response.getResponse().getContentAsString();
+        JSONObject jsonContent;
+        try {
+            jsonContent = new JSONObject( content );
+        } catch ( Exception e ) {
+            fail( "response is not jsonic");
+            return;
+        }
+
+        // HINT: response behavior is subject to change: is going to fix the problem and add the user
+        JSONObject expect = new JSONObject();
+        expect.put( "accepted", false );
+        expect.put( "message", "A problem occured, but we cleaned it up. Please simply try again." );
+        assertTrue( jsonContent.similar(expect), "jsons are not similar: \"jsonRes"+jsonContent.toString()+"\" vs \""+ expect.toString()+"\"");
+
+        assertFalse( participations.containsKey(ROOM_NAME), "room name is still a key" );
+    }
+
+
 
     // ____________________________  get materials  ____________________________
 

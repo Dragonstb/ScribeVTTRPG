@@ -25,6 +25,7 @@
  */
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.game.exceptions.IdentityNotUniqueException;
 import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
@@ -42,14 +43,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameTest {
 
     private static final String ROOM_NAME_BASE = "Bath Room ";
-    private HandoutManager manager;
     private String roomName;
     private static int counter = 0;
 
     @BeforeEach
     public void setUp() {
         roomName = ROOM_NAME_BASE + (++counter);
-        manager = new DefaultHandoutManager();
     }
 
     @Test
@@ -72,6 +71,24 @@ public class GameTest {
         assertEquals( role, part.getRole() );
         assertEquals( name, part.getName() );
         assertTrue( game.getParticipants().contains( part ) );
+    }
+
+    @Test
+    public void testAddParticipant_identity_occupied() {
+        String name = "Ethan";
+        ParticipantRole role = ParticipantRole.player;
+        Game game = Game.create(roomName);
+
+        Participant part = game.createAndAddParticipant( name, role );
+
+        IdentityNotUniqueException exc = assertThrows( IdentityNotUniqueException.class,
+                () -> game.createAndAddParticipant( name, role ));
+
+        assertEquals( role, part.getRole() );
+        assertEquals( name, part.getName() );
+        assertTrue( game.getParticipants().contains( part ) );
+        assertEquals( 1, game.getParticipants().size(), "wrong size" );
+        assertEquals( name, exc.getName(), "wrong name in exception" );
     }
 
 }

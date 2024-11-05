@@ -175,9 +175,10 @@ public class GameRestController {
             // decide on the server if the latter one is true (we don't want to put the effort for this), we send 404
             // anyway
             response.setStatus( 404 );
+            response.setContentType( MediaType.APPLICATION_JSON_VALUE );
             JSONObject json = new JSONObject();
             json.put( "accepted", false );
-            json.put( "message", "Hello." );
+            json.put( "message", "room not found." );
             return json.toString();
         }
 
@@ -194,6 +195,7 @@ public class GameRestController {
                     participations.put( roomName, participant );
                     json.put( "accepted", true );
                     json.put( "room", roomName );
+                    response.setStatus( HttpStatus.CREATED.value() );
                 } catch ( IdentityNotUniqueException inue ) {
                     json.put( "accepted", false );
                     String key = LocKeys.JOIN_NAME_OCCUPIED;
@@ -224,6 +226,7 @@ public class GameRestController {
             }
         }
 
+        response.setContentType( MediaType.APPLICATION_JSON_VALUE );
         return json.toString();
     }
 

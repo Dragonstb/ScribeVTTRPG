@@ -105,7 +105,7 @@ public class GameRestControllerTest {
         HttpSession session = new MockHttpSession();
         Map<String, Participant> map = new HashMap();
 
-        Map result = GameRestController.getParticipationsAndCreateIfNeeded( session );
+        Map result = GameUtils.getParticipationsAndCreateIfNeeded( session );
         assertNotNull( result );
         assertEquals( map, result );
     }
@@ -115,7 +115,7 @@ public class GameRestControllerTest {
         HttpSession session = new MockHttpSession();
 
         assertNull( session.getAttribute( Constants.KEY_PARTICIPATIONS) );
-        Map result = GameRestController.getParticipationsAndCreateIfNeeded( session );
+        Map result = GameUtils.getParticipationsAndCreateIfNeeded( session );
         assertNotNull( result );
     }
 
@@ -338,8 +338,7 @@ public class GameRestControllerTest {
         participations.put( ROOM_NAME, participant );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.hasJoinedAlready(participant) ).thenReturn( false );
-        when( game.isRelated(participant) ).thenReturn( true );
+        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.waiting );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
@@ -378,8 +377,7 @@ public class GameRestControllerTest {
         participations.put( ROOM_NAME, participant );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.hasJoinedAlready(participant) ).thenReturn( true );
-        when( game.isRelated(participant) ).thenReturn( true );
+        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.participating );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
@@ -418,8 +416,7 @@ public class GameRestControllerTest {
         participations.put( ROOM_NAME, participant );
 
         when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
-        when( game.hasJoinedAlready(participant) ).thenReturn( false );
-        when( game.isRelated(participant) ).thenReturn( false );
+        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.none );
 
         RequestBuilder request = post( "/joingame" )
                 .content( jsonBody.toString() )
@@ -460,11 +457,11 @@ public class GameRestControllerTest {
         Map<String, Participant> participations = new HashMap<>();
         participations.put( ROOM_NAME, DefaultParticipant.create("Randy", ParticipantRole.gm) );
 
-        when( gameUtils.getGameUserIsParticipatingIn( participations, ROOM_NAME ) ).thenReturn( Optional.of(game) );
+        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME ) )
+                .thenReturn( GameUtils.ParticipationStatus.participating );
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
         when( game.getHandoutManager() ).thenReturn( handoutManager );
-        when( game.hasJoinedAlready(any()) ).thenReturn( true );
         when( handoutManager.getHandouts() ).thenReturn( handouts );
-
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
@@ -494,7 +491,9 @@ public class GameRestControllerTest {
     public void testGetMaterials_notParticipating() throws Exception {
         Map<String, Participant> participations = new HashMap<>();
 
-        when( gameUtils.getGameUserIsParticipatingIn( any(), any() ) ).thenReturn( Optional.empty() );
+        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME ) )
+                .thenReturn( GameUtils.ParticipationStatus.none );
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
@@ -503,14 +502,17 @@ public class GameRestControllerTest {
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
-                .andExpect( status().is(400) );
+                .andExpect( status().is(401) );
     }
 
     @Test
     public void testGetMaterials_inconsistentParticipationRegistrations() throws Exception {
         Map<String, Participant> participations = new HashMap<>();
+        Participant participation = DefaultParticipant.create( "Emilyy", ParticipantRole.gm );
+        participations.put( ROOM_NAME, participation );
 
-        when( gameUtils.getGameUserIsParticipatingIn( any(), any() ) ).thenThrow( RuntimeException.class );
+        when( gameUtils.getUserParticipationStatus(participations, ROOM_NAME) ).thenReturn( GameUtils.ParticipationStatus.none );
+        when( gameManager.getGame(ROOM_NAME) ).thenReturn( Optional.of(game) );
 
         RequestBuilder request = get( "/materials/"+ROOM_NAME )
                 .content( jsonBody.toString() )
@@ -519,7 +521,7 @@ public class GameRestControllerTest {
                 .sessionAttr( Constants.KEY_PARTICIPATIONS, participations );
 
         mockMvc.perform( request )
-                .andExpect( status().is(400) );
+                .andExpect( status().is(401) );
     }
 
 }

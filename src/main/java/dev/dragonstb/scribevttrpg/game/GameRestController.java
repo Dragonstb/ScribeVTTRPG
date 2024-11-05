@@ -101,7 +101,7 @@ public class GameRestController {
 
         // TODO: access session variables with annotations
         HttpSession httpSession = request.getSession();
-        Map<String, Participant> participations = getParticipationsAndCreateIfNeeded( httpSession );
+        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
         GameService game;
         try {
@@ -205,23 +205,24 @@ public class GameRestController {
             }
             else {
                 json.put( "accepted", false );
-                if( game.hasJoinedAlready(participant) ) {
-                    // already participating
-                    // TODO: trigger auto-redirect to /game/{roomName}
-                    json.put( "message", "You are already participating in this room" );
-                }
-                else if( game.isRelated(participant) ) {
-                    // already waiting
-                    // TODO: trigger auto-redirect to /wait/{roomName}
-                    json.put( "message", "You are already waiting here." );
-                }
-                else {
-                    // inconsistent state, existing participant which is not part of the game. The game is assumed to be
-                    // right in this point, so delete participation
-                    participations.remove( roomName );
-                    // TODO: automatically go back to the beginning of the synchronized block and start the join
-                    //       process. For now, the user has to this for us
-                    json.put( "message", "A problem occured, but we cleaned it up. Please simply try again." );
+                GameUtils.ParticipationStatus status = game.getParticipationStatus( participant );
+                switch( status ) {
+                    case participating -> {
+                        // TODO: trigger auto-redirect to /game/{roomName}
+                        json.put( "message", "You are already participating in this room" );
+                    }
+                    case waiting -> {
+                        // TODO: trigger auto-redirect to /wait/{roomName}
+                        json.put( "message", "You are already waiting here." );
+                    }
+                    case none -> {
+                        // inconsistent state, existing participant which is not part of the game. The game is assumed to be
+                        // right in this point, so delete participation
+                        participations.remove( roomName );
+                        // TODO: automatically go back to the beginning of the synchronized block and start the join
+                        //       process. For now, the user has to this for us
+                        json.put( "message", "A problem occured, but we cleaned it up. Please simply try again." );
+                    }
                 }
             }
         }
@@ -248,22 +249,29 @@ public class GameRestController {
     public String getMaterials( HttpServletRequest request, @PathVariable String roomName ) {
         // TODO: validate room name
         HttpSession httpSession = request.getSession();
-        Map<String, Participant> participations = getParticipationsAndCreateIfNeeded( httpSession );
+        Map<String, Participant> participations = GameUtils.getParticipationsAndCreateIfNeeded( httpSession );
 
         // check user's participation
-        Optional<GameService> opt;
+        Optional<GameService> opt = gameManager.getGame( roomName );
+        if( opt.isEmpty() ) {
+            // TODO: error 404
+            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
+        }
+
+        GameService game = opt.get();
+        GameUtils.ParticipationStatus status;
         try {
-            opt = gameUtils.getGameUserIsParticipatingIn( participations, roomName );
+            // TODO: can ask game directly for participation status
+            status = gameUtils.getUserParticipationStatus( participations, roomName );
         } catch ( Exception e ) {
             throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
         }
 
-        if( opt.isEmpty() ) {
-            throw new ResponseStatusException( HttpStatus.BAD_REQUEST );
+        if( status != GameUtils.ParticipationStatus.participating ) {
+            throw new ResponseStatusException( HttpStatus.UNAUTHORIZED );
         }
 
         // assemble response
-        GameService game = opt.get();
         HandoutManager handoutManager = game.getHandoutManager();
         List<ContainerHandout> handouts = handoutManager.getHandouts(); // TODO: user ID and role as arguments
         JSONArray hoArr = new JSONArray();
@@ -335,27 +343,6 @@ public class GameRestController {
         json.put( "ok?", ok);
 
         return json.toString();
-    }
-
-
-    /** Gets the attribute "participations" from the http session object. This is a map that maps room names to the
-     * user participations in gaming sessions.<br><br>
-     * If the attribute is not set, a new, empty map is added. Therefore, this method garuantees the return of a nonnull
-     * map.
-     * @param session The http session. Must be not-null
-     * @return The map of romm names to participations. Never null.
-     * @deprecated since 0.1.0 Please use the method in GameUtils
-     */
-    @Deprecated
-    @NonNull
-    final static Map<String, Participant> getParticipationsAndCreateIfNeeded(@NonNull HttpSession session) {
-        // TODO: do we really need this method beyond this calls and beyond of unit tests?
-        Map<String, Participant> participations = (HashMap<String, Participant>)session.getAttribute( Constants.KEY_PARTICIPATIONS );
-        if( participations == null ) {
-            participations = new HashMap<>();
-            session.setAttribute( Constants.KEY_PARTICIPATIONS, participations );
-        }
-        return participations;
     }
 
 }

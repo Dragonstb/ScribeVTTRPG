@@ -50,14 +50,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 public class GameUtils {
 
-    /** Text for exception thrown when the room name leads to {@code null} in the user's map of participations. */
-    static final String EXC_NULL_PARTICIPATION = "Room name is mapped to null, not to an instance of Participation.";
-    /** Text for exception thrown when a user's participation relates to a nonexisting game. */
-    static final String EXC_GAME_DOES_NOT_EXIST = "No game is registered under this room name.";
-    /** Text for exception throwen when the user's participation is not listed in the related game. */
-    static final String EXC_NOT_LISTED_IN_GAME = "User\'s Partcipation is not listed in the game.";
-
-    static enum ParticipationStatus {
+    public static enum ParticipationStatus {
         /** A user is participating. */
         participating,
         /** A user is waiting for being let in into the room. */
@@ -69,53 +62,6 @@ public class GameUtils {
 
     @Autowired
     private GameManager gameManager;
-
-    /** Returns an optional either containing the game registered under {@code roomName} if and only if the user is
-     * participating in this game, or an empty optional. Note that the user's instance of
-     * {@link dev.dragonstb.scribevttrpg.game.participant.Participant Participant} is listed in two places: the user's
-     * list of participations and the list of participants in the game object. If an inconsisted state is detected by
-     * this method, an exception is thrown.
-     * @author Dragonstb
-     * @since 0.1.0;
-     * @param participations Collection of user's participations.
-     * @param roomName The room name where the game should be located.
-     * @return Optional with the game, if the user is participating, or an empty optional if the user is not
-     * participating.
-     * @throws RuntimeException When an inconsistent state is detected. This could be:
-     * <ul>
-     *   <li>The {@code roomName} exists as key in the user's participations, but leads to {@code null}</li>
-     *   <li>There is no game registered with {@code roomName}</li>
-     *   <li>The user's participation exists in the user's collection of participations, but not in the list of participants in the game</li>
-     * </ul>
-     * @deprecated since 0.1.0: Use {@code getUserParticipationStatus(...)} for checking the user's participation
-     * status.
-     */
-    @NonNull
-    @Deprecated
-    Optional<GameService> getGameUserIsParticipatingIn( @NonNull Map<String, Participant> participations, @NonNull String roomName) {
-        if( !participations.containsKey( roomName ) ) {
-            return Optional.empty();
-        }
-
-        // TODO: clean up detected inconsistent states
-        Participant participant = participations.get( roomName );
-        if( participant == null ) {
-            throw new RuntimeException( EXC_NULL_PARTICIPATION );
-        }
-
-        Optional<GameService> opt = gameManager.getGame( roomName );
-        if( opt.isEmpty() ) {
-            throw new RuntimeException( EXC_GAME_DOES_NOT_EXIST );
-        }
-        GameService game = opt.get();
-
-        if( !game.hasJoinedAlready(participant) ) {
-            throw new RuntimeException( EXC_NOT_LISTED_IN_GAME );
-        }
-
-        return opt;
-    }
-
 
     /** Gets the attribute "participations" from the http session object. This is a map that maps room names to the
      * user participations in gaming sessions.<br><br>
@@ -182,13 +128,13 @@ public class GameUtils {
                 return ParticipationStatus.none;
             }
 
-            boolean related = game.isRelated( participant );
-            if( !related ) {
+            ParticipationStatus status = game.getParticipationStatus( participant );
+            if( status == ParticipationStatus.none ) {
                 participations.remove( roomName );
                 throw new NotInGameException( roomName );
             }
 
-            return participant.hasJoinedAlready() ? ParticipationStatus.participating : ParticipationStatus.waiting;
+            return status;
         }
     }
 

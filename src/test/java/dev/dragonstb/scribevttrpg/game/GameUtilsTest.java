@@ -104,7 +104,7 @@ public class GameUtilsTest {
     public void testGetUserParticipationStatus_not_listed_in_game() {
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.isRelated(participant) ).thenReturn( false );
+        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.none );
 
         NotInGameException exc = assertThrows( NotInGameException.class,
                 () -> utils.getUserParticipationStatus(participations, roomName) );
@@ -117,7 +117,7 @@ public class GameUtilsTest {
         participant = DefaultParticipant.create( "Frederic", ParticipantRole.prospect );
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.isRelated(participant) ).thenReturn( true );
+        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.waiting );
 
         GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
         assertEquals( GameUtils.ParticipationStatus.waiting, status );
@@ -127,7 +127,7 @@ public class GameUtilsTest {
     public void testGetUserParticipationStatus_ok() {
         participations.put( roomName, participant );
         when( gameManager.getGame(roomName) ).thenReturn( Optional.of(game) );
-        when( game.isRelated(participant) ).thenReturn( true );
+        when( game.getParticipationStatus(participant) ).thenReturn( GameUtils.ParticipationStatus.participating );
 
         GameUtils.ParticipationStatus status = utils.getUserParticipationStatus( participations, roomName );
         assertEquals( GameUtils.ParticipationStatus.participating, status );

@@ -128,18 +128,6 @@ public final class Game implements GameService {
     }
 
     @Override
-    @Deprecated
-    public boolean hasJoinedAlready( @NonNull Participant participant ) {
-        return isRelated( participant ) && participant.hasJoinedAlready();
-    }
-
-    @Override
-    @Deprecated
-    public boolean isRelated( @NonNull Participant participant ) {
-        return participants.contains( participant );
-    }
-
-    @Override
     public GameUtils.ParticipationStatus getParticipationStatus( @NonNull Participant participant ) {
         boolean exists = participants.contains( participant );
         if( exists ) {

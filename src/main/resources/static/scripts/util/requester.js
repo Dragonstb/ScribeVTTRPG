@@ -45,7 +45,6 @@ const requester = {
          * @param {String} url The URL to be called.
          */
         async function getContentData( url ) {
-            console.log('making async call');
             const resp = await fetch(url, {
                 method: "GET",
                 cache: "no-cache",
@@ -63,7 +62,6 @@ const requester = {
          * @param {Object} data Response data as json object.
          */
         function resolveContentResponse( data ) {
-            console.log('resolving async call');
             if( data === null || data === undefined ) {
                 resolveFail( null );
             }

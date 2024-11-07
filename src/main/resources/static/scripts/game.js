@@ -2,6 +2,7 @@ let game = {
     handouts: {},
     room: null,
     fetchFromServer: false,
+    webSocket: null,
 
     handlePieceAction: function( actionData ) {
         console.log( 'Game: '+JSON.stringify(actionData) );
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', afterLoadingGame);
 
 
 // class names
-const NODISPLAY = "nodisplay";
+const NODISPLAY = constants.NODISPLAY;
 
 function afterLoadingGame() {
     let roomInput = document.querySelector("#roomname");
@@ -21,6 +22,7 @@ function afterLoadingGame() {
 
     addMenuActions();
     fetchHandouts();
+    setupWebSocket();
 }
 
 function addMenuActions() {
@@ -112,4 +114,13 @@ function fetchHandouts() {
     function resolveHandoutFailure() {
         console.log("failed in fetching the handouts");
     }
+}
+
+function setupWebSocket() {
+    if( !game.fetchFromServer ) {
+        console.log('No WebSockets in local mode');
+        return;
+    }
+
+    WSBuilder.build(game);
 }

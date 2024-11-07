@@ -24,6 +24,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-webflux') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-reactor-netty'
     }
+    //implementation 'org.springframework.boot:spring-messaging'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation 'org.json:json:20231013'
 }

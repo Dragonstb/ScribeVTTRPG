@@ -139,4 +139,12 @@ public final class Game implements GameService {
         }
     }
 
+    /*
+    TODO: shutdown routine that
+    - closes all open Server-Sent Events connections
+    - closes all open WebSocket connections
+    - removes the topic /admingame/{roomName} from the message broker
+    - unsubscribes all subscribers of the topic /admingame/{roomName}
+    - sets the alive flag to false (alive flag yet to be implemented)
+    */
 }

@@ -160,7 +160,13 @@ decline the request and don't let the person into the room. This way, I can cont
 
 # Technical stuff
 
-- Successfully creating a new *room* shall be responded with status code "201 created"
+- Adding an alive flag for an instance of game. Currently, join requests may be made during the creation of the game. If
+  the room creator's websocket connection has yet not been established by then, the prospect participant will wait for
+  ever: the room creator never got the signal. Game may be set alive once the instance has been created, teh room
+  creator is in the room, and the room creators UI and WebSocket connection is ready. Requests from others shall be
+  rejected as long as the game is not alive. Access to alive flag is synced.
+- Extending alive flag by a timestamp of last action. A sheduled task may check all rooms regularly for this time stamp
+  and auto-close wasted rooms after settign the alive flag to false again.
 - Transition to Java 23
 - Update dependencies in general
 - Redesign the way how nested handout pieces within containers are addressed by their ID. Currently, the ID of the

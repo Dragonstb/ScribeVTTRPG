@@ -49,7 +49,7 @@ const WSBuilder = {
         console.log("subscribing to /topic/admingame/"+game.room);
         sock.onConnect = function(frame) {
             const adminGameSubscription = sock.subscribe('/topic/admingame/'+game.room,
-                    function(msg){console.log(msg);});
+                    function(msg){console.dir(msg);});
 
             if( !wrapper.ready ) {
                 // TODO: remove test message

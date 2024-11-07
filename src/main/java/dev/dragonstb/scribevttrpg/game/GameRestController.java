@@ -36,6 +36,7 @@ import dev.dragonstb.scribevttrpg.game.handouts.ContainerHandout;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import dev.dragonstb.scribevttrpg.utils.Constants;
 import dev.dragonstb.scribevttrpg.utils.LocKeys;
+import dev.dragonstb.scribevttrpg.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -51,6 +52,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,10 +76,10 @@ public class GameRestController {
     private GameManager gameManager;
 
     @Autowired
-    private GameUtils gameUtils;
+    private MessageSource messageSource;
 
     @Autowired
-    private MessageSource messageSource;
+    private SimpMessagingTemplate smt;
 
     /** This method creates a new game. The game is created with the favourite room name, as long as this name has not
      * been taken already. If the creation fails, an error messsage is returned.
@@ -147,6 +149,14 @@ public class GameRestController {
         return json.toString();
     }
 
+    /** Called from the join webpage when hitting the "request participation" button.
+     *
+     * @param body
+     * @param request
+     * @param response
+     * @param loc
+     * @return
+     */
     @PostMapping("/joingame")
     public String startJoinProcess( @RequestBody String body, HttpServletRequest request, HttpServletResponse response,
             @RequestHeader(name="Accept-Language", defaultValue="en") Locale loc ) {
@@ -195,6 +205,7 @@ public class GameRestController {
                     json.put( "accepted", true );
                     json.put( "room", roomName );
                     response.setStatus( HttpStatus.CREATED.value() );
+                    notifyJoin( roomName, name );
                 } catch ( IdentityNotUniqueException inue ) {
                     json.put( "accepted", false );
                     json.put( "message", getMessage(LocKeys.JOIN_NAME_OCCUPIED, loc) );
@@ -360,5 +371,20 @@ public class GameRestController {
      */
     private String getMessage( @NonNull String key, @NonNull Locale locale ) {
         return messageSource.getMessage( key, null, "<"+key+">", locale);
+    }
+
+    /** Creates a notification about a join request and hands it over to the message broker. This notification is
+     * sent by the game administration channel of the room.
+     * @since 0.1.1;
+     * @author Dragonstb
+     * @param roomName Name of the room of interest.
+     * @param userId
+     */
+    private void notifyJoin( @NonNull String roomName, @NonNull String userId ) {
+        JSONObject json = new JSONObject();
+        json.put( "event", "new prospect" );
+        json.put( "roomName", roomName );
+        json.put( "name", userId );
+        smt.convertAndSend( Utils.getAdminGamePath(roomName), json.toString() );
     }
 }

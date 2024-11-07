@@ -105,7 +105,7 @@ public class Utils {
         }
         return builder.toString();
     }
-    
+
     /** Gets the path to the game pages(s).
      * @author Dragonstb
      * @since 0.1.0
@@ -116,6 +116,23 @@ public class Utils {
     public static String getGamePath( String roomName ) {
         StringBuilder builder = new StringBuilder();
         builder.append( "/game" );
+        if( roomName != null && !roomName.isBlank() ) {
+            builder.append( "/" );
+            builder.append( roomName );
+        }
+        return builder.toString();
+    }
+
+    /** Gets the message destination for the game administration topic.
+     * @author Dragonstb
+     * @since 0.1.1
+     * @param roomName Name of the room.
+     * @return "/topic/admingame/"+roomName if and only if {@code roomName} is neither {@code null} nor blank.
+     * Otherwise just "/topic/admingame".
+     */
+    public static String getAdminGamePath( String roomName ) {
+        StringBuilder builder = new StringBuilder();
+        builder.append( "/topic/admingame" );
         if( roomName != null && !roomName.isBlank() ) {
             builder.append( "/" );
             builder.append( roomName );

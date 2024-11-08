@@ -6,6 +6,9 @@ let game = {
 
     handlePieceAction: function( actionData ) {
         console.log( 'Game: '+JSON.stringify(actionData) );
+    },
+
+    receiveMessage: function( topic, msg ) {
     }
 };
 

@@ -382,7 +382,7 @@ public class GameRestController {
      */
     private void notifyJoin( @NonNull String roomName, @NonNull String userId ) {
         JSONObject json = new JSONObject();
-        json.put( "event", "new prospect" );
+        json.put( "event", "newProspect" );
         json.put( "roomName", roomName );
         json.put( "name", userId );
         smt.convertAndSend( Utils.getAdminGamePath(roomName), json.toString() );

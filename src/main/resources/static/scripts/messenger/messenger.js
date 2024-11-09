@@ -36,8 +36,8 @@ const Messenger = {
      * @param {string} topic A non-blank string.
      */
     subscribe: function( topic, listener ) {
-        if( !topic || typeof(topic) !== "string" || topic.length === 0 ) {
-            console.error('cannot subscribe to topic: topic name must be a non-blank string.');
+        if( !Utils.isNonemptyString(topic) ) {
+            console.error('cannot subscribe to topic: topic name must be a non-empty string.');
             console.dir(topic);
             return;
         }

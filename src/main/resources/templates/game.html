@@ -9,6 +9,7 @@
         <script src="../static/scripts/stompjs/stomp.umd.js" th:src="@{/scripts/stompjs/stomp.umd.js}"></script>
         <script src="../static/scripts/stompjs/stomp.umd.min.js" th:src="@{/scripts/stompjs/stomp.umd.min.js}"></script>
         <script src="../static/scripts/messenger/messenger.js" th:src="@{/scripts/messenger/messenger.js}"></script>
+        <script src="../static/scripts/mainmenu/mainmenu.js" th:src="@{/scripts/mainmenu/mainmenu.js}"></script>
         <script src="../static/scripts/util/requester.js" th:src="@{/scripts/util/requester.js}"></script>
         <script src="../static/scripts/util/websocket.js" th:src="@{/scripts/util/websocket.js}"></script>
         <script src="../static/scripts/game.js" th:src="@{/scripts/game.js}"></script>
@@ -27,10 +28,7 @@
                         aria-owns="let-them-in-panel">Guests waiting in front of the door</button>
                 <button type="button">Leave</button>
             </div>
-            <div class="nodisplay" id="let-them-in-panel" >
-                <div>Sam</div>
-                <div>Alex</div>
-            </div>
+            <div class="nodisplay" id="let-them-in-panel" ></div>
             <h1 th:text="${pageTitle}">The great adventure</h1>
         </div>
         <div>Space for the table</div>

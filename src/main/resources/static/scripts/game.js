@@ -1,4 +1,4 @@
-let game = {
+const game = {
     handouts: {},
     room: null,
     myId: null,
@@ -11,10 +11,28 @@ let game = {
     },
 
     receiveMessage: function( topic, msg ) {
-        console.log('-----------------');
-        console.log(topic);
-        console.dir(msg);
-        console.log('-----------------');
+        switch( topic ) {
+            case constants.TOPIC_ADMINGAME:
+                this.receiveAdminGameMessage( msg );
+                break;
+        }
+    },
+
+    receiveAdminGameMessage: function( msg ) {
+        // TODO: use Utils.isSafeString (tbi)
+        if( !msg.hasOwnProperty(constants.MSG_EVENT) || !Utils.isNonemptyString(msg[constants.MSG_EVENT]) ) {
+            return;
+        }
+
+        if( this.hasOwnProperty(msg[constants.MSG_EVENT]) && typeof(this[msg[constants.MSG_EVENT]])==='function' ) {
+            this[msg[constants.MSG_EVENT]].call( this, msg );
+        }
+    },
+
+    newProspect: function( msg ) {
+        if( msg.hasOwnProperty('name') && Utils.isNonemptyString(msg.name) ) { // TODO: use Utils.isSafeString (tbi)
+            MainMenu.addProspect( msg.name );
+        }
     }
 };
 
@@ -40,30 +58,12 @@ function afterLoadingGame() {
 }
 
 function addMenuActions() {
-    let mainMenuBtn = document.getElementById('main-menu-btn');
-    let mainMenuPanel = document.getElementById('main-menu-panel');
-    let letThemInBtn = document.getElementById('let-them-in-btn');
-    let letThemInPanel = document.getElementById('let-them-in-panel');
+    MainMenu.init();
 
-    function toggleMainMenuVisibility() {
-        let wasVisible = !mainMenuPanel.classList.contains(NODISPLAY);
-        mainMenuPanel.classList.toggle(NODISPLAY);
-
-        if( wasVisible ) {
-            hideLetThemInPanel();
-        }
+    if( !game.fetchFromServer ) {
+        MainMenu.addProspect('Sam2');
+        MainMenu.addProspect('Alex2');
     }
-
-    function toggleLetThemInVisibility() {
-        letThemInPanel.classList.toggle(NODISPLAY);
-    }
-
-    function hideLetThemInPanel() {
-        letThemInPanel.classList.add(NODISPLAY);
-    }
-
-    mainMenuBtn.addEventListener('click', toggleMainMenuVisibility);
-    letThemInBtn.addEventListener('click', toggleLetThemInVisibility);
 }
 
 function fetchHandouts() {

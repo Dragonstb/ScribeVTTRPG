@@ -46,5 +46,30 @@ const constants = {
     TOPIC_ADMINGAME: 'adminGame',
 
     /** Role: GM. */
-    ROLE_GM: 'gm'
+    ROLE_GM: 'gm',
+
+    /** Message property: event type */
+    MSG_EVENT: 'event'
+};
+
+Utils = {
+
+    /** Chechs if the argument is a string of non-vanishing length.
+     * @author Dragonstb
+     * @since 0.1.1;
+     * @param {any} text The entity to be tested.
+     * @returns {Boolean} True if and only if the argument is an actual string with a length greater than zero.
+     */
+    isNonemptyString: function(text) {
+        return text && typeof(text) === 'string' && text.length > 0;
+    }
+
+//    isSafeString: function(text) {
+//        if( !this.isNonemptyString(text) ) {
+//            return false;
+//        }
+//
+//        // TODO: check if text contains unsafe characters
+//        return false;
+//    }
 };

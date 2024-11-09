@@ -31,7 +31,6 @@ const WSBuilder = {
             sock: null,
 
             notifyGameAdminEvent: function( frame ) {
-                console.dir(frame);
                 try {
                     let json = JSON.parse( frame.body );
                     Messenger.relayMessage( constants.TOPIC_ADMINGAME, json );

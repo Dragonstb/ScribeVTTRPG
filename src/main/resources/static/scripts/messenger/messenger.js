@@ -51,7 +51,6 @@ const Messenger = {
             this.topics[topic] = new Set();
         }
         this.topics[topic].add( listener );
-        console.log('subscriptions to '+topic+': '+this.topics[topic].size);
     },
 
     /** Relays a message to all listeners of the topic by calling their 'receiveMessage' functions.

@@ -43,5 +43,8 @@ const constants = {
     /** For an element of adding. */
     ADD: 'add',
     /** Message topic: administrate game. */
-    TOPIC_ADMINGAME: 'adminGame'
+    TOPIC_ADMINGAME: 'adminGame',
+
+    /** Role: GM. */
+    ROLE_GM: 'gm'
 };

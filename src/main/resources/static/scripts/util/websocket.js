@@ -57,11 +57,14 @@ const WSBuilder = {
             console.dir(frame);
         };
 
-        console.log("subscribing to /topic/admingame/"+game.room);
         sock.onConnect = function(frame) {
-            // TODO: only GM may subscribe to admingame
             // TODO: serversided rejection of unallowed subscriptions
-            const adminGameSubscription = sock.subscribe('/topic/admingame/'+game.room,  wrapper.notifyGameAdminEvent);
+            if( game.myRole === constants.ROLE_GM) {
+                console.log("subscribing to /topic/admingame/"+game.room);
+                // TODO: subscription object must remain accessible for the code
+                const adminGameSubscription = sock.subscribe('/topic/admingame/'+game.room,
+                        wrapper.notifyGameAdminEvent);
+            }
 
             if( !wrapper.ready ) {
                 game.wsWrapper = wrapper;

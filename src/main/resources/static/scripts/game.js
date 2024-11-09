@@ -1,6 +1,8 @@
 let game = {
     handouts: {},
     room: null,
+    myId: null,
+    myRole: null,
     fetchFromServer: false,
     webSocket: null,
 
@@ -24,7 +26,11 @@ const NODISPLAY = constants.NODISPLAY;
 
 function afterLoadingGame() {
     let roomInput = document.querySelector("#roomname");
+    let userIdInput = document.querySelector("#myId");
+    let userRoleInput = document.querySelector("#myRole");
     game.room = roomInput.value;
+    game.myId = userIdInput.value;
+    game.myRole = userRoleInput.value;
     game.fetchFromServer = !roomInput.hasAttribute('th:value');
     Messenger.subscribe( constants.TOPIC_ADMINGAME, game );
 

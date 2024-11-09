@@ -26,7 +26,6 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
-import dev.dragonstb.scribevttrpg.GameManager;
 import static dev.dragonstb.scribevttrpg.game.ParticipationStatus.none;
 import static dev.dragonstb.scribevttrpg.game.ParticipationStatus.participating;
 import static dev.dragonstb.scribevttrpg.game.ParticipationStatus.waiting;
@@ -37,13 +36,12 @@ import dev.dragonstb.scribevttrpg.utils.LocKeys;
 import dev.dragonstb.scribevttrpg.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -83,7 +81,17 @@ public class GameController {
         }
 
         String result = switch( status ) {
-            case participating -> serveGamePage( roomName, model, loc );
+            case participating -> {
+                // since gameUtils.getUserParticipationStatus, the participation of interest might has been
+                // removed by another http request
+                Participant participation = participations.get( roomName );
+                if( participation != null ) {
+                    yield serveGamePage( roomName, model, loc, participation );
+                }
+                else {
+                    yield "redirect:" + Utils.getJoinPath( roomName );
+                }
+            }
             case none -> "redirect:" + Utils.getJoinPath( roomName );
             case waiting -> "redirect:" + Utils.getWaitPath( roomName );
         };
@@ -166,9 +174,10 @@ public class GameController {
      * @param roomName Name of the room.
      * @param model Page model.
      * @param loc Locale used for the localization.
+     * @param participant The user's instance of Participation in this game.
      * @return Name of the game page html file.
      */
-    private String serveGamePage( String roomName, Model model, Locale loc ) {
+    private String serveGamePage( String roomName, Model model, Locale loc, @NonNull Participant participant ) {
         String baseTitle = messageSource.getMessage("web.common.baseTitle", null, "<web.common.baseTitle>", loc);
         String campaignName="hello RPG world"; // TODO: fetch campaign title from the room associated with the name
         String documentTitle = Utils.composeDocumentTitle(campaignName, baseTitle != null ? baseTitle : "ScribeVTTRPG");
@@ -176,6 +185,8 @@ public class GameController {
         model.addAttribute("pageTitle", campaignName);
         model.addAttribute("documentTitle", documentTitle);
         model.addAttribute("roomName", roomName);
+        model.addAttribute( "userRole", participant.getRole().toString() );
+        model.addAttribute( "userId", participant.getName() );
 
         return "game";
     }

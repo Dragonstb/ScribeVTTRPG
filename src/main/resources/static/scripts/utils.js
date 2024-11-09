@@ -41,5 +41,7 @@ const constants = {
     /** For an element of deletion. */
     DELETE: 'delete',
     /** For an element of adding. */
-    ADD: 'add'
+    ADD: 'add',
+    /** Message topic: administrate game. */
+    TOPIC_ADMINGAME: 'adminGame'
 };

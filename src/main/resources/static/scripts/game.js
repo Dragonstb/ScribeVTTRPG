@@ -9,6 +9,10 @@ let game = {
     },
 
     receiveMessage: function( topic, msg ) {
+        console.log('-----------------');
+        console.log(topic);
+        console.dir(msg);
+        console.log('-----------------');
     }
 };
 
@@ -22,6 +26,7 @@ function afterLoadingGame() {
     let roomInput = document.querySelector("#roomname");
     game.room = roomInput.value;
     game.fetchFromServer = !roomInput.hasAttribute('th:value');
+    Messenger.subscribe( constants.TOPIC_ADMINGAME, game );
 
     addMenuActions();
     fetchHandouts();

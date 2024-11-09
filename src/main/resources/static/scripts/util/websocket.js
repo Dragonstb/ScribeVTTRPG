@@ -28,7 +28,18 @@ const WSBuilder = {
     build: function(game) {
         wrapper = {
             ready: false,
-            sock: null
+            sock: null,
+
+            notifyGameAdminEvent: function( frame ) {
+                console.dir(frame);
+                try {
+                    let json = JSON.parse( frame.body );
+                    Messenger.relayMessage( constants.TOPIC_ADMINGAME, json );
+                }
+                catch(error) {
+                    console.log('could not parse json');
+                }
+            }
         };
 
         let handshakeUrl = window.location.toString();
@@ -48,15 +59,11 @@ const WSBuilder = {
 
         console.log("subscribing to /topic/admingame/"+game.room);
         sock.onConnect = function(frame) {
-            const adminGameSubscription = sock.subscribe('/topic/admingame/'+game.room,
-                    function(msg){console.dir(msg);});
+            // TODO: only GM may subscribe to admingame
+            // TODO: serversided rejection of unallowed subscriptions
+            const adminGameSubscription = sock.subscribe('/topic/admingame/'+game.room,  wrapper.notifyGameAdminEvent);
 
             if( !wrapper.ready ) {
-                // TODO: remove test message
-                sock.publish({
-                    destination: '/topic/admingame/'+game.room,
-                    body: 'here we are!'
-                });
                 game.wsWrapper = wrapper;
                 wrapper.ready = true;
                 // TODO: if room creator, signal to server that room creator's UI is ready, opening the game for guests

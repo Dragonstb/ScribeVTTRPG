@@ -38,6 +38,14 @@ const WSBuilder = {
                 catch(error) {
                     console.log('could not parse json');
                 }
+            },
+
+            sendJson: function( channel, json ) {
+                let body = JSON.stringify( json );
+                this.sock.publish({
+                    destination: channel,
+                    body: body
+                });
             }
         };
 

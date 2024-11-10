@@ -44,6 +44,8 @@ const constants = {
     ADD: 'add',
     /** Message topic: administrate game. */
     TOPIC_ADMINGAME: 'adminGame',
+    /** Message topic: frontend-internal communications. */
+    TOPIC_INTERNAL: 'internal',
 
     /** Role: GM. */
     ROLE_GM: 'gm',

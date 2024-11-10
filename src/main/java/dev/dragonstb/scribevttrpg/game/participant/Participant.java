@@ -58,4 +58,13 @@ public interface Participant {
      */
     public boolean hasJoinedAlready();
 
+    /** Sets the role to a role that indicates an actual participation in this game. The method does not change the
+     * participant's actual role if {@code newRole} is a waiting role (i.e. <i>prospect</i>) or if the participant is
+     * not in a waiting role.
+     * @since 0.1.1;
+     * @param newRole The new role.
+     * @return Indicates if the change of the role was successfull. The change can fail when the new role is not a
+     * participating role, or when the participant is not in a waiting role.
+     */
+    public boolean setParticipatingRole( @NonNull ParticipantRole newRole );
 }

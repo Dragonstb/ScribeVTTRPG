@@ -34,6 +34,7 @@ import dev.dragonstb.scribevttrpg.game.handouts.DefaultHandoutManager;
 import dev.dragonstb.scribevttrpg.game.handouts.HandoutManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.lang.NonNull;
@@ -139,6 +140,19 @@ public final class Game implements GameService {
         }
     }
 
+    @Override
+    public boolean joinProspect( @NonNull String name, @NonNull ParticipantRole newRole ) {
+        boolean ok = false;
+        synchronized ( participants ) {
+            Optional<Participant> opt = participants.stream().filter( part -> part.getName().equals(name) ).findFirst();
+            if( opt.isPresent() ) {
+                Participant part = opt.get();
+                ok = part.setParticipatingRole( newRole );
+            }
+        }
+        return ok;
+    }
+
     /*
     TODO: shutdown routine that
     - closes all open Server-Sent Events connections
@@ -147,4 +161,5 @@ public final class Game implements GameService {
     - unsubscribes all subscribers of the topic /admingame/{roomName}
     - sets the alive flag to false (alive flag yet to be implemented)
     */
+
 }

@@ -61,4 +61,8 @@ public class GameWebSocketConfig implements WebSocketMessageBrokerConfigurer{
         registry.addEndpoint( "/wshandshake" );
     }
 
+    // TODO: prevent processing of messages sent from the client to /topic and /queue (these destinations are used for
+    //       outbound only. Clients shall sent their messages to /wschannel, where it is processed, authorized, ...
+    // TODO: prevent subscription of channels the clients are not authorized for (for example,
+    //       /wschannel/admingame/{roomName} is only for administartors of the, which is just the GM currently)
 }

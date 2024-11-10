@@ -66,4 +66,5 @@ public interface GameService {
      */
     public ParticipationStatus getParticipationStatus( @NonNull Participant participant );
 
+    public boolean joinProspect( @NonNull String name, @NonNull ParticipantRole newRole );
 }

@@ -26,6 +26,9 @@
 
 package dev.dragonstb.scribevttrpg.game;
 
+import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -41,13 +44,44 @@ import org.springframework.stereotype.Controller;
 public class GameWebSocketController {
 
     @Autowired
+    private GameManager gameManager;
+
+    @Autowired
     private SimpMessagingTemplate smt;
 
+    /** Handles messages sent from the clients for administrating the room. Examples are decisions made on requests
+     * of joining the game.
+     * @since 0.1.1;
+     * @author Dragonstb
+     * @param roomName Name of the room we are talking about
+     */
     @MessageMapping("/admingame/{roomName:.+}")
     public void administrateGame( @DestinationVariable String roomName ) {
-        // messages sent to GMs in room {roomName}. Examples
-        // join requests, join abortions
+        // TODO: validate room name
 
-        // smt.convertAndSend( "/topic/admingame/"+roomName, message );
+        Optional<GameService> opt = gameManager.getGame( roomName );
+        if( opt.isEmpty() ) {
+            return;
+        }
+
+        // TODO: is sender administrator in this room?
+
+        GameService game = opt.get();
+
+        /*
+        TODO:
+        1. extract message sent
+        2. get event type
+        3. react on event
+
+        when event is letJoinAs...:
+            A: get candidate participant's name
+            B: get candidate participant's new role
+            C: call game.joinProspect() fur ushering the candidate participant in... if possible
+            D: if successfull, send notification to waiting prospect
+            E: notify room admins anyway, they shall kick the user from their list of waiting people
+        */
     }
+
+    // TODO: listen to websocket lifecycle events.
 }

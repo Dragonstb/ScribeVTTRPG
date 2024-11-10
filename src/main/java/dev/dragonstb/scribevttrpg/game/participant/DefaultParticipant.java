@@ -26,6 +26,7 @@
 
 package dev.dragonstb.scribevttrpg.game.participant;
 
+import dev.dragonstb.scribevttrpg.game.ParticipationStatus;
 import org.springframework.lang.NonNull;
 
 /** Representation of a participant.
@@ -39,7 +40,7 @@ public class DefaultParticipant implements Participant{
     @NonNull private final String name;
 
     /** The role the participant has in the game session. */
-    @NonNull private final ParticipantRole role;
+    @NonNull private ParticipantRole role;
 
     /** Generates.
      * @author Dragonstb
@@ -79,5 +80,16 @@ public class DefaultParticipant implements Participant{
     public boolean hasJoinedAlready() {
         return role != ParticipantRole.prospect;
     }
+
+    @Override
+    public boolean setParticipatingRole( ParticipantRole newRole ) {
+        if( this.role != ParticipantRole.prospect || newRole == ParticipantRole.prospect) {
+            return false;
+        }
+
+        this.role = newRole;
+        return true;
+    }
+
 
 }

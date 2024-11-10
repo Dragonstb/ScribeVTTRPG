@@ -26,6 +26,7 @@
 
 const MainMenu = {
 
+    idMap: new Map(),
     mainMenuBtn: null,
     mainMenuPanel: null,
     letThemInBtn: null,
@@ -38,85 +39,25 @@ const MainMenu = {
      * @param {String} name User's name
      */
     addProspect: function( name ) {
-        // TODO: make sure you do not produce duplicated items
-        let letInDivId = 'let-'+name+'-in-div';
-        let letInBtnId = 'let-'+name+'-in-btn';
-        let letInPnlId = 'let-'+name+'-in-panel';
-        let letInAsPlayerBtnId = 'let-'+name+'-in-btn-as-player';
-        let letInAsSpecBtnId = 'let-'+name+'-in-btn-as-spectator';
-        let rejectBtnId = 'reject-'+name;
+        if( this.idMap.has(name) ) {
+            console.log(name+' is already waiting');
+            return;
+        }
 
-        // -----  view  -----
-        /*
-        <div id=letInDivId>
-            <button id=letInBtnId aria-controls=letInPnlId aria-owns=letInPnlId aria-expanded=false>name</button>
-            <div id=letInPnlId class="nodisplay">
-                <button id=letInAsPlayerBtnId>Let {name} join as player</button>
-                <button letInAsSpecBtnId>Let {name} join as spectator</button>
-                <button rejectBtnId>Reject {name} join as spectator</button>
-            </div>
-        </div>
-        */
+        let letInElem = makeLetInElem( name );
 
-       const letInDiv = document.createElement('div');
-       letInDiv.setAttribute( 'id', letInDivId );
+        this.letThemInPanel.appendChild( letInElem.elem );
+        this.idMap.set( name, letInElem );
+    },
 
-       const letInBtn = document.createElement('button');
-       letInBtn.setAttribute( 'id', letInBtnId );
-       letInBtn.setAttribute( 'aria-controls', letInPnlId );
-       letInBtn.setAttribute( 'aria-owns', letInPnlId );
-       letInBtn.setAttribute( 'aria-expanded', false );
-       letInBtn.innerText = name;
-       letInDiv.appendChild( letInBtn );
+    hideProspect: function( name ) {
+        if( !this.idMap.has(name) || !this.letThemInPanel ) {
+            return;
+        }
 
-       const letInPanel = document.createElement('div');
-       letInPanel.setAttribute( 'id', letInPnlId );
-       letInPanel.classList.add( constants.NODISPLAY );
-       letInDiv.appendChild( letInPanel );
-
-       const letInAsPlayerBtn = document.createElement('button');
-       letInAsPlayerBtn.setAttribute( 'id', letInAsPlayerBtnId );
-       letInAsPlayerBtn.innerText = 'Let '+name+' join as player'; // TODO: localize
-       letInPanel.appendChild( letInAsPlayerBtn );
-
-       const letInAsSpecBtn = document.createElement('button');
-       letInAsSpecBtn.setAttribute( 'id', letInAsSpecBtnId );
-       letInAsSpecBtn.innerText = 'Let '+name+' join as spectator'; // TODO: localize
-       letInPanel.appendChild( letInAsSpecBtn );
-
-       const rejectBtn = document.createElement('button');
-       rejectBtn.setAttribute( 'id', rejectBtnId );
-       rejectBtn.innerText = 'Reject '+name; // TODO: localize
-       letInPanel.appendChild( rejectBtn );
-
-       // -----  controller  -----
-
-       function toggleButtonsVisibility() {
-           letInPanel.classList.toggle( constants.NODISPLAY );
-           let visible = !letInPanel.classList.contains( constants.NODISPLAY );
-           letInBtn.setAttribute( 'aria-expanded', visible );
-       }
-
-       function letInAsPlayerAction() {
-           // TODO: function content
-           console.log('Letting '+name+' in as player'); // TODO: localize
-       }
-
-       function letInAsSpectatorAction() {
-           // TODO: function content
-           console.log('Letting '+name+' in as spectator'); // TODO: localize
-       }
-
-       function rejectAction() {
-           console.log('Rejecting '+name); // TODO: localize
-       }
-
-       letInBtn.addEventListener( 'click', toggleButtonsVisibility );
-       letInAsPlayerBtn.addEventListener( 'click', letInAsPlayerAction );
-       letInAsSpecBtn.addEventListener( 'click', letInAsSpectatorAction );
-       rejectBtn.addEventListener( 'click', rejectAction );
-
-       this.letThemInPanel.appendChild( letInDiv );
+        let obj = this.idMap.get(name);
+        this.letThemInPanel.removeChild( obj.elem );
+        // TODO: also disable the buttons for this potential participant
     },
 
     /** Initializes the main menu with actions. Do not call until the dom content is loaded.

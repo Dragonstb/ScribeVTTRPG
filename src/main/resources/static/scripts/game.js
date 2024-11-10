@@ -5,33 +5,89 @@ const game = {
     myRole: null,
     fetchFromServer: false,
     webSocket: null,
+    wsAdminGameEventsAllowed: new Set(['newProspect']),
+    wsInternalEventsAllowed: new Set(['sendLetInAsPlayer']),
 
     handlePieceAction: function( actionData ) {
         console.log( 'Game: '+JSON.stringify(actionData) );
     },
 
-    receiveMessage: function( topic, msg ) {
+    receiveMessage: function( topic, msgBody ) {
         switch( topic ) {
             case constants.TOPIC_ADMINGAME:
-                this.receiveAdminGameMessage( msg );
+                this.receiveAdminGameMessage( msgBody );
                 break;
+            case constants.TOPIC_INTERNAL:
+                this.receiveInternalMessage( msgBody );
         }
     },
 
-    receiveAdminGameMessage: function( msg ) {
+    // _______________  handle game-administrative messanges  ____________________
+
+    receiveAdminGameMessage: function( msgBody ) {
         // TODO: use Utils.isSafeString (tbi)
-        if( !msg.hasOwnProperty(constants.MSG_EVENT) || !Utils.isNonemptyString(msg[constants.MSG_EVENT]) ) {
+        if( !msgBody.hasOwnProperty(constants.MSG_EVENT) || !Utils.isNonemptyString(msgBody[constants.MSG_EVENT]) ) {
             return;
         }
 
-        if( this.hasOwnProperty(msg[constants.MSG_EVENT]) && typeof(this[msg[constants.MSG_EVENT]])==='function' ) {
-            this[msg[constants.MSG_EVENT]].call( this, msg );
+        let eventType = msgBody[constants.MSG_EVENT];
+        // message body enetrs code from the web and is, consequently, considered usnave. Continue only for certain
+        // values of 'eventType'. Otherwise, a manipulated, injected message may invoke any method.
+        if( !this.wsAdminGameEventsAllowed.has(eventType) ) {
+            console.log(eventType+' is not allowed to be called by websocket input');
+            return;
+        }
+
+        if( this.hasOwnProperty(eventType) && typeof(this[eventType])==='function' ) {
+            this[eventType].call( this, msgBody );
         }
     },
 
-    newProspect: function( msg ) {
-        if( msg.hasOwnProperty('name') && Utils.isNonemptyString(msg.name) ) { // TODO: use Utils.isSafeString (tbi)
-            MainMenu.addProspect( msg.name );
+    /** Adds a new prospective candidate to the list of guests waiting in front of the door.
+     * @since 0.1.1;
+     * @author Dragonstb
+     * @param {Object} msgBody Websocket message body. Is expected to contain a string-property 'name'.
+     */
+    newProspect: function( msgBody ) {
+        if( msgBody.hasOwnProperty('name') && Utils.isNonemptyString(msgBody.name) ) { // TODO: use Utils.isSafeString (tbi)
+            MainMenu.addProspect( msgBody.name, this );
+        }
+    },
+
+    // _______________ handle internal messages  ____________________
+
+    receiveInternalMessage: function( msgBody ) {
+        // TODO: use Utils.isSafeString (tbi)
+        if( !msgBody.hasOwnProperty(constants.MSG_EVENT) || !Utils.isNonemptyString(msgBody[constants.MSG_EVENT]) ) {
+            return;
+        }
+
+        let eventType = msgBody[constants.MSG_EVENT];
+        if( !this.wsInternalEventsAllowed.has( eventType ) ) {
+            console.log(eventType+' is not allowed to be called here');
+            return;
+        }
+
+        if( this.hasOwnProperty(eventType) && typeof(this[eventType])==='function' ) {
+            this[eventType].call( this, msgBody );
+        }
+    },
+
+
+    sendLetInAsPlayer: function( msgBody ) {
+        if( msgBody.hasOwnProperty('name') && Utils.isNonemptyString(msgBody.name) ) { // TODO: use Utils.isSafeString (tbi)
+            MainMenu.hideProspect( msgBody.name );
+            if( !this.webSocket ) {
+                console.log('local mode: no websocket for letting '+msgBody.name+' in as a player');
+                return;
+            }
+
+            let obj = {
+                name: msgBody.name,
+                event: 'letJoinAsPlayer'
+            };
+            let channel = '/wschannel/admingame/'+this.room;
+            this.webSocket.sendJson( channel, obj );
         }
     }
 };
@@ -51,6 +107,7 @@ function afterLoadingGame() {
     game.myRole = userRoleInput.value;
     game.fetchFromServer = !roomInput.hasAttribute('th:value');
     Messenger.subscribe( constants.TOPIC_ADMINGAME, game );
+    Messenger.subscribe( constants.TOPIC_INTERNAL, game );
 
     addMenuActions();
     fetchHandouts();

@@ -147,7 +147,7 @@ public final class Game implements GameService {
             Optional<Participant> opt = participants.stream().filter( part -> part.getName().equals(name) ).findFirst();
             if( opt.isPresent() ) {
                 Participant part = opt.get();
-                ok = part.setParticipatingRole( newRole );
+                ok = part.promoteToParticipatingRole( newRole );
             }
         }
         return ok;

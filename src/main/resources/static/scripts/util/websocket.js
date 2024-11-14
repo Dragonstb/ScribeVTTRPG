@@ -67,7 +67,7 @@ const WSBuilder = {
         sock.onConnect = function(frame) {
             // TODO: serversided rejection of unallowed subscriptions
             if( game.myRole === constants.ROLE_GM) {
-                console.log("subscribing to /topic/admingame/"+game.room);
+                console.log("connecting to /topic/admingame/"+game.room); // TODO: remove
                 // TODO: subscription object must remain accessible for the code
                 const adminGameSubscription = sock.subscribe('/topic/admingame/'+game.room,
                         wrapper.notifyGameAdminEvent);

@@ -66,5 +66,12 @@ public interface Participant {
      * @return Indicates if the change of the role was successfull. The change can fail when the new role is not a
      * participating role, or when the participant is not in a waiting role.
      */
-    public boolean setParticipatingRole( @NonNull ParticipantRole newRole );
+    public boolean promoteToParticipatingRole( @NonNull ParticipantRole newRole );
+
+    /** Tells if this participant is an administrator of the game. Administrators of a game can, for example, usher
+     * waiting users in into the room.
+     * @since 0.1.1;
+     * @return {@code True} if and only if this participant is an administrator of the game.
+     */
+    public boolean isAdministratingGame();
 }

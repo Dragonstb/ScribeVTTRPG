@@ -36,7 +36,6 @@ import dev.dragonstb.scribevttrpg.utils.LocKeys;
 import dev.dragonstb.scribevttrpg.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;

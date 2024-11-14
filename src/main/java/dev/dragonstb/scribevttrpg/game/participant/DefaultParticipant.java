@@ -26,7 +26,6 @@
 
 package dev.dragonstb.scribevttrpg.game.participant;
 
-import dev.dragonstb.scribevttrpg.game.ParticipationStatus;
 import org.springframework.lang.NonNull;
 
 /** Representation of a participant.
@@ -82,7 +81,7 @@ public class DefaultParticipant implements Participant{
     }
 
     @Override
-    public boolean setParticipatingRole( ParticipantRole newRole ) {
+    public boolean promoteToParticipatingRole( ParticipantRole newRole ) {
         if( this.role != ParticipantRole.prospect || newRole == ParticipantRole.prospect) {
             return false;
         }
@@ -91,5 +90,9 @@ public class DefaultParticipant implements Participant{
         return true;
     }
 
+    @Override
+    public boolean isAdministratingGame() {
+        return role == ParticipantRole.gm;
+    }
 
 }

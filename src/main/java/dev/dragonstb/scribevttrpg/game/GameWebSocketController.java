@@ -27,11 +27,20 @@
 package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
+import dev.dragonstb.scribevttrpg.utils.Constants;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -54,33 +63,95 @@ public class GameWebSocketController {
      * @since 0.1.1;
      * @author Dragonstb
      * @param roomName Name of the room we are talking about
+     * @param msg The message body sent from an admin of the game.
+     * @param accessor Header accessor for accessing the session attributes.
      */
     @MessageMapping("/admingame/{roomName:.+}")
-    public void administrateGame( @DestinationVariable String roomName ) {
+    public void administrateGame( @DestinationVariable String roomName, Message<String> msg, SimpMessageHeaderAccessor accessor ) {
+        /* Message payload:
+        {
+            event = hopefully a value of WSAdminGameEvent
+            name = supposed to be the name of user of interest
+        }
+        */
+        // TODO: make sure that the WebSocket request causes the http session to stay alive (Spring Session does this
+        //       automatcally, but would cause further programming overhead we do not really need *nowadays*)
         // TODO: validate room name
+        // TODO: validate message
+        // TODO: use converter for accessing the message
 
-        Optional<GameService> opt = gameManager.getGame( roomName );
-        if( opt.isEmpty() ) {
+        JSONObject json;
+        try {
+            json = new JSONObject( msg.getPayload() );
+        } catch ( Exception e ) {
+            // TODO: notify admins, so they may roll back some actions
             return;
         }
 
-        // TODO: is sender administrator in this room?
+        // check existence of room
+        Optional<GameService> opt = gameManager.getGame( roomName );
+        if( opt.isEmpty() ) {
+            // TODO: notify admins, so they may roll back some actions
+            return;
+        }
+
+        // check if sender is admin of this game
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+        if( sessionAttributes == null ) {
+            // TODO: handle
+            return;
+        }
+        Object obj = sessionAttributes.get( Constants.KEY_PARTICIPATIONS );
+        Map<String, Participant> participations;
+        if( obj != null && obj instanceof Map ) {
+            participations = (Map<String, Participant>)obj;
+        }
+        else{
+            // TODO: handle - not part of this game
+            return;
+        }
+
+        Participant part = participations.get( roomName );
+        if( part == null || !part.isAdministratingGame() ) {
+            // TODO: handle - either sender does not exists or does not has the rights to post here
+            return;
+        }
 
         GameService game = opt.get();
+        if( opt.isEmpty() ) {
+            // TODO: notify admins, so they may roll back some actions
+            return;
+        }
 
-        /*
-        TODO:
-        1. extract message sent
-        2. get event type
-        3. react on event
+        String event =json.getString( "event" );
+        if( event.equals( WSGameAdminEvents.letJoinAsPlayer.name() ) ) {
+            //letJoin( game, json.getString("name"), ParticipantRole.player);
+        }
+        else {
+            // TODO: notify admins, so they may roll back some actions
+        }
 
-        when event is letJoinAs...:
-            A: get candidate participant's name
-            B: get candidate participant's new role
-            C: call game.joinProspect() fur ushering the candidate participant in... if possible
-            D: if successfull, send notification to waiting prospect
-            E: notify room admins anyway, they shall kick the user from their list of waiting people
-        */
+    }
+
+    /**
+     * @since 0.1.1;
+     * @author Dragonstb
+     * @param game The game we are talking about.
+     * @param name ID of the user who is ushered into the room.
+     * @param newRole The new role for this user.
+     */
+    private void letJoin( @NonNull GameService game, @NonNull String name, @NonNull ParticipantRole newRole ) {
+        boolean success = game.joinProspect( name, newRole );
+        if( success ) {
+            // TODO: notify game admins: they may permanently delete the let-in-UI for this user
+            // TODO: send Server-Sent-Event to user and initialize auto-forwarding to the game page
+        }
+        else {
+            // TODO: notify admins, so they may roll back some actions
+            // TODO: notify waiting user that he/she could not be promoted to be a participant (a reason might be that
+            //       the user has become a participant since a few milliseconds, due to the reacion of another game
+            //       administrator. Consequently, this notification to the user needs to behave idempotently.)
+        }
     }
 
     // TODO: listen to websocket lifecycle events.

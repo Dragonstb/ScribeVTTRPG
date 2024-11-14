@@ -4,7 +4,7 @@ const game = {
     myId: null,
     myRole: null,
     fetchFromServer: false,
-    webSocket: null,
+    wsWrapper: null,
     wsAdminGameEventsAllowed: new Set(['newProspect']),
     wsInternalEventsAllowed: new Set(['sendLetInAsPlayer']),
 
@@ -76,18 +76,22 @@ const game = {
 
     sendLetInAsPlayer: function( msgBody ) {
         if( msgBody.hasOwnProperty('name') && Utils.isNonemptyString(msgBody.name) ) { // TODO: use Utils.isSafeString (tbi)
+            /* TODO: must reappear after some time if no reaction arrives from the server. Because then it is unclear if
+             * the request has been processed. Best to add an info text, so that the user is not confused why these
+             * UI elements have reappeared.
+             */
             MainMenu.hideProspect( msgBody.name );
-            if( !this.webSocket ) {
+            if( !this.wsWrapper ) {
                 console.log('local mode: no websocket for letting '+msgBody.name+' in as a player');
                 return;
             }
 
             let obj = {
                 name: msgBody.name,
-                event: 'letJoinAsPlayer'
+                event: constants.EVENTTYPE_LET_JOIN_AS_PLAYER
             };
             let channel = '/wschannel/admingame/'+this.room;
-            this.webSocket.sendJson( channel, obj );
+            this.wsWrapper.sendJson( channel, obj );
         }
     }
 };

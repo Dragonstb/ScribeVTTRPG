@@ -34,6 +34,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 /**
  *
@@ -58,11 +59,15 @@ public class GameWebSocketConfig implements WebSocketMessageBrokerConfigurer{
 
     @Override
     public void registerStompEndpoints( StompEndpointRegistry registry ) {
-        registry.addEndpoint( "/wshandshake" );
+
+        registry.addEndpoint( "/wshandshake" )
+                .addInterceptors( new HttpSessionHandshakeInterceptor() );
     }
+
+
 
     // TODO: prevent processing of messages sent from the client to /topic and /queue (these destinations are used for
     //       outbound only. Clients shall sent their messages to /wschannel, where it is processed, authorized, ...
     // TODO: prevent subscription of channels the clients are not authorized for (for example,
-    //       /wschannel/admingame/{roomName} is only for administartors of the, which is just the GM currently)
+    //       /wschannel/admingame/{roomName} is only for administrators of the game, which is just the GM currently)
 }

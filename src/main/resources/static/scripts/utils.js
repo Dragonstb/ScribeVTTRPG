@@ -51,7 +51,10 @@ const constants = {
     ROLE_GM: 'gm',
 
     /** Message property: event type */
-    MSG_EVENT: 'event'
+    MSG_EVENT: 'event',
+
+    /** Administarte game event: let waiting user join as player. */
+    EVENTTYPE_LET_JOIN_AS_PLAYER: 'letJoinAsPlayer'
 };
 
 Utils = {

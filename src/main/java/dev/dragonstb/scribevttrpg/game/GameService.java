@@ -67,4 +67,11 @@ public interface GameService {
     public ParticipationStatus getParticipationStatus( @NonNull Participant participant );
 
     public boolean joinProspect( @NonNull String name, @NonNull ParticipantRole newRole );
+
+    /** Returns the name of the room.
+     * @since 0.1.1;
+     * @return Returns the name of the room.
+     */
+    @NonNull
+    public String getRoomName();
 }

@@ -5,7 +5,7 @@ const game = {
     myRole: null,
     fetchFromServer: false,
     wsWrapper: null,
-    wsAdminGameEventsAllowed: new Set(['newProspect']),
+    wsAdminGameEventsAllowed: new Set(['newProspect', 'eventJoinDecided']),
     wsInternalEventsAllowed: new Set(['sendLetInAsPlayer']),
 
     handlePieceAction: function( actionData ) {
@@ -25,13 +25,13 @@ const game = {
     // _______________  handle game-administrative messanges  ____________________
 
     receiveAdminGameMessage: function( msgBody ) {
-        // TODO: use Utils.isSafeString (tbi)
+        // TODO: use Utils.isSafeString (tbi) instead of isNonemptyString
         if( !msgBody.hasOwnProperty(constants.MSG_EVENT) || !Utils.isNonemptyString(msgBody[constants.MSG_EVENT]) ) {
             return;
         }
 
         let eventType = msgBody[constants.MSG_EVENT];
-        // message body enetrs code from the web and is, consequently, considered usnave. Continue only for certain
+        // message body enters code from the web and is, consequently, considered unsave. Continue only for certain
         // values of 'eventType'. Otherwise, a manipulated, injected message may invoke any method.
         if( !this.wsAdminGameEventsAllowed.has(eventType) ) {
             console.log(eventType+' is not allowed to be called by websocket input');
@@ -51,6 +51,16 @@ const game = {
     newProspect: function( msgBody ) {
         if( msgBody.hasOwnProperty('name') && Utils.isNonemptyString(msgBody.name) ) { // TODO: use Utils.isSafeString (tbi)
             MainMenu.addProspect( msgBody.name, this );
+        }
+    },
+
+    /** Deletes the user with the id given in the message body from the list of people who want to join.
+     * @author Dragonstb
+     * @param {json} msgBody Message body that came through the web socket.
+     */
+    eventJoinDecided: function( msgBody ) {
+        if( msgBody.hasOwnProperty('name') && Utils.isNonemptyString(msgBody.name) ) { // TODO: use Utils.isSafeString (tbi)
+            MainMenu.removeProspect( msgBody.name, this );
         }
     },
 

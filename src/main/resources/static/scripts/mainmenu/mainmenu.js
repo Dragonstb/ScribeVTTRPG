@@ -60,6 +60,23 @@ const MainMenu = {
         // TODO: also disable the buttons for this potential participant
     },
 
+    /** Removes a prospect participant from the UI.
+     * @since 0.1.1;
+     * @author Dragonstb
+     * @param {String} name The user's name.
+     */
+    removeProspect: function( name ) {
+        if( !this.idMap.has(name) || !this.letThemInPanel ) {
+            return;
+        }
+
+        let obj = this.idMap.get( name );
+        this.idMap.delete( name );
+        if( obj.elem.parentElement && obj.elem.parentElement === this.letThemInPanel ) {
+            this.letThemInPanel.removeChild( obj.elem );
+        }
+    },
+
     /** Initializes the main menu with actions. Do not call until the dom content is loaded.
      * @since 0.1.1;
      * @author Dragonstb

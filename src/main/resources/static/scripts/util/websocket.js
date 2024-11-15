@@ -31,12 +31,16 @@ const WSBuilder = {
             sock: null,
 
             notifyGameAdminEvent: function( frame ) {
+                let json = null;
                 try {
-                    let json = JSON.parse( frame.body );
-                    Messenger.relayMessage( constants.TOPIC_ADMINGAME, json );
+                    json = JSON.parse( frame.body );
                 }
                 catch(error) {
                     console.log('could not parse json');
+                }
+
+                if(json) {
+                    Messenger.relayMessage( constants.TOPIC_ADMINGAME, json );
                 }
             },
 

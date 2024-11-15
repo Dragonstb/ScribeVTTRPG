@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Dragonstb
+ * Copyright (c) 2024, Dragonstb
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,33 +23,40 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package dev.dragonstb.scribevttrpg.utils;
 
-import java.nio.charset.Charset;
+package dev.dragonstb.scribevttrpg.game;
 
-/**
+import dev.dragonstb.scribevttrpg.events.ParticipantJoinsEvent;
+import dev.dragonstb.scribevttrpg.utils.Constants;
+import dev.dragonstb.scribevttrpg.utils.Utils;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
+
+/** Reacts on events that are related to message flow over web sockets somehow.
  *
  * @author Dragonstb
- * @since 0.0.2;
+ * @since 0.1.1;
  */
-public interface Constants {
+@Component
+public final class GameWebSocketEventListener {
 
-    /** The empty string "". */
-    public static final String EMPTY_STRING = "";
-    /** A default charset. */
-    public static final Charset DEFAULT_CHARSET = Charset.forName("utf-8");
+    @Autowired
+    private SimpMessagingTemplate smt;
 
-    // Keys used in maps
-    /** Key for http session attribute {@link dev.dragonstb.scribevttrpg.content.ContentManager content manager}. */
-    public static final String KEY_CONTENT_MANAGER = "contentManager";
-    /** Key for http session attribute <i>participations</i>. */
-    public static final String KEY_PARTICIPATIONS = "participations";
-    /** Key for http session attribute <i>waitings</i>. */
-    public static final String KEY_WAITINGS = "waitings";
+    /** Reacts when a join process for a new participant ends with the decision that the user can join the game.
+     * @since 0.1.1;
+     * @author Dragonstb
+     * @param event Event fired
+     */
+    @EventListener(ParticipantJoinsEvent.class)
+    public void onParticipantJoinsEvent( ParticipantJoinsEvent event ) {
+        JSONObject json = new JSONObject();
+        json.put( "event", Constants.EVT_GM_ADM_JOIN_DECIDED );
+        json.put( "name", event.getName() );
+        smt.convertAndSend( Utils.getAdminGamePath(event.getRoomName()), json.toString() );
+    }
 
-    // __________  event types for messages send around the world  __________
-
-    // events for administrators of a game
-    /** Game admin event: a joining process has come to an decission. */
-    public static final String EVT_GM_ADM_JOIN_DECIDED = "eventJoinDecided";
 }

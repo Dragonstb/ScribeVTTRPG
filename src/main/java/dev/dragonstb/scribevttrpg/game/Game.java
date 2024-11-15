@@ -112,7 +112,8 @@ public final class Game implements GameService {
      * @return The name of the room this game takes place in.
      */
     @NonNull
-    String getRoomName() {
+    @Override
+    public String getRoomName() {
         // TODO: Do we really need this outside of unit tests?
         return roomName;
     }

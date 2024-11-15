@@ -27,15 +27,15 @@
 package dev.dragonstb.scribevttrpg.game;
 
 import dev.dragonstb.scribevttrpg.GameManager;
+import dev.dragonstb.scribevttrpg.events.ParticipantJoinsEvent;
 import dev.dragonstb.scribevttrpg.game.participant.Participant;
 import dev.dragonstb.scribevttrpg.game.participant.ParticipantRole;
 import dev.dragonstb.scribevttrpg.utils.Constants;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -56,7 +56,7 @@ public class GameWebSocketController {
     private GameManager gameManager;
 
     @Autowired
-    private SimpMessagingTemplate smt;
+    private ApplicationEventPublisher eventPublisher;
 
     /** Handles messages sent from the clients for administrating the room. Examples are decisions made on requests
      * of joining the game.
@@ -125,7 +125,7 @@ public class GameWebSocketController {
 
         String event =json.getString( "event" );
         if( event.equals( WSGameAdminEvents.letJoinAsPlayer.name() ) ) {
-            //letJoin( game, json.getString("name"), ParticipantRole.player);
+            letJoin( game, json.getString("name"), ParticipantRole.player);
         }
         else {
             // TODO: notify admins, so they may roll back some actions
@@ -140,10 +140,12 @@ public class GameWebSocketController {
      * @param name ID of the user who is ushered into the room.
      * @param newRole The new role for this user.
      */
-    private void letJoin( @NonNull GameService game, @NonNull String name, @NonNull ParticipantRole newRole ) {
+    private void letJoin( @NonNull final GameService game, @NonNull final String name,
+            @NonNull final ParticipantRole newRole ) {
         boolean success = game.joinProspect( name, newRole );
         if( success ) {
-            // TODO: notify game admins: they may permanently delete the let-in-UI for this user
+            ParticipantJoinsEvent event = new ParticipantJoinsEvent( newRole, name, game.getRoomName() );
+            eventPublisher.publishEvent( event );
             // TODO: send Server-Sent-Event to user and initialize auto-forwarding to the game page
         }
         else {
